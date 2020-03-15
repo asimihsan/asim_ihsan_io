@@ -6,8 +6,9 @@ katex: true
 summary: |
     You want to iterate over a random ordering of items without storing or needing to lookup already-used items.
     We can borrow an algorithm from cryptography called the Feistel Network to generate random permutations in constant
-    space. Applications include generating unique gift card codes or credit card numbers for your customers without
-    exposing already-generated codes/numbers, and efficiently implementing the fizzlefade effect from Wolfenstein 3D.
+    space and time. Applications include generating unique gift card codes or credit card numbers for your customers
+    without exposing already-generated codes/numbers, and efficiently implementing the fizzlefade effect from
+    Wolfenstein 3D.
 
     Topics: algorithms, randomness, cryptography
 ---

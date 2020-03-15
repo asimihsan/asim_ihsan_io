@@ -3,6 +3,16 @@ Content for https://asim.ihsan.io website.
 
 ## Usage
 
+### Build to staging environment with production assets
+
+TODO automate, but for now change directory to root then:
+
+```
+(cd hugo/themes/ananke/src && npm run build:production)
+(cd hugo && hugo --buildDrafts --destination build)
+(cd cdk && cdk deploy)
+```
+
 ## Setup
 
 -   Install and setup nvm: https://github.com/nvm-sh/nvm
