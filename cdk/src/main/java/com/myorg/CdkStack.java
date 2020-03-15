@@ -5,6 +5,7 @@ import software.amazon.awscdk.core.*;
 import software.amazon.awscdk.services.certificatemanager.DnsValidatedCertificate;
 import software.amazon.awscdk.services.certificatemanager.ICertificate;
 import software.amazon.awscdk.services.cloudfront.*;
+import software.amazon.awscdk.services.iam.CanonicalUserPrincipal;
 import software.amazon.awscdk.services.iam.PolicyStatement;
 import software.amazon.awscdk.services.route53.*;
 import software.amazon.awscdk.services.route53.targets.CloudFrontTarget;
@@ -34,8 +35,12 @@ public class CdkStack extends Stack {
         //  S3 bucket for static blog assets.
         // --------------------------------------------------------------------
         final Bucket bucket = new Bucket(this, "BlogBucket", BucketProps.builder()
-                .publicReadAccess(false)
-                .blockPublicAccess(BlockPublicAccess.BLOCK_ALL)
+
+                // TODO couldn't get S3 working without public access. I've had to add it as a static website
+                // origin rather than an S3 origin, that may be the reason.
+                .publicReadAccess(true)
+                //.blockPublicAccess(BlockPublicAccess.BLOCK_ALL)
+
                 .removalPolicy(RemovalPolicy.DESTROY)
                 .versioned(false)
                 .encryption(BucketEncryption.S3_MANAGED)
@@ -85,6 +90,7 @@ public class CdkStack extends Stack {
 
                         .behaviors(Collections.singletonList(Behavior.builder()
                                 .isDefaultBehavior(true)
+                                .compress(true)
                                 .build()))
                         .build()
         );
@@ -105,17 +111,23 @@ public class CdkStack extends Stack {
         // --------------------------------------------------------------------
         //  Only grant CloudFront read access to the S3 bucket, the S3 bucket
         //  should not be publicly readable.
+        //
+        //  Only seems to matter if you're using S3 origin as the origin. Here we use the S3 static website
+        //  endpoint because we want to default to index.html as the object for Hugo posts.
+        //
+        //  References
+        //  - https://github.com/aws-samples/serverless-retail-workshop/blob/master/infrastructure/src/main/java/fishing/lee/infrastructure/ContentDistribution.java
         // --------------------------------------------------------------------
-        final OriginAccessIdentity cloudFrontIdentity = OriginAccessIdentity.Builder.create(
-                this, "CloudFrontIdentity"
-        )
-                .comment("Allow CloudFront to reach the blog bucket")
-                .build();
-        bucket.addToResourcePolicy(PolicyStatement.Builder.create()
-                .actions(Collections.singletonList("s3:GetObject"))
-                .resources(Collections.singletonList(bucket.arnForObjects("*")))
-                .principals(Collections.singletonList(cloudFrontIdentity.getGrantPrincipal()))
-                .build());
+//        final OriginAccessIdentity cloudFrontIdentity = OriginAccessIdentity.Builder.create(
+//                this, "CloudFrontIdentity"
+//        )
+//                .comment("Allow CloudFront to reach the blog bucket")
+//                .build();
+//        bucket.addToResourcePolicy(PolicyStatement.Builder.create()
+//                .actions(Collections.singletonList("s3:GetObject"))
+//                .resources(Collections.singletonList(bucket.arnForObjects("*")))
+//                .principals(Collections.singletonList(cloudFrontIdentity.getGrantPrincipal()))
+//                .build());
         // --------------------------------------------------------------------
 
         // --------------------------------------------------------------------
