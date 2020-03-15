@@ -1,11 +1,14 @@
 package com.myorg;
 
+import com.sun.management.VMOption;
 import software.amazon.awscdk.core.*;
 import software.amazon.awscdk.services.certificatemanager.DnsValidatedCertificate;
 import software.amazon.awscdk.services.certificatemanager.ICertificate;
 import software.amazon.awscdk.services.cloudfront.*;
+import software.amazon.awscdk.services.iam.PolicyStatement;
 import software.amazon.awscdk.services.route53.*;
 import software.amazon.awscdk.services.route53.targets.CloudFrontTarget;
+import software.amazon.awscdk.services.s3.BlockPublicAccess;
 import software.amazon.awscdk.services.s3.Bucket;
 import software.amazon.awscdk.services.s3.BucketEncryption;
 import software.amazon.awscdk.services.s3.BucketProps;
@@ -31,7 +34,8 @@ public class CdkStack extends Stack {
         //  S3 bucket for static blog assets.
         // --------------------------------------------------------------------
         final Bucket bucket = new Bucket(this, "BlogBucket", BucketProps.builder()
-                .publicReadAccess(true)
+                .publicReadAccess(false)
+                .blockPublicAccess(BlockPublicAccess.BLOCK_ALL)
                 .removalPolicy(RemovalPolicy.DESTROY)
                 .versioned(false)
                 .encryption(BucketEncryption.S3_MANAGED)
@@ -66,9 +70,19 @@ public class CdkStack extends Stack {
         // --------------------------------------------------------------------
         final List<SourceConfiguration> sourceConfigurations = Collections.singletonList(
                 SourceConfiguration.builder()
-                        .s3OriginSource(S3OriginConfig.builder()
-                                .s3BucketSource(bucket)
+
+                        // Rather than use S3 origin source, we use a custom origin source and treat S3 as a generic
+                        // HTTP server, in order to get 'index.html' working for Hugo posts.
+                        // See: https://stackoverflow.com/questions/31017105/how-do-you-set-a-default-root-object-for-subdirectories-for-a-statically-hosted
+                        .customOriginSource(CustomOriginConfig.builder()
+                                .domainName(bucket.getBucketWebsiteDomainName())
+                                .allowedOriginSslVersions(Collections.singletonList(OriginSslPolicy.TLS_V1_2))
+
+                                // This is unfortunate, S3 static website doesn't support HTTPS as a protocol
+                                .originProtocolPolicy(OriginProtocolPolicy.HTTP_ONLY)
+
                                 .build())
+
                         .behaviors(Collections.singletonList(Behavior.builder()
                                 .isDefaultBehavior(true)
                                 .build()))
@@ -83,9 +97,27 @@ public class CdkStack extends Stack {
                                         .securityPolicy(SecurityPolicyProtocol.TLS_V1_1_2016)
                                         .sslMethod(SSLMethod.SNI)
                                         .build()))
-                        .defaultRootObject("index.html")
+                        .viewerProtocolPolicy(ViewerProtocolPolicy.REDIRECT_TO_HTTPS)
                         .priceClass(PriceClass.PRICE_CLASS_ALL)
                         .build());
+        // --------------------------------------------------------------------
+
+        // --------------------------------------------------------------------
+        //  Only grant CloudFront read access to the S3 bucket, the S3 bucket
+        //  should not be publicly readable.
+        // --------------------------------------------------------------------
+        final OriginAccessIdentity cloudFrontIdentity = OriginAccessIdentity.Builder.create(
+                this, "CloudFrontIdentity"
+        )
+                .comment("Allow CloudFront to reach the blog bucket")
+                .build();
+        bucket.addToResourcePolicy(PolicyStatement.Builder.create()
+                .actions(Collections.singletonList("s3:GetObject"))
+                .resources(Collections.singletonList(bucket.arnForObjects("*")))
+                .principals(Collections.singletonList(cloudFrontIdentity.getGrantPrincipal()))
+                .build());
+        // --------------------------------------------------------------------
+
         // --------------------------------------------------------------------
 
         // --------------------------------------------------------------------
