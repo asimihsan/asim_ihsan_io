@@ -1,4 +1,4 @@
-baseURL = ""
+baseURL = "/"
 languageCode = "en-us"
 title = "Asim Ihsan's Meanderings"
 theme = "ananke"
