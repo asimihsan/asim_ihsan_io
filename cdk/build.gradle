@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        url = 'https://repo.maven.apache.org/maven2'
+    }
+}
+
+application {
+    mainClassName = 'com.myorg.CdkApp'
+}
+
+dependencies {
+    implementation 'software.amazon.awscdk:core:1.27.0'
+    implementation 'software.amazon.awscdk:s3:1.27.0'
+    implementation 'software.amazon.awscdk:s3-deployment:1.27.0'
+    implementation 'software.amazon.awscdk:route53:1.27.0'
+    implementation 'software.amazon.awscdk:route53-targets:1.27.0'
+    implementation 'com.google.guava:guava:28.2-jre'
+
+    testImplementation 'junit:junit:4.12'
+}
+
+group = 'com.myorg'
+version = '0.1'
+sourceCompatibility = '1.8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
