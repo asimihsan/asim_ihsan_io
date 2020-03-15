@@ -10,7 +10,7 @@ TODO automate, but for now change directory to root then:
 ```
 (cd hugo/themes/ananke/src && npm run build:production)
 (cd hugo && hugo --buildDrafts --destination build)
-(cd cdk && cdk deploy)
+(cd cdk && cdk deploy AsimIhsanIoCdkStack)
 ```
 
 ## Setup
