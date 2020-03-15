@@ -36,3 +36,10 @@ enableRobotsTXT = true
   recent_posts_number = 10
   body_classes = "sans-serif bg-near-white"
   post_content_classes = "sans-serif bg-near-white"
+  show_reading_time = false
+
+[markup]
+  [markup.tableOfContents]
+    endLevel = 2
+    ordered = true
+    startLevel = 2
