@@ -1,5 +1,5 @@
 ---
-title: "Random Permutations With Constant Space"
+title: "[DRAFT] Random Permutations With Constant Space"
 date: 2020-03-13T17:24:19-07:00
 draft: true
 katex: true
@@ -12,6 +12,8 @@ summary: |
 
     Topics: algorithms, randomness, cryptography
 ---
+
+## This is a draft post, still writing it
 
 ## Introduction
 
@@ -54,7 +56,9 @@ randomness.
 
 ## Solution
 
+TODO
 
+[https://github.com/asimihsan/permutation-iterator-rs](https://github.com/asimihsan/permutation-iterator-rs)
 
 ## Other solutions
 
