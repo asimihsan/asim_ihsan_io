@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id "io.freefair.lombok" version "5.0.0-rc6"
 }
 
 repositories {
@@ -15,12 +16,12 @@ application {
 }
 
 dependencies {
-    implementation 'software.amazon.awscdk:core:1.27.0'
-    implementation 'software.amazon.awscdk:cloudfront:1.27.0'
-    implementation 'software.amazon.awscdk:s3:1.27.0'
-    implementation 'software.amazon.awscdk:s3-deployment:1.27.0'
-    implementation 'software.amazon.awscdk:route53:1.27.0'
-    implementation 'software.amazon.awscdk:route53-targets:1.27.0'
+    implementation 'software.amazon.awscdk:core:1.46.0'
+    implementation 'software.amazon.awscdk:cloudfront:1.46.0'
+    implementation 'software.amazon.awscdk:s3:1.46.0'
+    implementation 'software.amazon.awscdk:s3-deployment:1.46.0'
+    implementation 'software.amazon.awscdk:route53:1.46.0'
+    implementation 'software.amazon.awscdk:route53-targets:1.46.0'
     implementation 'com.google.guava:guava:28.2-jre'
 
     testImplementation 'junit:junit:4.12'

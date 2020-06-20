@@ -1,15 +1,11 @@
 package com.myorg;
 
-import com.sun.management.VMOption;
 import software.amazon.awscdk.core.*;
 import software.amazon.awscdk.services.certificatemanager.DnsValidatedCertificate;
 import software.amazon.awscdk.services.certificatemanager.ICertificate;
 import software.amazon.awscdk.services.cloudfront.*;
-import software.amazon.awscdk.services.iam.CanonicalUserPrincipal;
-import software.amazon.awscdk.services.iam.PolicyStatement;
 import software.amazon.awscdk.services.route53.*;
 import software.amazon.awscdk.services.route53.targets.CloudFrontTarget;
-import software.amazon.awscdk.services.s3.BlockPublicAccess;
 import software.amazon.awscdk.services.s3.Bucket;
 import software.amazon.awscdk.services.s3.BucketEncryption;
 import software.amazon.awscdk.services.s3.BucketProps;
@@ -158,8 +154,15 @@ public class CdkStack extends Stack {
         // --------------------------------------------------------------------
 
         CfnOutput.Builder.create(this, "CloudfrontDomainNameExport")
-                .exportName("CloudfrontDomainNameExport")
                 .value(distribution.getDomainName())
+                .build();
+
+        CfnOutput.Builder.create(this, "BlogBucketName")
+                .value(bucket.getBucketName())
+                .build();
+
+        CfnOutput.Builder.create(this, "BlogBucketArn")
+                .value(bucket.getBucketArn())
                 .build();
     }
 }
