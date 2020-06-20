@@ -40,6 +40,6 @@ enableRobotsTXT = true
 
 [markup]
   [markup.tableOfContents]
-    endLevel = 2
+    endLevel = 4
     ordered = true
     startLevel = 2
