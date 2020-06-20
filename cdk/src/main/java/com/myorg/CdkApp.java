@@ -1,15 +1,11 @@
 package com.myorg;
 
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
-import com.google.common.io.Resources;
 import software.amazon.awscdk.core.App;
 import software.amazon.awscdk.core.Environment;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,11 +18,11 @@ public class CdkApp {
                 .region("us-east-2")
                 .build();
         final List<String> pingerRegions = Arrays.asList(
-                "us-west-1"
-//                "us-west-2",
-//                "us-west-1",
-//                "us-east-2",
-//                "eu-west-2"
+                "us-west-2",
+                "us-west-1",
+                "us-east-2",
+                "us-east-1",
+                "eu-west-2"
         );
         final String preprodHostname = "preprod-asim.ihsan.io";
         final String prodHostname = "asim.ihsan.io";
@@ -56,12 +52,31 @@ public class CdkApp {
             pingerStack.addDependency(preprodRootStack);
         }
 
-        final Stack prodRootStack = new CdkStack(app, "prod-AsimIhsanIoCdkStack",
+        final String prodStackName = "prod-AsimIhsanIoCdkStack";
+        final Stack prodRootStack = new CdkStack(app, prodStackName,
                 prodHostname,
                 StackProps.builder()
                         .env(environment)
                         .description("Blog prod environment")
                         .build());
+        for (final String pingerRegion : pingerRegions) {
+            final Environment pingerEnvironment = Environment.builder()
+                    .account(environment.getAccount())
+                    .region(pingerRegion)
+                    .build();
+            final String pingerStackName = String.format("prod-AsimIhsanIoCdkPingerStack-%s", pingerRegion);
+            final Stack pingerStack = new PingerCdkStack(
+                    app,
+                    pingerStackName,
+                    prodHostname,
+                    prodStackName,
+                    StackProps.builder()
+                            .env(pingerEnvironment)
+                            .description(String.format("Blog prod pinger environment for %s", pingerRegion))
+                            .build());
+            pingerStack.addDependency(prodRootStack);
+        }
+
 
         app.synth();
     }
