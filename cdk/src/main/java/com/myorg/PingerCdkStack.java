@@ -2,7 +2,6 @@ package com.myorg;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;
 import software.amazon.awscdk.core.Construct;
@@ -11,10 +10,15 @@ import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.cloudformation.CustomResource;
 import software.amazon.awscdk.services.cloudformation.CustomResourceProvider;
+import software.amazon.awscdk.services.events.Rule;
+import software.amazon.awscdk.services.events.Schedule;
+import software.amazon.awscdk.services.events.targets.LambdaFunction;
 import software.amazon.awscdk.services.iam.Effect;
 import software.amazon.awscdk.services.iam.PolicyStatement;
-import software.amazon.awscdk.services.lambda.*;
+import software.amazon.awscdk.services.lambda.Code;
+import software.amazon.awscdk.services.lambda.Function;
 import software.amazon.awscdk.services.lambda.Runtime;
+import software.amazon.awscdk.services.lambda.SingletonFunction;
 import software.amazon.awscdk.services.logs.RetentionDays;
 import software.amazon.awscdk.services.s3.Bucket;
 import software.amazon.awscdk.services.s3.IBucket;
@@ -94,6 +98,16 @@ public class PingerCdkStack extends Stack {
                         .build())
                 .build();
         bucket.grantRead(pingerFunction);
+        // --------------------------------------------------------------------
+
+        // --------------------------------------------------------------------
+        //  Run pinger periodically.
+        // --------------------------------------------------------------------
+        final LambdaFunction ruleTarget = LambdaFunction.Builder.create(pingerFunction).build();
+        final Rule eventRule = Rule.Builder.create(this, "PingerRule")
+                .schedule(Schedule.rate(Duration.hours(1)))
+                .targets(Collections.singletonList(ruleTarget))
+                .build();
         // --------------------------------------------------------------------
     }
 }

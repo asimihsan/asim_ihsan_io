@@ -13,6 +13,9 @@ Content for https://asim.ihsan.io website.
 ```
 (cd cdk && cdk bootstrap aws://519160639284/us-west-2)
 (cd cdk && cdk bootstrap aws://519160639284/us-west-1)
+(cd cdk && cdk bootstrap aws://519160639284/us-east-2)
+(cd cdk && cdk bootstrap aws://519160639284/us-east-1)
+(cd cdk && cdk bootstrap aws://519160639284/eu-west-2)
 ```
 
 ### Build to staging environment with production assets
