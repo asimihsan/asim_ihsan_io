@@ -97,6 +97,14 @@ flutter upgrade
 flutter doctor -v
 {{< / highlight >}}
 
+In order to pretend to be a server-side decrypting data sent by the Flutter mobile application we will use the
+[`pynacl`](https://pynacl.readthedocs.io/en/stable/) Python module. Use your Python system install or install it
+on [Homebrew (for Mac)](https://docs.brew.sh/Homebrew-and-Python), [Anaconda](https://www.anaconda.com/products/individual) (for all operating systems), or whatever other way you prefer. Then install `pynacl` and `ipython` (for a useful REPL shell):
+
+{{< highlight bash >}}
+pip install pyncal ipython
+{{< / highlight >}}
+
 ### Getting libsodium
 
 As of 2020-06-14, v1.0.18 is the latest stable version of libsodium.
@@ -314,9 +322,9 @@ Creating a wrapper may seem pointless, but when we cover a non-trivial example b
 useful. At least it reminds us to call `sodium_init()` and check its return value.
 
 Note that [`sodium_version_string` does not `malloc` memory on the
-heap](https://github.com/jedisct1/libsodium/blob/927dfe8e2eaa86160d3ba12a7e3258fbc322909c/src/libsodium/sodium/version.c#L4-L8),
-so we do not need to `free` the return value. When we cover a non-trivial example below I'll talk more about
-memory management.
+heap](https://github.com/jedisct1/libsodium/blob/927dfe8/src/libsodium/sodium/version.c#L4-L8), so we do not
+need to `free` the return value. When we cover a non-trivial example below I'll talk more about memory
+management.
 
 Also note that the strange function definition on line 24 is because [in order to use `compute` for
 asynchronous calls, "The callback argument must be a top-level function, not a closure or an instance or
@@ -324,8 +332,10 @@ static method of a class."](https://api.flutter.dev/flutter/foundation/compute.h
 
 In [`flutter_libsodium` branch `part1`](https://github.com/asimihsan/flutter_libsodium/tree/part1) take a look at the `example` subfolder for how to use the library and integration test it:
 
--   [`example\lib\main.dart`](https://github.com/asimihsan/flutter_libsodium/blob/part1/example/lib/main.dart) for usage
--   [`example\test_driver\app_test.dart`](https://github.com/asimihsan/flutter_libsodium/blob/part1/example/test_driver/app_test.dart) for integration test
+-   [`example\lib\main.dart`](https://github.com/asimihsan/flutter_libsodium/blob/part1/example/lib/main.dart)
+    for usage
+-   [`example\test_driver\app_test.dart`](https://github.com/asimihsan/flutter_libsodium/blob/part1/example/test_driver/app_test.dart)
+    for integration test
 
 To run the integration tests, as usual run:
 
@@ -336,15 +346,162 @@ flutter drive --target=test_driver/app.dart --android-emulator
 
 ### Flutter Dart code - seal then unseal
 
-TODO
+This is a more complex, realistic example where you want to encrypt something on the device and decrypt it on
+a server. Moreover, let's assume that we want to encrypt data on the device such that it's impossible for the
+device or other adversaries to decrypt what it encrypted, and also impossible for adversaries to modify the
+data without being detected.
+
+The cryptographic primitive that gives us these primitives is called "sealing". `libsodium` calls these
+[sealed boxes](https://doc.libsodium.org/public-key_cryptography/sealed_boxes), and the concept originates
+from ["Cryptographic Sealing for Information Secrecy and Authentication" by Gifford
+(1981)](https://dl.acm.org/doi/pdf/10.1145/1067627.806599).
+
+First let's open a new Terminal window and generate a public/private keypair on the server side. Start a Python shell:
+
+{{< highlight bash >}}
+ipython
+{{< / highlight >}}
+
+Then generate the server keypair:
+
+{{< highlight python >}}
+import base64
+from nacl.public import PrivateKey
+
+keypair = PrivateKey.generate()
+print("Public key: " + base64.b64encode(keypair.public_key.encode()).decode('utf-8'))
+print("Private key: " + base64.b64encode(keypair.encode()).decode('utf-8'))
+{{< / highlight >}}
+
+Result:
+
+{{< highlight plain >}}
+Public key: lKSTP8K5YQoHMZOn2+mTLunP3yMgqN1O8GyaqRvHbQE=
+Private key: +YownzrW+Bx2dmpQAjuQJr5SEAwd6Bg5NUDHVfKRIY4=
+{{< / highlight >}}
+
+Let's use the server public key in Flutter to seal a message. There's a lot of boilerplate code involved, so
+be sure to look at [`flutter_libsodium` branch
+`part2`](https://github.com/asimihsan/flutter_libsodium/tree/part2), in particular the [commit that implements
+seal box](https://github.com/asimihsan/flutter_libsodium/commit/9047a1), for all the code. However here are
+some highlights with respect to the `part1` branch to pay attention to.
+
+Starting at the top of the bindings, note how we bind to the [`crypto_box_seal`
+API](https://doc.libsodium.org/public-key_cryptography/sealed_boxes):
+
+{{< highlight dart "linenos=table" >}}
+//  int crypto_box_seal(unsigned char *c, const unsigned char *m,
+//                      unsigned long long mlen, const unsigned char *pk);
+typedef CryptoBoxSeal = int Function(
+    Pointer<Uint8> c, Pointer<Uint8> m, int mlen, Pointer<Uint8> pk);
+typedef NativeCryptoBoxSeal = Int32 Function(
+    Pointer<Uint8> c, Pointer<Uint8> m, Uint64 mlen, Pointer<Uint8> pk);
+final CryptoBoxSeal cryptoBoxSeal =
+    libsodium.lookupFunction<NativeCryptoBoxSeal, CryptoBoxSeal>('crypto_box_seal');
+{{< / highlight >}}
+
+`unsigned char*` is C for a chunk of memory, and in the Dart FFI this corresponds to `Pointer<Uint8>`. These
+pointers must be to native-managed memory. But if you start off with a Dart `String`, how do you get a
+`Pointer<Uint8>` in native memory? Recall that in Dart, `String`'s are UTF-16 encoded. Here we use a very
+convenient feature of Dart to extend the `String` object and create a new `toUint8Pointer()` method that uses
+`libsodium`'s secure memory allocation `sodium_malloc()` method, then copy over the raw bytes of the `String`:
+
+{{< highlight dart "linenos=table" >}}
+extension StringExtensions on String {
+  Pointer<Uint8> toUint8Pointer() {
+    if (this == null) {
+      return Pointer<Uint8>.fromAddress(0);
+    }
+    final units = utf8.encode(this);
+    final Pointer<Uint8> result = bindings.sodiumMalloc(units.length);
+    final Uint8List nativeString = result.asTypedList(units.length);
+    nativeString.setAll(0, units);
+    return result;
+  }
+}
+{{< / highlight >}}
+
+We add other helper extensions to other classes and hence can come up with a wrapper around the underlying
+`crypto_box_seal` native call. Note that `crypto_box_SEALBYTES` is the overhead that `libsodium` adds to the
+encrypted ciphertext (32 bytes for the ephemeral public key, and 16 bytes for an HMAC):
+
+{{< highlight dart "linenos=table">}}
+// https://doc.libsodium.org/public-key_cryptography/sealed_boxes
+String cryptoBoxSeal(final String recipientPublicKeyBase64Encoded, final String plaintext) {
+  final int cryptoBoxSealBytes = bindings.crypto_box_SEALBYTES();
+  final cLength = plaintext.length + cryptoBoxSealBytes;
+  final c = bindings.sodiumMalloc(cLength);
+  final m = plaintext.toUint8Pointer();
+  final Uint8List recipientPublicKey = base64.decode(recipientPublicKeyBase64Encoded);
+  final pk = recipientPublicKey.toPointer();
+  try {
+    bindings.cryptoBoxSeal(c, m, plaintext.length, pk);
+    final Uint8List result = c.toList(cLength);
+    return base64.encode(result);
+  } finally {
+    bindings.sodiumFree(c);
+    bindings.sodiumFree(m);
+    bindings.sodiumFree(pk);
+  }
+}
+{{< / highlight >}}
+
+
+
+
+{{< highlight dart "linenos=table">}}
+Future<void> encryptData(final String plaintext) async {
+  final encryptedData = await compute(
+      cryptoBoxSeal, CryptoBoxSealCall(wrapper, serverPublicKeyBase64Encoded, plaintext));
+  setState(() {
+    _encryptedData = encryptedData;
+  });
+}
+{{< / highlight >}}
+
+If you run the `part2` branch of the code, every time you encrypt some data you will get different ciphertext,
+because `libsodium` uses a brand new ephemeral public/private key pair for each seal box call. In a particular
+run when I encrypted `foobar` I got
+`zZSCwppjzaneb4f6a1HEWo4GL8RiN8oGILzMaaM8Mz7/97J4+8EEEfbQHDBGp3A1juOFWv/Z`.
+
+Once you have the base64-encoded sealed box (i.e. encrypted data), imagine that you've somehow transferred it
+to the server. You can then decrypt it on the server:
+
+{{< highlight python >}}
+from nacl.public import PrivateKey, SealedBox
+
+private_key_encoded = "+YownzrW+Bx2dmpQAjuQJr5SEAwd6Bg5NUDHVfKRIY4="
+private_key = PrivateKey(base64.b64decode(private_key_encoded))
+unseal_box = SealedBox(keypair)
+ciphertext = "zZSCwppjzaneb4f6a1HEWo4GL8RiN8oGILzMaaM8Mz7/97J4+8EEEfbQHDBGp3A1juOFWv/Z"
+new_plaintext = unseal_box.decrypt(base64.b64decode(ciphertext)).decode('utf-8')
+print(new_plaintext)
+{{< / highlight >}}
+
+This returns `foobar` as expected.
 
 ## Reference code
 
-TODO GitHub link
+Take a look at the [`flutter_libsodium`](https://github.com/asimihsan/flutter_libsodium) GitHub repository,
+particular tags `part1` and `part2`.
 
 ## Future work and areas for improvement
- 
+
+For convenience I skipped error handling for the `crypto_box_seal` call in Flutter, and `crypto_box_unseal`
+call on the server. Of course, you want to handle errors!
+
+When interacting with native code you need to interact with data that lives somewhere in memory. If you start
+with memory managed by the Dart runtime, you need to copy it to native-managed memory in order for the native
+library to access it. This is wasteful. The most memory efficient way to give the native library access to
+data is to [carefully ensure you allocate native-memory, then use it via a
+view](https://github.com/dart-lang/ffi/issues/31). That way there's no need to copy from Dart to native, and
+the FFI already gives easy way so going from native to Dart. When working on your own applications, consider
+if you can work directly with native memory `Pointer<Uint8>` pointers.
+
 Rather than having separate directories `libsodium` and the Flutter binding, it would be more maintainable to
 have a single directory for both, check out `libsodium` as a Git submodule, and then create a build script to
 automatically build `libsodium` and copy its binaries around. However, I'm not sure if Flutter plugins support
 customizing their build process in this way.
+
+As discussed in the article, it should be possible to automatically parse the `libsodium` C headers and code
+in order to generate the FFI bindings and wrapper Dart code.
