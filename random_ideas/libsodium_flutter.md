@@ -197,7 +197,8 @@ import base64
 from nacl.public import PrivateKey
 
 keypair = PrivateKey.generate()
-print(base64.b64encode(keypair.public_key.encode()).decode('utf-8'))
+print("Public key: " + base64.b64encode(keypair.public_key.encode()).decode('utf-8'))
+print("Private key: " + base64.b64encode(keypair.encode()).decode('utf-8'))
 ```
 
 The encoded public key is `31SbsmXLwc3fPOLsM0Ztg+WNJL2UKRpaDKMvtoSdQQQ=`. Let's use this in Flutter to seal then encode a message:
