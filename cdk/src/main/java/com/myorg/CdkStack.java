@@ -100,7 +100,7 @@ public class CdkStack extends Stack {
                                         .sslMethod(SSLMethod.SNI)
                                         .build()))
                         .viewerProtocolPolicy(ViewerProtocolPolicy.REDIRECT_TO_HTTPS)
-                        .priceClass(PriceClass.PRICE_CLASS_ALL)
+                        .priceClass(PriceClass.PRICE_CLASS_200)
                         .build());
         // --------------------------------------------------------------------
 
