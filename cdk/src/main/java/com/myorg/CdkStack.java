@@ -1,9 +1,17 @@
 package com.myorg;
 
+import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.io.Resources;
 import software.amazon.awscdk.core.*;
 import software.amazon.awscdk.services.certificatemanager.DnsValidatedCertificate;
 import software.amazon.awscdk.services.certificatemanager.ICertificate;
+import software.amazon.awscdk.services.cloudformation.CustomResource;
 import software.amazon.awscdk.services.cloudfront.*;
+import software.amazon.awscdk.services.iam.Effect;
+import software.amazon.awscdk.services.iam.PolicyStatement;
+import software.amazon.awscdk.services.lambda.*;
+import software.amazon.awscdk.services.lambda.Runtime;
 import software.amazon.awscdk.services.route53.*;
 import software.amazon.awscdk.services.route53.targets.CloudFrontTarget;
 import software.amazon.awscdk.services.s3.Bucket;
@@ -13,18 +21,19 @@ import software.amazon.awscdk.services.s3.deployment.BucketDeployment;
 import software.amazon.awscdk.services.s3.deployment.ISource;
 import software.amazon.awscdk.services.s3.deployment.Source;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class CdkStack extends Stack {
-    public CdkStack(final Construct scope, final String id) {
-        this(scope, id, null, null);
-    }
-
     public CdkStack(final Construct scope,
                     final String id,
                     final String domainName,
-                    final StackProps props) {
+                    final String rewriteLambdaStackName,
+                    final String rewriteLambdaOutputName,
+                    final String rewriteLambdaCodeHash,
+                    final StackProps props) throws IOException {
         super(scope, id, props);
 
         // --------------------------------------------------------------------
@@ -40,7 +49,6 @@ public class CdkStack extends Stack {
                 .removalPolicy(RemovalPolicy.DESTROY)
                 .versioned(false)
                 .encryption(BucketEncryption.S3_MANAGED)
-                .websiteIndexDocument("index.html")
                 .build());
         // --------------------------------------------------------------------
 
@@ -67,40 +75,90 @@ public class CdkStack extends Stack {
         // --------------------------------------------------------------------
 
         // --------------------------------------------------------------------
+        //  Custom resource to get the Lambda@Edge name from the us-east-1 stack. CDK does not support this because
+        //  it's in a different region, and Lambda@Edge only supports functions created in us-east-1.
+        //
+        //  See: https://github.com/aws/aws-cdk/issues/1575#issuecomment-480738659
+        // --------------------------------------------------------------------
+        final String stackLookupLambdaCode = Resources.toString(
+                Resources.getResource("cfn_stack_lookup.js"), Charsets.UTF_8);
+        final SingletonFunction stackLookupLambda = SingletonFunction.Builder.create(this, "StackLookupLambda")
+                .uuid("f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc")
+                .handler("index.handler")
+                .runtime(Runtime.NODEJS_12_X)
+                .code(Code.fromInline(stackLookupLambdaCode))
+                .timeout(Duration.seconds(60))
+                .build();
+
+        final software.amazon.awscdk.services.cloudformation.CustomResourceProvider stackLookupProvider = software.amazon.awscdk.services.cloudformation.CustomResourceProvider.fromLambda(stackLookupLambda);
+        stackLookupLambda.addToRolePolicy(PolicyStatement.Builder.create()
+                .effect(Effect.ALLOW)
+                .actions(Collections.singletonList("cloudformation:DescribeStacks"))
+                .resources(Collections.singletonList(
+                        String.format("arn:aws:cloudformation:*:*:stack/%s/*", rewriteLambdaStackName)))
+                .build());
+        final software.amazon.awscdk.services.cloudformation.CustomResource stackLookup =
+                CustomResource.Builder.create(this, "RewriteLambdaArnCfnStackLookupOutput")
+                .provider(stackLookupProvider)
+                .properties(ImmutableMap.of(
+                        "StackName", rewriteLambdaStackName,
+                        "OutputKey", rewriteLambdaOutputName,
+                        "Region", "us-east-1",
+
+                        // Need a key that changes when the rewrite Lambda code changes, or else we never re-deploy it.
+                        "LambdaHash", rewriteLambdaCodeHash
+
+                ))
+                .build();
+        final String rewriteLambdaArn = stackLookup.getAttString("Output");
+        final IVersion rewriteLambdaVersion = Version.fromVersionArn(this, "RewriteLambda", rewriteLambdaArn);
+        // --------------------------------------------------------------------
+
+        // --------------------------------------------------------------------
         //  CloudFront distribution for assets.
         // --------------------------------------------------------------------
         final List<SourceConfiguration> sourceConfigurations = Collections.singletonList(
                 SourceConfiguration.builder()
-
-                        // Rather than use S3 origin source, we use a custom origin source and treat S3 as a generic
-                        // HTTP server, in order to get 'index.html' working for Hugo posts.
-                        // See: https://stackoverflow.com/questions/31017105/how-do-you-set-a-default-root-object-for-subdirectories-for-a-statically-hosted
-                        .customOriginSource(CustomOriginConfig.builder()
-                                .domainName(bucket.getBucketWebsiteDomainName())
-                                .allowedOriginSslVersions(Collections.singletonList(OriginSslPolicy.TLS_V1_2))
-
-                                // This is unfortunate, S3 static website doesn't support HTTPS as a protocol
-                                .originProtocolPolicy(OriginProtocolPolicy.HTTP_ONLY)
-
+                        .s3OriginSource(S3OriginConfig.builder()
+                                .s3BucketSource(bucket)
                                 .build())
-
                         .behaviors(Collections.singletonList(Behavior.builder()
                                 .isDefaultBehavior(true)
-                                .compress(true)
+                                .compress(false)
+                                .lambdaFunctionAssociations(Arrays.asList(
+                                        LambdaFunctionAssociation.builder()
+                                                .eventType(LambdaEdgeEventType.ORIGIN_REQUEST)
+                                                .lambdaFunction(rewriteLambdaVersion)
+                                                .build(),
+
+                                        // Note that S3 deployment bucket does not set Content-Type or Content-Encoding
+                                        // correctly, so for now use Lambda@Edge to set this.
+                                        // https://github.com/aws/aws-cdk/issues/7090
+                                        LambdaFunctionAssociation.builder()
+                                                .eventType(LambdaEdgeEventType.ORIGIN_RESPONSE)
+                                                .lambdaFunction(rewriteLambdaVersion)
+                                                .build()))
+                                .allowedMethods(CloudFrontAllowedMethods.GET_HEAD_OPTIONS)
+                                .forwardedValues(CfnDistribution.ForwardedValuesProperty.builder()
+                                        .queryString(false)
+                                        .headers(Collections.singletonList("Accept-Encoding"))
+                                        .build())
                                 .build()))
                         .build()
         );
         final CloudFrontWebDistribution distribution = new CloudFrontWebDistribution(this, "CloudFront",
                 CloudFrontWebDistributionProps.builder()
+                        .httpVersion(HttpVersion.HTTP2)
                         .originConfigs(sourceConfigurations)
                         .viewerCertificate(ViewerCertificate.fromAcmCertificate(certificate,
                                 ViewerCertificateOptions.builder()
                                         .aliases(Collections.singletonList(domainName))
-                                        .securityPolicy(SecurityPolicyProtocol.TLS_V1_1_2016)
+                                        .securityPolicy(SecurityPolicyProtocol.TLS_V1_2_2018)
                                         .sslMethod(SSLMethod.SNI)
                                         .build()))
                         .viewerProtocolPolicy(ViewerProtocolPolicy.REDIRECT_TO_HTTPS)
                         .priceClass(PriceClass.PRICE_CLASS_200)
+                        .defaultRootObject("")
                         .build());
         // --------------------------------------------------------------------
 
