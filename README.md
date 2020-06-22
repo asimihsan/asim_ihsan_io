@@ -28,6 +28,7 @@ TODO automate, but for now change directory to root then:
 rm -rf hugo/build
 (cd hugo/themes/ananke/src && npm run build:production)
 (cd hugo && hugo --buildDrafts --destination build)
+./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'preprod*')
 ```
 
@@ -37,14 +38,16 @@ rm -rf hugo/build
 rm -rf hugo/build
 (cd hugo/themes/ananke/src && npm run build:production)
 (cd hugo && hugo --buildDrafts --destination build)
+./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'prod*')
 ```
 
 ### Live rebuilding during blog writing
 
 ```
+IP_ADDRESS=192.168.1.9
 (cd hugo/themes/ananke/src && npm run build:production)
-(cd hugo && hugo --buildDrafts --destination build --watch server --disableFastRender)
+(cd hugo && hugo --buildDrafts --destination build --watch server --disableFastRender --bind 0.0.0.0 --baseURL "http://${IP_ADDRESS}" --enableGitInfo)
 ```
 
 ## Setup

@@ -1,7 +1,7 @@
 ---
-title: "[DRAFT] Using a native cryptography library in Flutter"
-date: 2020-06-19T17:24:19-07:00
-draft: true
+title: "Using a native cryptography library in Flutter"
+date: 2020-06-21T17:46:00-07:00
+draft: false
 katex: true
 summary: |
     [Flutter](https://flutter.dev/) is a Google UI toolkit for writing cross-platform mobile applications.  Using
@@ -28,17 +28,17 @@ Android at the same time.  [Dart](https://dart.dev/) is the programming language
 powerful and fast enough for most purposes. However, sometimes you want to use pre-existing native libraries of code
 already written and battle-tested in some other programming language, for example because:
 
-1.  The code is for a **security-sensitive application**, such as encrypting data. You do not want to re-write
-    such code because of the likelihood of introducing bugs that leak information or cause your application to
-    crash. Instead, by using a pre-written library that has been audited by security engineers you are more
-    confident that it works.
+1.  You need to write code in a **different, faster, more memory efficient language**. For example, by writing a
+    re-usable library in [Rust](https://www.rust-lang.org/) you can take advantage of a more powerful
+    optimizing compiler and avoid the overhead of a garbage collector if need be.
 2.  You want to **re-use the same code in multiple domains**, such as your Flutter mobile application, a desktop
     application, and a server. Although Google are starting to introduce desktop and web support for Flutter,
     for now in order to share logic across multiple domains you can write it in a re-usable library in a
     different language.
-3.  You need to write code in a **different, faster, more memory efficient language**. For example, by writing a
-    re-usable library in [Rust](https://www.rust-lang.org/) you can take advantage of a more powerful
-    optimizing compiler and avoid the overhead of a garbage collector if need be.
+3.  You want to **re-use existing code**, escially for a **security-sensitive application**, such as
+    encrypting data. You do not want to re-write such code because of the likelihood of introducing bugs that
+    leak information or cause your application to crash. Instead, by using a pre-written library that has been
+    audited by security engineers you are more confident that it works.
 
 In this article we will use an example that is motivated by all three reasons. [`libsodium`](https://doc.libsodium.org/)
 is a cryptography library that lets you e.g. encrypt, decrypt, and hash data. `libsodium` is fast, already audited
@@ -98,8 +98,14 @@ flutter doctor -v
 {{< / highlight >}}
 
 In order to pretend to be a server-side decrypting data sent by the Flutter mobile application we will use the
-[`pynacl`](https://pynacl.readthedocs.io/en/stable/) Python module. Use your Python system install or install it
-on [Homebrew (for Mac)](https://docs.brew.sh/Homebrew-and-Python), [Anaconda](https://www.anaconda.com/products/individual) (for all operating systems), or whatever other way you prefer. Then install `pynacl` and `ipython` (for a useful REPL shell):
+[`pynacl`](https://pynacl.readthedocs.io/en/stable/) Python module. Use your Python system install or install Python
+with:
+
+- [Homebrew](https://docs.brew.sh/Homebrew-and-Python) for Mac, or
+- [Anaconda](https://www.anaconda.com/products/individual) for all operating systems, or
+- whatever other way you prefer.
+
+Then install `pynacl` and `ipython` (for a useful REPL shell):
 
 {{< highlight bash >}}
 pip install pyncal ipython
@@ -236,7 +242,7 @@ Afterwards let's practice just getting the version string, which should return "
 
 First add `ffi` as a new dependency to your `pubspec.yaml`:
 
-{{< highlight diff "linenos=table" >}}
+{{< highlight diff "linenos=false" >}}
 diff --git a/pubspec.yaml b/pubspec.yaml
 index 8c63764..8247ec0 100644
 --- a/pubspec.yaml
@@ -253,7 +259,7 @@ index 8c63764..8247ec0 100644
 Then create a new file `lib/libsodium_bindings.dart`, which will contain the first layer that directly talks
 to the native library using FFI:
 
-{{< highlight dart "linenos=table" >}}
+{{< highlight dart "linenos=false" >}}
 library bindings;
 
 import 'dart:ffi';
@@ -291,7 +297,7 @@ these findings from `libsodium`.
 
 Now we create a `lib/libsodium_wrapper.dart` on top of the bindings. This talks to our bindings layer, creates convenience wrappers, and eventually manages memory on our behalf.
 
-{{< highlight dart "linenos=table" >}}
+{{< highlight dart "linenos=false" >}}
 import 'package:ffi/ffi.dart';
 import 'package:flutter_libsodium/libsodium_bindings.dart' as bindings;
 
@@ -326,11 +332,12 @@ heap](https://github.com/jedisct1/libsodium/blob/927dfe8/src/libsodium/sodium/ve
 need to `free` the return value. When we cover a non-trivial example below I'll talk more about memory
 management.
 
-Also note that the strange function definition on line 24 is because [in order to use `compute` for
+Also note that the strange function definition on the last line is because [in order to use `compute` for
 asynchronous calls, "The callback argument must be a top-level function, not a closure or an instance or
 static method of a class."](https://api.flutter.dev/flutter/foundation/compute.html)
 
-In [`flutter_libsodium` branch `part1`](https://github.com/asimihsan/flutter_libsodium/tree/part1) take a look at the `example` subfolder for how to use the library and integration test it:
+In [`flutter_libsodium` branch `part1`](https://github.com/asimihsan/flutter_libsodium/tree/part1) take a look
+at the `example` subfolder for how to use the library and integration test it:
 
 -   [`example\lib\main.dart`](https://github.com/asimihsan/flutter_libsodium/blob/part1/example/lib/main.dart)
     for usage
@@ -389,7 +396,7 @@ some highlights with respect to the `part1` branch to pay attention to.
 Starting at the top of the bindings, note how we bind to the [`crypto_box_seal`
 API](https://doc.libsodium.org/public-key_cryptography/sealed_boxes):
 
-{{< highlight dart "linenos=table" >}}
+{{< highlight dart "linenos=false" >}}
 //  int crypto_box_seal(unsigned char *c, const unsigned char *m,
 //                      unsigned long long mlen, const unsigned char *pk);
 typedef CryptoBoxSeal = int Function(
@@ -402,11 +409,11 @@ final CryptoBoxSeal cryptoBoxSeal =
 
 `unsigned char*` is C for a chunk of memory, and in the Dart FFI this corresponds to `Pointer<Uint8>`. These
 pointers must be to native-managed memory. But if you start off with a Dart `String`, how do you get a
-`Pointer<Uint8>` in native memory? Recall that in Dart, `String`'s are UTF-16 encoded. Here we use a very
-convenient feature of Dart to extend the `String` object and create a new `toUint8Pointer()` method that uses
-`libsodium`'s secure memory allocation `sodium_malloc()` method, then copy over the raw bytes of the `String`:
+`Pointer<Uint8>` in native memory? Here we use a very convenient feature of Dart to extend the `String` object
+and create a new `toUint8Pointer()` method that uses `libsodium`'s secure memory allocation `sodium_malloc()`
+method, then copy over the raw bytes of the `String`.
 
-{{< highlight dart "linenos=table" >}}
+{{< highlight dart "linenos=false" >}}
 extension StringExtensions on String {
   Pointer<Uint8> toUint8Pointer() {
     if (this == null) {
@@ -421,11 +428,25 @@ extension StringExtensions on String {
 }
 {{< / highlight >}}
 
+Why did I allocate memory using [`libsodium`
+`sodium_malloc`](https://doc.libsodium.org/memory_management#guarded-heap-allocations) rather than using the
+[Dart FFI `allocate`](https://pub.dev/documentation/ffi/latest/ffi/allocate.html) API? `sodium_malloc` is
+slower but offers features like:
+
+- **guard pages** are created before and after the allocated memory; if a program accesses a guard page the
+  application crashes. This provides defence-in-depth against buffer overflows.
+- the allocated memory is **`mlock()`**'d to try and avoid it being swapped to disk or being part of memory
+  dumps.
+
+These features provide defence-in-depth but ultimately you also need to avoid allocating Dart objects like
+`String` for sensitive data like the plaintext; see the "Future work and areas for improvement" section below
+for details.
+
 We add other helper extensions to other classes and hence can come up with a wrapper around the underlying
 `crypto_box_seal` native call. Note that `crypto_box_SEALBYTES` is the overhead that `libsodium` adds to the
 encrypted ciphertext (32 bytes for the ephemeral public key, and 16 bytes for an HMAC):
 
-{{< highlight dart "linenos=table">}}
+{{< highlight dart "linenos=false">}}
 // https://doc.libsodium.org/public-key_cryptography/sealed_boxes
 String cryptoBoxSeal(final String recipientPublicKeyBase64Encoded, final String plaintext) {
   final int cryptoBoxSealBytes = bindings.crypto_box_SEALBYTES();
@@ -446,10 +467,15 @@ String cryptoBoxSeal(final String recipientPublicKeyBase64Encoded, final String 
 }
 {{< / highlight >}}
 
+Finally in the actual UI we want to encrypt some text when a button is pressed. If you perform this
+computationally intense call in the UI thread you will block it and causes
+[jank](https://flutter.dev/docs/perf/rendering/ui-performance). Jank means you block the UI thread for so long
+that you interfere with hte user interfaces; maybe user inputs are ignored, or animation frames are skipped.
+Hence we need to perform this calculation on a different thread. Flutter provide a convenience function
+[`compute`](https://api.flutter.dev/flutter/foundation/compute.html), but one limitation is that only a single
+argument can be passed to `compute`, so we create a convenience class to encapsulate the arguments.
 
-
-
-{{< highlight dart "linenos=table">}}
+{{< highlight dart "linenos=false">}}
 Future<void> encryptData(final String plaintext) async {
   final encryptedData = await compute(
       cryptoBoxSeal, CryptoBoxSealCall(wrapper, serverPublicKeyBase64Encoded, plaintext));
