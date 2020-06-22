@@ -7,15 +7,16 @@ const response = require('cfn-response');
 
 exports.handler = (event, context) => {
   console.log("REQUEST RECEIVED:\n" + JSON.stringify(event));
-  const {RequestType, ResourceProperties: {StackName, OutputKey}} = event;
+  const {RequestType, ResourceProperties: {StackName, OutputKey, Region}} = event;
   console.log("StackName: " + StackName);
   console.log("OutputKey: " + OutputKey);
+  console.log("Region: " + Region);
 
   if (RequestType === 'Delete') {
     return response.send(event, context, response.SUCCESS);
   }
 
-  const cfn = new aws.CloudFormation({region: 'us-east-2'});
+  const cfn = new aws.CloudFormation({region: Region});
 
   cfn.describeStacks({StackName}, (err, data) => {
     console.log("err: " + err);

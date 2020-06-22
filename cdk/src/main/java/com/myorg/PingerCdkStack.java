@@ -61,11 +61,12 @@ public class PingerCdkStack extends Stack {
                 .resources(Collections.singletonList(
                         String.format("arn:aws:cloudformation:*:*:stack/%s/*", blogStackName)))
                 .build());
-        final CustomResource stackLookup = CustomResource.Builder.create(this, "CfnStackLookupOutput")
+        final CustomResource stackLookup = CustomResource.Builder.create(this, "BlogBucketCfnStackLookupOutput")
                 .provider(stackLookupProvider)
                 .properties(ImmutableMap.of(
                         "StackName", blogStackName,
                         "OutputKey", blogStackBlogBucketArnOutputName,
+                        "Region", "us-east-2",
 
                         // Need a key that changes when the stack lookup Lambda code changes, or else we never re-deploy
                         // it.
