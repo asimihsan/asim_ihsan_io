@@ -19,13 +19,17 @@ FRONTEND_DIR = os.path.abspath(os.path.join(SCRIPT_PATH, "..", "hugo", "build"))
 
 
 def brotli_compress(contents: ByteString, extension: str, destination: str) -> None:
+    quality: int
     if extension == ".woff2":
-        mode = brotli.MODE_FONT
+        mode = brotli.MODE_GENERIC
+        quality = 0
     elif extension in {".html"}:
         mode = brotli.MODE_TEXT
+        quality = 11
     else:
         mode = brotli.MODE_GENERIC
-    brotli_compressed = brotli.compress(contents, mode=mode)
+        quality = 11
+    brotli_compressed = brotli.compress(contents, mode=mode, quality=quality)
     with open(destination, "wb") as f_out:
         f_out.write(brotli_compressed)
 

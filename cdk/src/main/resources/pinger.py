@@ -13,13 +13,15 @@ import boto3.s3
 BLOG_BUCKET_NAME: str = os.environ["BLOG_BUCKET_NAME"]
 HOSTNAME: str = os.environ["HOSTNAME"]
 KEY_RE_TO_SKIP: List[str] = [
-    ".DS_Store",
-    "README.md",
+    "\.DS_Store",
+    "README\.md",
+    ".br$",
+    ".gz$",
 ]
-RE_TO_SKIP = re.compile("|".join(re.escape(elem) for elem in KEY_RE_TO_SKIP))
+RE_TO_SKIP = re.compile("|".join(elem for elem in KEY_RE_TO_SKIP))
 
 
-def ping_url(url: str, http_conn: http.client.HTTPSConnection):
+def ping_url(url: str, http_conn: http.client.HTTPSConnection) -> None:
     print(f"ping_url entry. url: {url}")
     for accept_encoding in [None, "gzip, deflate", "gzip, deflate, br"]:
         headers: Dict[str, str] = {}
@@ -33,7 +35,7 @@ def ping_url(url: str, http_conn: http.client.HTTPSConnection):
         )
 
 
-def handler(event, context):
+def handler(event, context) -> None:
     print(f"BLOG_BUCKET_NAME: {BLOG_BUCKET_NAME}")
     print(f"HOSTNAME: {HOSTNAME}")
 
@@ -43,18 +45,12 @@ def handler(event, context):
     bucket: boto3.s3.Bucket = s3.Bucket(BLOG_BUCKET_NAME)
     keys = bucket.objects.all()
     matching_keys: Generator[boto3.s3.ObjectSummary] = (
-        key for key in keys if re.search(RE_TO_SKIP, key.key) is None
+        key for key in keys if RE_TO_SKIP.search(key.key) is None
     )
     urls: List[str] = ("/" + key.key for key in matching_keys)
     for url in urls:
         try:
             ping_url(url, http_conn)
-
-            # CloudFront delegates to S3, and S3 assumes the default object is "index.html" if it isn't found.
-            # Hence let's also request index.html-less URL.
-            if url.endswith("/index.html"):
-                url2: str = re.sub(r"(/index.html)$", "", url)
-                ping_url(url2, http_conn)
         except:
             print("exception")
             traceback.print_exc()
