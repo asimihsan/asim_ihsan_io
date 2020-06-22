@@ -52,7 +52,7 @@ public class CdkApp {
         final String preprodStackName = "preprod-AsimIhsanIoCdkStack";
         final String preprodRewriteLambdaStackName = "preprod-AsimIhsanIoRewriteLambdaCdkStack";
         final String preprodRewriteLambdaOutputName = "PreprodAsimIhsanIoRewriteLambdaName";
-        final String preprodRewriteLambdaVersionNumber = "000014";
+        final String preprodRewriteLambdaVersionNumber = "000015";
 
         final RewriteLambdaEdgeStack preprodRewriteLambdaEdgeStack = new RewriteLambdaEdgeStack(
                 app,
@@ -103,7 +103,7 @@ public class CdkApp {
         final String prodStackName = "prod-AsimIhsanIoCdkStack";
         final String prodRewriteLambdaStackName = "prod-AsimIhsanIoRewriteLambdaCdkStack";
         final String prodRewriteLambdaOutputName = "ProdAsimIhsanIoRewriteLambdaName";
-        final String prodRewriteLambdaVersionNumber = "000014";
+        final String prodRewriteLambdaVersionNumber = "000015";
 
         final RewriteLambdaEdgeStack prodRewriteLambdaEdgeStack = new RewriteLambdaEdgeStack(
                 app,
@@ -112,7 +112,7 @@ public class CdkApp {
                 prodRewriteLambdaVersionNumber,
                 StackProps.builder()
                         .env(lambdaEdge)
-                        .description("Blog pre-prod Lambda@Edge stack")
+                        .description("Blog prod Lambda@Edge stack")
                         .build());
 
         final Stack prodRootStack = new CdkStack(app, prodStackName,

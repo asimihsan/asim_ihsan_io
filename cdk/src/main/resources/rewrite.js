@@ -72,6 +72,10 @@ exports.handler = (event, context, callback) => {
         // No Accept-Encoding header, just pass-through request.
         return callback(null, request);
     }
+    if (request.uri.endsWith(".woff2")) {
+        // WOFF2 is already Brotli-compressed so don't serve a compressed version of it.
+        return callback(null, request);
+    }
 
     let gzip = false;
     let brotli = false;

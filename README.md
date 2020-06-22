@@ -37,7 +37,7 @@ rm -rf hugo/build
 ```
 rm -rf hugo/build
 (cd hugo/themes/ananke/src && npm run build:production)
-(cd hugo && hugo --buildDrafts --destination build)
+(cd hugo && HUGO_ENV=production hugo --buildDrafts --destination build)
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'prod*')
 ```
