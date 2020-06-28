@@ -27,14 +27,20 @@ public class CdkApp {
                 .region("us-east-1")
                 .build();
 
+        // Only useful to have pingers in regions where there is a CloudFront regional edge. The point is that
+        // even a Lambda function pinging via CloudFront may go to a POP that isn't used by regular website viewers,
+        // but falls back to an L2 regional edge cache which **is** used. We're tring to keep regional edge caches
+        // warm.
+        //
+        // See: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/HowCloudFrontWorks.html
+        // See: https://aws.amazon.com/cloudfront/pricing/
         final List<String> pingerRegions = Arrays.asList(
                 "us-west-2",
-                "us-west-1",
                 "us-east-2",
                 "us-east-1",
                 "eu-west-2",
-                "me-south-1",
-                "ca-central-1"
+                "eu-central-1",
+                "sa-east-1"
         );
 
 
@@ -52,7 +58,7 @@ public class CdkApp {
         final String preprodStackName = "preprod-AsimIhsanIoCdkStack";
         final String preprodRewriteLambdaStackName = "preprod-AsimIhsanIoRewriteLambdaCdkStack";
         final String preprodRewriteLambdaOutputName = "PreprodAsimIhsanIoRewriteLambdaName";
-        final String preprodRewriteLambdaVersionNumber = "000015";
+        final String preprodRewriteLambdaVersionNumber = "000024";
 
         final RewriteLambdaEdgeStack preprodRewriteLambdaEdgeStack = new RewriteLambdaEdgeStack(
                 app,
@@ -103,7 +109,7 @@ public class CdkApp {
         final String prodStackName = "prod-AsimIhsanIoCdkStack";
         final String prodRewriteLambdaStackName = "prod-AsimIhsanIoRewriteLambdaCdkStack";
         final String prodRewriteLambdaOutputName = "ProdAsimIhsanIoRewriteLambdaName";
-        final String prodRewriteLambdaVersionNumber = "000015";
+        final String prodRewriteLambdaVersionNumber = "000024";
 
         final RewriteLambdaEdgeStack prodRewriteLambdaEdgeStack = new RewriteLambdaEdgeStack(
                 app,

@@ -106,7 +106,7 @@ public class PingerCdkStack extends Stack {
         // --------------------------------------------------------------------
         final LambdaFunction ruleTarget = LambdaFunction.Builder.create(pingerFunction).build();
         final Rule eventRule = Rule.Builder.create(this, "PingerRule")
-                .schedule(Schedule.rate(Duration.hours(1)))
+                .schedule(Schedule.rate(Duration.hours(4)))
                 .targets(Collections.singletonList(ruleTarget))
                 .build();
         // --------------------------------------------------------------------

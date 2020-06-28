@@ -1,6 +1,6 @@
 'use strict';
 
-let regexps = [
+const regexps = [
     [new RegExp("\.html(\.br|\.gz)?$"), "text/html; charset=UTF-8"],
     [new RegExp("\.js(\.br|\.gz)?$"), "application/javascript"],
     [new RegExp("\.css(\.br|\.gz)?$"), "text/css"],
@@ -18,7 +18,7 @@ let regexps = [
     [new RegExp("\.ico(\.br|\.gz)?$"), "image/x-icon"],
     [new RegExp("\.md(\.br|\.gz)?$"), "text/markdown; charset=UTF-8"],
 ]
-let regexps_length = regexps.length;
+const regexps_length = regexps.length;
 
 // See: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-examples.html
 exports.handler = (event, context, callback) => {
@@ -40,7 +40,7 @@ exports.handler = (event, context, callback) => {
             headers["content-encoding"] = [
                 {
                     "key": "Content-Encoding",
-                    "value": "gz"
+                    "value": "gzip"
                 }
             ];
         }
@@ -58,12 +58,34 @@ exports.handler = (event, context, callback) => {
             break;
           }
         }
+
+        headers['strict-transport-security'] = [
+            {
+                key: 'Strict-Transport-Security',
+                value: 'max-age=63072000; includeSubdomains; preload'
+            }
+        ];
+
+        /*
+        work in progress! I use inline CSS for syntax highlighting. JS is a mess too, need inline and eval.
+        https://observatory.mozilla.org/analyze/preprod-asim.ihsan.io
+        https://infosec.mozilla.org/guidelines/web_security#content-security-policy
+        https://www.html5rocks.com/en/tutorials/security/content-security-policy/
+        */
+//        headers['content-security-policy'] = [
+//            {
+//                key: 'Content-Security-Policy',
+//                value: "default-src 'none'; img-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self'"
+//            }
+//        ];
+
         return callback(null, response);
     }
 
     console.log("REQUEST");
     const headers = request.headers;
     const acceptEncodingHeader = headers['accept-encoding'];
+
     if (request.uri.endsWith("/")) {
         // If requesting a directory redirect to index.html
         request.uri += "index.html";
