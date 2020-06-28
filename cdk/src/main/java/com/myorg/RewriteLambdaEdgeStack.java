@@ -33,9 +33,9 @@ public class RewriteLambdaEdgeStack extends Stack {
         final String rewriteLambdaCode = Resources.toString(
                 Resources.getResource("rewrite.js"), Charsets.UTF_8);
         final Function rewriteLambda = Function.Builder.create(this, "RewriteLambdaEdge")
-                .handler("index.handler")
+                .handler("rewrite.handler")
                 .runtime(Runtime.NODEJS_12_X)
-                .code(Code.fromInline(rewriteLambdaCode))
+                .code(Code.fromAsset("src/main/resources/"))
                 .timeout(Duration.seconds(10))
                 .memorySize(1024)
                 .role(Role.Builder.create(this, "AllowLambdaServiceToAssumeRole")

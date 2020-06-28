@@ -141,7 +141,13 @@ public class CdkStack extends Stack {
                                 .allowedMethods(CloudFrontAllowedMethods.GET_HEAD_OPTIONS)
                                 .forwardedValues(CfnDistribution.ForwardedValuesProperty.builder()
                                         .queryString(false)
-                                        .headers(Collections.singletonList("Accept-Encoding"))
+                                        .headers(Arrays.asList(
+                                                "Accept-Encoding",
+
+                                                // We want to cache behavior for HTTP requests
+                                                // See: https://stackoverflow.com/questions/52994321/cloudfront-lambdaedge-https-redirect
+                                                "CloudFront-Forwarded-Proto"
+                                        ))
                                         .build())
                                 .build()))
                         .build()
@@ -204,10 +210,11 @@ public class CdkStack extends Stack {
         final List<ISource> bucketDeploymentSources = Collections.singletonList(
                 Source.asset("./../hugo/build")
         );
-        BucketDeployment.Builder.create(this, "DeployWebsite")
+        BucketDeployment.Builder.create(this, "DeployWebsite2")
                 .sources(bucketDeploymentSources)
                 .destinationBucket(bucket)
                 .distribution(distribution)
+                .memoryLimit(1792)
                 .build();
         // --------------------------------------------------------------------
 
