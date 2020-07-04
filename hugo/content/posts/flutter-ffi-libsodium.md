@@ -2,7 +2,7 @@
 title: "Using a native cryptography library in Flutter"
 date: 2020-06-21T17:46:00-07:00
 draft: false
-katex: true
+katex: false
 summary: |
     [Flutter](https://flutter.dev/) is a Google UI toolkit for writing cross-platform mobile applications.  Using
     native code from Flutter is now easier than ever by using the
@@ -11,6 +11,12 @@ summary: |
     using the [`libsodium`](https://doc.libsodium.org/) cryptography library.
 
     Topics: flutter, mobile, native, cryptography, tutorial
+tags:
+- flutter
+- mobile
+- native
+- cryptography
+- tutorial
 ---
 
 ## Learning objectives
@@ -49,6 +55,8 @@ This article will start from scratch. We will create a Flutter plugin, compile `
 and finally demonstrate how to use `libsodium` from Flutter and the server-side. By reading this article you will
 be able to use code from other native libraries, not just `libsodium`.
 
+{{< newsletter_signup >}}
+
 ## Prior art, references, and other resources
 
 [Rust once and share it with Android, iOS and
@@ -85,7 +93,7 @@ and `NDK_HOME` environment variables to `$HOME/Library/Android/sdk/ndk-bundle`:
 
 {{< highlight bash >}}
 export ANDROID_NDK_HOME=$HOME/Library/Android/sdk/ndk-bundle
-export NDK_HOME=ANDROID_NDK_HOME
+export NDK_HOME=$HOME/Library/Android/sdk/ndk-bundle
 {{< / highlight >}}
 
 Make sure your [Flutter installation](https://flutter.dev/docs/get-started/install) doesn't have any
@@ -108,7 +116,7 @@ with:
 Then install `pynacl` and `ipython` (for a useful REPL shell):
 
 {{< highlight bash >}}
-pip install pyncal ipython
+pip install pynacl ipython
 {{< / highlight >}}
 
 ### Getting libsodium
@@ -470,9 +478,9 @@ String cryptoBoxSeal(final String recipientPublicKeyBase64Encoded, final String 
 Finally in the actual UI we want to encrypt some text when a button is pressed. If you perform this
 computationally intense call in the UI thread you will block it and causes
 [jank](https://flutter.dev/docs/perf/rendering/ui-performance). Jank means you block the UI thread for so long
-that you interfere with hte user interfaces; maybe user inputs are ignored, or animation frames are skipped.
+that you interfere with the user interface; maybe user inputs are ignored, or animation frames are skipped.
 Hence we need to perform this calculation on a different thread. Flutter provide a convenience function
-[`compute`](https://api.flutter.dev/flutter/foundation/compute.html), but one limitation is that only a single
+[`compute`](https://flutter.dev/docs/cookbook/networking/background-parsing), but one limitation is that only a single
 argument can be passed to `compute`, so we create a convenience class to encapsulate the arguments.
 
 {{< highlight dart "linenos=false">}}
@@ -494,11 +502,12 @@ Once you have the base64-encoded sealed box (i.e. encrypted data), imagine that 
 to the server. You can then decrypt it on the server:
 
 {{< highlight python >}}
+import base64
 from nacl.public import PrivateKey, SealedBox
 
 private_key_encoded = "+YownzrW+Bx2dmpQAjuQJr5SEAwd6Bg5NUDHVfKRIY4="
 private_key = PrivateKey(base64.b64decode(private_key_encoded))
-unseal_box = SealedBox(keypair)
+unseal_box = SealedBox(private_key)
 ciphertext = "zZSCwppjzaneb4f6a1HEWo4GL8RiN8oGILzMaaM8Mz7/97J4+8EEEfbQHDBGp3A1juOFWv/Z"
 new_plaintext = unseal_box.decrypt(base64.b64decode(ciphertext)).decode('utf-8')
 print(new_plaintext)
