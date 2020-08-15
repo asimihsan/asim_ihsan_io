@@ -84,7 +84,7 @@ TODO
 
 ## Appendix
 
-<a>
+---
 
 ### Demonstration that a Feistel Network permutes an input integer
 
