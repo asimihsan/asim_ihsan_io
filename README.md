@@ -8,6 +8,16 @@ Content for https://asim.ihsan.io website.
 
 ## Usage
 
+### First time Python setup
+
+Install pyenv, then
+
+```
+pyenv install miniconda3-latest
+pyenv virtualenv miniconda3-latest asim_ihsan_io
+pip install -r requirements.txt
+```
+
 ### First-time CDK setup
 
 ```
@@ -62,9 +72,23 @@ rm -rf hugo/build
 ### Live rebuilding during blog writing
 
 ```
-IP_ADDRESS=192.168.1.9
+IP_ADDRESS=192.168.1.17
 (cd hugo/themes/ananke/src && npm run build:production)
-(cd hugo && hugo --buildDrafts --destination build --watch server --disableFastRender --bind 0.0.0.0 --baseURL "http://${IP_ADDRESS}" --enableGitInfo)
+(cd hugo && hugo --buildDrafts --destination build --watch server --disableFastRender --bind 0.0.0.0 --baseURL "http://${IP_ADDRESS}" --enableGitInfo --port 5000)
+```
+
+### Life watching readability stats
+
+Prerequisites
+
+```
+brew install fswatch
+```
+
+Then:
+
+```
+fswatch hugo/content | xargs -n1 -I{} bash -c '(cd hugo && hugo --buildDrafts --destination build) && ./src/analyze_post.py ./hugo/build/posts/healthy-breathing-with-a-smart-bulb/index.json
 ```
 
 ## Setup
