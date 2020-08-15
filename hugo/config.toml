@@ -54,3 +54,6 @@ enableRobotsTXT = true
     noClasses = true
     style = "monokailight"
     tabWidth = 4
+
+[outputs]
+page = ["HTML", "JSON"]
