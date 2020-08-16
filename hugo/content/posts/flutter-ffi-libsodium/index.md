@@ -11,6 +11,13 @@ summary: |
     [`dart:ffi`](https://flutter.dev/docs/development/platform-integration/c-interop) library that is currently in
     beta. In this article we demonstrate why you'd want to use native code, and a practical example of doing so
     using the [`libsodium`](https://doc.libsodium.org/) cryptography library.
+objectives: |
+    By the end of this article you will be able to:
+
+    -   Create a Flutter plugin that uses native code for iOS and Android mobile apps.
+    -   Use the libsodium native cryptography library from Flutter mobile apps.
+    -   Run expensive native code in the background to avoid blocking the user interface of a mobile app.
+
 tags:
 - flutter
 - mobile
@@ -18,14 +25,6 @@ tags:
 - cryptography
 - tutorial
 ---
-
-## Learning objectives
-
-By the end of this article you will be able to:
-
--   Create a Flutter plugin that uses native code for iOS and Android mobile apps.
--   Use the libsodium native cryptography library from Flutter mobile apps.
--   Run expensive native code in the background to avoid blocking the user interface of a mobile app.
 
 ## Introduction
 

@@ -22,6 +22,9 @@
     <h2 class="summary">Summary</h2>
     <div class="summary-body">
         {{ .Summary }}
+        <br/><br/>
+        {{ .Params.Objectives | markdownify }}
+        <p><i>The opinions expressed in this blog are my own and not necessarily those of my employer.</i></p>
     </div>
 
     <div class="tableOfContents">
