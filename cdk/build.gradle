@@ -16,14 +16,14 @@ application {
 }
 
 dependencies {
-    implementation 'software.amazon.awscdk:cloudfront:1.46.0'
-    implementation 'software.amazon.awscdk:core:1.46.0'
-    implementation 'software.amazon.awscdk:events-targets:1.46.0'
-    implementation 'software.amazon.awscdk:events:1.46.0'
-    implementation 'software.amazon.awscdk:route53-targets:1.46.0'
-    implementation 'software.amazon.awscdk:route53:1.46.0'
-    implementation 'software.amazon.awscdk:s3-deployment:1.46.0'
-    implementation 'software.amazon.awscdk:s3:1.46.0'
+    implementation 'software.amazon.awscdk:cloudfront:1.59.0'
+    implementation 'software.amazon.awscdk:core:1.59.0'
+    implementation 'software.amazon.awscdk:events-targets:1.59.0'
+    implementation 'software.amazon.awscdk:events:1.59.0'
+    implementation 'software.amazon.awscdk:route53-targets:1.59.0'
+    implementation 'software.amazon.awscdk:route53:1.59.0'
+    implementation 'software.amazon.awscdk:s3-deployment:1.59.0'
+    implementation 'software.amazon.awscdk:s3:1.59.0'
     implementation 'com.google.guava:guava:28.2-jre'
 
     testImplementation 'junit:junit:4.12'
