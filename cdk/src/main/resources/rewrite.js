@@ -15,6 +15,7 @@ const regexps = [
     [new RegExp("\.jpg(\.br|\.gz)?$"), "image/jpg"],
     [new RegExp("\.png(\.br|\.gz)?$"), "image/png"],
     [new RegExp("\.gif(\.br|\.gz)?$"), "image/gif"],
+    [new RegExp("\.svg(\.br|\.gz)?$"), "image/svg+xml"],
     [new RegExp("\.ico(\.br|\.gz)?$"), "image/x-icon"],
     [new RegExp("\.md(\.br|\.gz)?$"), "text/markdown; charset=UTF-8"],
 ]
