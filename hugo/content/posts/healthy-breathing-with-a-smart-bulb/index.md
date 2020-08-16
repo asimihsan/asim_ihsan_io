@@ -1,15 +1,15 @@
 ---
 title: "Healthy breathing with a smart bulb"
 date: 2020-08-13T20:00:00-07:00
-draft: true
-katex: false
+aliases:
+  - /posts/healthy-breathing-with-a-smart-bulb/
+  - /healthy-breathing-with-a-smart-bulb/
+draft: false
 summary: |
     Inhale 5 seconds, exhale 5 seconds. Research repeatedly demonstrates that this breathing pattern reduces
     anxiety, stress, high blood pressure, and insomnia, both during sessions and durably for months afterwards. In
     this article I summarize research into breathing, and also create an open-source tool that uses a smart bulb
-    as a visual breathing guide.
-
-    Topics: breathing, health, habits, relaxation, focus, smart bulb, LIFX
+    as a peripheral-vision breathing guide.
 summary_image_enabled: true
 summary_image: breathing01.svg
 summary_image_title: Diagram illustrating breathing at a certain rate with the help of a smart bulb.

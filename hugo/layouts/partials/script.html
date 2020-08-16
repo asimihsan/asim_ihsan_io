@@ -1,0 +1,4 @@
+{{ partial "mathjax.html" . }}
+
+{{ $custom_js := "js/custom.js" | absURL }}
+<script async src="{{ $custom_js }}" type="text/javascript"></script>

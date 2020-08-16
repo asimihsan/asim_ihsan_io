@@ -35,7 +35,6 @@ TODO automate, but for now change directory to root then:
 
 ```
 rm -rf hugo/build
-(cd hugo/themes/ananke/src && npm run build:production)
 (cd hugo && hugo --buildDrafts --destination build)
 (cd hugo && HUGO_BASEURL='https://preprod-asim.ihsan.io' hugo --buildDrafts --destination build)
 ./src/compress_build.py
@@ -46,7 +45,6 @@ rm -rf hugo/build
 
 ```
 rm -rf hugo/build
-(cd hugo/themes/ananke/src && npm run build:production)
 (cd hugo && HUGO_ENV=production HUGO_BASEURL='https://asim.ihsan.io' hugo --buildDrafts --destination build)
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'prod*')
@@ -56,14 +54,12 @@ rm -rf hugo/build
 
 ```
 rm -rf hugo/build
-(cd hugo/themes/ananke/src && npm run build:production)
 (cd hugo && hugo --buildDrafts --destination build)
 (cd hugo && HUGO_BASEURL='https://preprod-asim.ihsan.io' hugo --buildDrafts --destination build)
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'preprod*')
 
 rm -rf hugo/build
-(cd hugo/themes/ananke/src && npm run build:production)
 (cd hugo && HUGO_ENV=production HUGO_BASEURL='https://asim.ihsan.io' hugo --buildDrafts --destination build)
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'prod*')
@@ -73,7 +69,6 @@ rm -rf hugo/build
 
 ```
 IP_ADDRESS=192.168.1.17
-(cd hugo/themes/ananke/src && npm run build:production)
 (cd hugo && hugo --buildDrafts --destination build --watch server --disableFastRender --bind 0.0.0.0 --baseURL "http://${IP_ADDRESS}" --enableGitInfo --port 5000)
 ```
 
