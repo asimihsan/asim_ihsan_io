@@ -1,0 +1,30 @@
+{{ range .Pages.ByPublishDate.Reverse }}
+<div class="card">
+    <div class="columns is-vcentered">
+        {{ if .Params.summary_image_enabled }}
+        <div class="column">
+            <div class="card-image">
+                <a href="{{ .RelPermalink }}">
+                    <img src="{{ .Permalink }}{{ .Params.summary_image }}" alt="image from {{ .Title }}">
+                </a>
+            </div>
+        </div>
+        {{ end }}
+        <div class="column">
+            <div class="card-content">
+                <div class="content">
+                    <h2>
+                        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+                    </h2>
+
+                    {{ partial "post-above-summary.html" . }}
+
+                    <div class="summary-body">
+                        {{ .Summary }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ end }}

@@ -1,0 +1,21 @@
+<nav class="navbar is-info" role="navigation" aria-label="main navigation">  
+    <div class="navbar-brand">
+        <a class="navbar-item" href="{{ .Site.BaseURL }}">
+            <strong>{{ .Site.Title }}</strong>
+        </a>
+
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="myNavbar">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+    <div id="myNavbar" class="navbar-menu">
+        <div class="navbar-start">
+            {{ range .Site.Menus.main }}
+                {{ $text := print .Name | safeHTML }}
+                <a class="navbar-item" href="{{ .URL }}">{{ $text }}</a>
+            {{ end }}
+        </div>
+    </div>
+</nav>

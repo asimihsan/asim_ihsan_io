@@ -1,0 +1,14 @@
+{{ $image := .profile_image }}
+{{ $alt := .alt }}
+{{ $type_arr := split $image "." }}
+{{ $srcbase := index $type_arr 0 }}
+
+<figure>
+    <picture>
+        <source srcset="{{$srcbase}}.webp" type="image/webp">
+        <img src="{{ $image }}" alt="{{ $alt }}">
+    </picture>
+    <figcaption>
+        <p class="caption">{{ $alt }}</p>
+    </figcaption>
+</figure>

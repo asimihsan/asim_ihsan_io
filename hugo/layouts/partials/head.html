@@ -1,0 +1,21 @@
+<head>
+    <meta charset="utf-8">
+
+    {{ $title := print .Title " | " .Site.Title }}
+    {{ if .IsHome }}{{ $title = .Site.Title }}{{ end }}
+    <title>{{ $title }} </title>
+
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {{ hugo.Generator }}
+    <meta property="og:title" content="{{ .Title }}">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="{{ .Site.BaseURL | absURL }}">
+    <meta property="og:image" content="">
+
+    {{ $bulma_css := "css/bulma.min.css" | absURL }}
+    <link rel="stylesheet" type="text/css" href="{{ $bulma_css }}">
+    {{ $template_style := resources.Get "css/template-style.css" }}
+    {{ $style := $template_style | resources.ExecuteAsTemplate "css/style.css" . }}
+    <link rel="stylesheet" type="text/css" href="{{ $style.Permalink }}">
+</head>

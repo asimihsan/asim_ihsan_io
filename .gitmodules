@@ -1,3 +1,0 @@
-[submodule "hugo/themes/ananke"]
-	path = hugo/themes/ananke
-	url = git@github.com:asimihsan/gohugo-theme-ananke.git

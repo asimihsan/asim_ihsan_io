@@ -1,0 +1,24 @@
+{{ define "newsletter_signup" }}
+<script defer src="https://f.convertkit.com/ckjs/ck.5.js"></script>
+{{ end }}
+
+{{ define "main" }}
+
+<div class="content about-page">
+    <h1 class="title">About</h1>
+    <div class="columns">
+        <div class="column is-one-quarter">
+            {{ partial "image_webp_fallback.html" (dict "profile_image" "/image/profile_photo.png" "alt" "") }}
+        </div>
+        <div class="column">
+            <article>
+                {{ .Content }}
+            </article>
+            <center>
+                {{ partial "newsletter-signup.html" . }}
+            </center>
+        </div>
+    </div>
+</div>
+
+{{ end }}

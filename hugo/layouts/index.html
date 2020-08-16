@@ -1,0 +1,12 @@
+{{ define "main" }}
+
+<h1 class="title is-hidden-mobile">{{ .Title }}</h1>
+<div class="subtitle">{{ .Site.Params.homeText | markdownify }}</div>
+
+<div class="index-page">
+    {{ with .Site.GetPage "section" "posts" }}
+    {{ partial "list.html" . }}
+    {{ end }}
+</div>
+
+{{ end }}

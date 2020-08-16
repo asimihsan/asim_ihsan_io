@@ -1,0 +1,85 @@
+html, .card {
+    background-color: {{ .Site.Params.backgroundColor | default "#FFFFFF" }};
+}
+
+body {
+    background-color: {{ .Site.Params.backgroundColor | default "#FFFFFF" }};
+    color: {{ .Site.Params.textColor | default "#000000" }};
+}
+
+.tableOfContents {
+    background-color: #eee;
+    padding: 0.5em 1em 1em 1em;
+    margin: 1em 0 2em 0;
+
+}
+
+figure img, .card-image {
+    max-width: 30em;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.index-page figure img, .index-page .card-image {
+    max-width: 20em;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+figcaption h4 {
+    font-size: 0.8em;
+    font-weight: normal;
+    font-style: italic;
+    text-align: center;
+}
+
+.card {
+    margin: 0 0 1em 0;
+}
+
+.card .summary-body {
+    margin-top: 1em;
+}
+
+
+.post-above-summary {
+    font-weight: 800;
+}
+
+.navbar.is-info {
+    background-color: #8675a9;
+    color: #fff;
+}
+
+.navbar.is-info .navbar-brand .navbar-link.is-active,
+.navbar.is-info .navbar-brand .navbar-link:focus,
+.navbar.is-info .navbar-brand .navbar-link:hover,
+.navbar.is-info .navbar-brand>a.navbar-item.is-active,
+.navbar.is-info .navbar-brand>a.navbar-item:focus,
+.navbar.is-info .navbar-brand>a.navbar-item:hover {
+ background-color:#5B4F73;
+ color: #fff;
+}
+
+.navbar.is-info .navbar-end .navbar-link.is-active,
+.navbar.is-info .navbar-end .navbar-link:focus,
+.navbar.is-info .navbar-end .navbar-link:hover,
+.navbar.is-info .navbar-end>a.navbar-item.is-active,
+.navbar.is-info .navbar-end>a.navbar-item:focus,
+.navbar.is-info .navbar-end>a.navbar-item:hover,
+.navbar.is-info .navbar-start .navbar-link.is-active,
+.navbar.is-info .navbar-start .navbar-link:focus,
+.navbar.is-info .navbar-start .navbar-link:hover,
+.navbar.is-info .navbar-start>a.navbar-item.is-active,
+.navbar.is-info .navbar-start>a.navbar-item:focus,
+.navbar.is-info .navbar-start>a.navbar-item:hover {
+background-color:#5B4F73;
+ color:#fff
+}
+
+.about-page figure {
+    margin-left: 0;
+    text-align: left;
+}

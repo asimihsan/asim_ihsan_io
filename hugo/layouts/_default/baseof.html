@@ -1,0 +1,13 @@
+<!doctype html>
+<html class="no-js" lang="en">
+    {{ partial "head.html" . }}
+    <body>
+        {{ partial "nav.html" . }}
+        <section class="section">
+            <div class="container">
+                {{ block "main" . }}{{ end }}
+            </div>
+        </section>
+        {{ partial "script.html" . }}
+    </body>
+</html>

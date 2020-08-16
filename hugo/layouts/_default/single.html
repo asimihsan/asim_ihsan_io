@@ -1,0 +1,40 @@
+{{ define "newsletter_signup" }}
+<script defer src="https://f.convertkit.com/ckjs/ck.5.js"></script>
+{{ end }}
+
+{{ define "main" }}
+
+<h1 class="title">{{ .Title }}</h1>
+
+<div class="content">
+    {{ if .Params.summary_image }}
+    <div>
+      <figure>
+        <picture>
+            <img src="{{ .Params.summary_image }}" alt="{{ .Params.summary_image_title }}">
+        </picture>
+      </figure>
+    </div>
+    {{ end }}
+
+    {{ partial "post-above-summary.html" . }}
+
+    <h2 class="summary">Summary</h2>
+    <div class="summary-body">
+        {{ .Summary }}
+    </div>
+
+    <div class="tableOfContents">
+        {{ .TableOfContents }}
+    </div>
+
+    <article>
+        {{ .Content }}
+    </article>
+
+    <center>
+        {{ partial "newsletter-signup.html" . }}
+      </center>
+</div>
+
+{{ end }}
