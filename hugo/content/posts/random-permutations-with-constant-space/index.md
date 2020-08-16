@@ -12,18 +12,19 @@ summary: |
     space and time. Applications include generating unique gift card codes or credit card numbers for your customers
     without exposing already-generated codes/numbers, and efficiently implementing the fizzlefade effect from
     Wolfenstein 3D.
+objectives: |
+   By the end of this article you will be able to:
 
-    Topics: algorithms, randomness, cryptography
+   -   Understand what a Feistel Network is.
+   -   Use Feistel Networks to generate random permutations on small domains.
+
+tags:
+-   algorithms
+-   randomness
+-   cryptography
 ---
 
 {{< banner_info >}}This is a draft post, still writing it{{< /banner_info >}}
-
-## Learning objectives
-
-By the end of this article you will be able to:
-
--   Understand what a Feistel Network is.
--   Use Feistel Networks to generate random permutations on small domains.
 
 ## Introduction
 

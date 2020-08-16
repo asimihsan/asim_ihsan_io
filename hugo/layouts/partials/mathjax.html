@@ -1,5 +1,7 @@
+{{ if .Params.mathjax }}
 {{ $mathjaxStartup := "js/mathjax-startup.js" | absURL }}
 <script async src="{{ $mathjaxStartup }}" type="text/javascript"></script>
 
 {{ $mathjax := "js/mathjax/tex-svg.js" | absURL }}
 <script id="MathJax-script" async src="{{ $mathjax }}" type="text/javascript"></script>
+{{ end }}

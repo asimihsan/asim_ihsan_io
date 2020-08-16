@@ -5,6 +5,7 @@ html, .card {
 body {
     background-color: {{ .Site.Params.backgroundColor | default "#FFFFFF" }};
     color: {{ .Site.Params.textColor | default "#000000" }};
+    line-height: 1.3;
 }
 
 .tableOfContents {

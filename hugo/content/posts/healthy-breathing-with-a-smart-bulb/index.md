@@ -10,6 +10,14 @@ summary: |
     anxiety, stress, high blood pressure, and insomnia, both during sessions and durably for months afterwards. In
     this article I summarize research into breathing, and also create an open-source tool that uses a smart bulb
     as a peripheral-vision breathing guide.
+objectives: |
+    By the end of this article you will be able to:
+
+    -   Understand how breathing one inhale-then-exhale cycle every 10 seconds (6 breaths per minute) has positive
+        health benefits.
+    -   Apply different ratios of inhalation to exhalation to alter your self-perceived mood.
+    -   Use a Raspberry Pi and a LIFX smart bulb as a peripheral vision breathing aid.
+
 summary_image_enabled: true
 summary_image: breathing01.svg
 summary_image_title: Diagram illustrating breathing at a certain rate with the help of a smart bulb.
@@ -23,18 +31,11 @@ tags:
 -   LIFX
 ---
 
-## Objectives
-
-By the end of this article you will be able to:
-
--   Understand how breathing one inhale-then-exhale cycle every 10 seconds (6 breaths per minute) has positive
-    health benefits.
--   Apply different ratios of inhalation to exhalation to alter your self-perceived mood.
--   Use a Raspberry Pi and a LIFX smart bulb as a peripheral vision breathing aid.
-
 ## Introduction
 
-foobar
+Pause. Inhale as deeply as you can. Then exhale slowly and fully. Something as simple as a deep breath can
+reset a bad mood or offer a fresh perspective on a problem. Merely being present and breathing deeply is beneficial.
+Yet research 
 
 {{< newsletter_signup >}}
 

@@ -2,7 +2,7 @@
 <div class="card">
     <div class="columns is-vcentered">
         {{ if .Params.summary_image_enabled }}
-        <div class="column">
+        <div class="column is-one-third">
             <div class="card-image">
                 <a href="{{ .RelPermalink }}">
                     <img src="{{ .Permalink }}{{ .Params.summary_image }}" alt="image from {{ .Title }}">
