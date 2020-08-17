@@ -1,6 +1,12 @@
 <head>
     <meta charset="utf-8">
 
+    {{ if eq (getenv "HUGO_ENV") "production" | or (eq .Site.Params.env "production")  }}
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' f.convertkit.com 'unsafe-inline'; img-src 'self' 'unsafe-inline' data:; style-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self' app.convertkit.com">
+    {{ else }}
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src 'self' 192.168.1.17; script-src 'self' f.convertkit.com 'unsafe-inline'; img-src 'self' 'unsafe-inline' data:; style-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self' app.convertkit.com">
+    {{ end }} 
+
     {{ $title := print .Title " | " .Site.Title }}
     {{ if .IsHome }}{{ $title = .Site.Title }}{{ end }}
     <title>{{ $title }} </title>
@@ -13,9 +19,9 @@
     <meta property="og:url" content="{{ .Site.BaseURL | absURL }}">
     <meta property="og:image" content="">
 
-    {{ $bulma_css := "css/bulma.min.css" | absURL }}
-    <link rel="stylesheet" type="text/css" href="{{ $bulma_css }}">
-    {{ $template_style := resources.Get "css/template-style.css" }}
-    {{ $style := $template_style | resources.ExecuteAsTemplate "css/style.css" . }}
-    <link rel="stylesheet" type="text/css" href="{{ $style.Permalink }}">
+    {{ $bulma_css := resources.Get "css/bulma.css" }}
+    {{ $custom_css_template := resources.Get "css/template-style.css" }}
+    {{ $custom_css := $custom_css_template | resources.ExecuteAsTemplate "css/custom.css" . }}
+    {{ $css := slice $bulma_css $custom_css | resources.Concat "css/style.css" | minify | fingerprint }}
+    <link rel="stylesheet" type="text/css" href="{{ $css.Permalink }}" integrity="{{ $css.Data.Integrity }}">
 </head>
