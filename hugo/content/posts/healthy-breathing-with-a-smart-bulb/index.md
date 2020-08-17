@@ -7,8 +7,8 @@ aliases:
 draft: false
 summary: |
     Inhale 5 seconds, exhale 5 seconds. Research repeatedly demonstrates that this breathing pattern reduces
-    anxiety, stress, high blood pressure, and insomnia, both during sessions and durably for months afterwards. In
-    this article I summarize research into breathing, and also create an open-source tool that uses a smart bulb
+    anxiety, stress, high blood pressure, and insomnia, both during sessions and durably for months afterward. In
+    this article I summarize research into breathing, and create an open-source tool that uses a smart bulb
     as a peripheral-vision breathing guide.
 objectives: |
     By the end of this article you will be able to:
@@ -35,11 +35,11 @@ tags:
 
 Pause. Inhale as deeply as you can. Then exhale slowly and fully. Something as simple as a deep breath can
 reset a bad mood or offer a fresh perspective on a problem. Merely being present and breathing deeply is
-beneficial. Yet breathing in a specific way has suprising and proven benefits.
+beneficial. Yet breathing in a specific way has surprising and proven benefits.
 
 Focus on your stomach and put one hand on your stomach. Keep your rib cage and chest fixed. Instead, imagine
-you can only breath in while moving your stomach outwards then inwards. Inhale as deeply as you can. Then
-exhale slowly and fully. Repeat 3 times. By moving only your stomach you are doing **diaphragmatic
+that you are only able to breathe in while moving your stomach outwards then inwards. Inhale as deeply as you
+can. Then exhale slowly and fully. Repeat 3 times. By moving only your stomach you are doing **diaphragmatic
 breathing**, i.e. **belly breating**. You may find it easier to do this lying down, but over time you can do
 this sitting upright. Diaphragmatic breathing is more efficient than breathing with you chest, lowers your
 heart rate, and lowers your blood pressure [^5].
@@ -50,7 +50,7 @@ practices such as yoga acknowledge that breathing 6 times per minute is optimall
 also try a different exalation to inhalation ratio. A ratio of 1:2 (inhale for 3 seconds, exhale for 7
 seconds) further encourages alertness, focus, and stress tolerance  [^1].
 
-Research suggests this patten optimizes the respiratory sinus arrythmia (RSA) and the high-frequency (HF)
+Research suggests this pattern optimizes the respiratory sinus arrythmia (RSA) and the high-frequency (HF)
 power in your heart rate frequency. Changes in the RSA and HF of your heart beat are associated with a better
 capacity to adapt to stressful situations [^1]. Breathing is not a magic cure-all for conditions, but
 breathing 6 times a minute is associated with reducing tension, insomnia, high blood pressure, and stress,
@@ -63,18 +63,19 @@ in this way improves your thinking [^4].
 
 When I'm working on my widescreen monitor I find it difficult to use breathing aids either on my phone or as a
 moving image on the computer. Instead I realized that changing the colors on a smart bulb to match inhalation
-and exhalation cycles would help me remember to breath correctly whilst workign.
+and exhalation cycles would help me remember to breath correctly whilst working.
 
 Hence [I wrote a program](https://github.com/asimihsan/lifx-breathing) that I run on a Raspberry Pi that uses
 the [lifxlan](https://github.com/mclarkk/lifxlan) Python module that helps me maintain a breathing pattern. A
 [LIFX](https://www.lifx.com) bulb gradually changes color to indicate inhalation or exhalation, and then
 quickly switches off then on to indicate to change from inhaling to exhaling.
 
+I'm now able to work or watch TV and have the ambient colors of a LIFX smart bulb optimally guide my
+breathing.
+
 Here's a video of it in action:
 
-TODO
-
-I'm now able to work or watch TV and have the ambient colors of a LIFX smart bulb optimally guide my breathing.
+{{< youtube IIqjp69V6Q0 >}}
 
 ## Future work
 
@@ -82,6 +83,8 @@ I'm now able to work or watch TV and have the ambient colors of a LIFX smart bul
   and locations so that I'm proactively reminded to breath correctly.
 - There might be demand for selling Raspberry Pi's pre-configured to detect LIFX bulbs and run breathing
   programs for you.
+
+## Footnotes
 
 [^1]: Diest, Ilse Van et al. ["Inhalation/Exhalation Ratio Modulates the Effect of Slow Breathing on Heart
     Rate Variability and Relaxation."](https://lirias.kuleuven.be/retrieve/285986) Applied Psychophysiology
