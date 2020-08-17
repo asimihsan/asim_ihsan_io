@@ -1,3 +1,7 @@
+---
+title: About
+---
+
 I’m [Asim Ihsan](https://asim.ihsan.io). I've worked as a software engineer at
 Amazon for six years, and in the software industry for twelve years. I’ve worked
 on a variety of teams, such as AWS Lambda, AWS DynamoDB, and Amazon Go, on

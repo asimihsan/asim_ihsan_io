@@ -4,3 +4,4 @@ git+https://github.com/andreasvc/readability.git@master#egg=readability
 spacy
 termcolor
 lxml
+brotli

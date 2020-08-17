@@ -8,7 +8,7 @@ Content for https://asim.ihsan.io website.
 
 ## Usage
 
-### First time Python setup
+### First time setup
 
 Install pyenv, then
 
@@ -16,6 +16,13 @@ Install pyenv, then
 pyenv install miniconda3-latest
 pyenv virtualenv miniconda3-latest asim_ihsan_io
 pip install -r requirements.txt
+```
+
+Also need critical for above-fold CSS inlining, and need moreutils for sponge:
+
+```
+brew install moreutils
+npm install -g critical
 ```
 
 ### First-time CDK setup
@@ -35,8 +42,8 @@ TODO automate, but for now change directory to root then:
 
 ```
 rm -rf hugo/build
-(cd hugo && hugo --buildDrafts --destination build)
-(cd hugo && HUGO_BASEURL='https://preprod-asim.ihsan.io' hugo --buildDrafts --destination build)
+(cd hugo && HUGO_ENV=production HUGO_BASEURL='https://preprod-asim.ihsan.io' hugo --buildDrafts --destination build)
+find hugo/build -name '*.html' | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'preprod*')
 ```
@@ -46,6 +53,7 @@ rm -rf hugo/build
 ```
 rm -rf hugo/build
 (cd hugo && HUGO_ENV=production HUGO_BASEURL='https://asim.ihsan.io' hugo --buildDrafts --destination build)
+find hugo/build -name '*.html' | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'prod*')
 ```
@@ -54,13 +62,14 @@ rm -rf hugo/build
 
 ```
 rm -rf hugo/build
-(cd hugo && hugo --buildDrafts --destination build)
 (cd hugo && HUGO_BASEURL='https://preprod-asim.ihsan.io' hugo --buildDrafts --destination build)
+find hugo/build -name '*.html' | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'preprod*')
 
 rm -rf hugo/build
 (cd hugo && HUGO_ENV=production HUGO_BASEURL='https://asim.ihsan.io' hugo --buildDrafts --destination build)
+find hugo/build -name '*.html' | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'prod*')
 ```
@@ -68,7 +77,16 @@ rm -rf hugo/build
 ### Live rebuilding during blog writing
 
 ```
-IP_ADDRESS=192.168.1.17
+IFS='' read -r -d '' PROGRAM <<"EOF"
+import socket
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+print(s.getsockname()[0])
+s.close()
+EOF
+IP_ADDRESS=$(python -c "${PROGRAM}")
+
+rm -rf hugo/build
 (cd hugo && hugo --buildDrafts --destination build --watch server --disableFastRender --bind 0.0.0.0 --baseURL "http://${IP_ADDRESS}" --enableGitInfo --port 5000)
 ```
 
@@ -83,7 +101,7 @@ brew install fswatch
 Then:
 
 ```
-fswatch hugo/content | xargs -n1 -I{} bash -c '(cd hugo && hugo --buildDrafts --destination build) && ./src/analyze_post.py ./hugo/build/posts/healthy-breathing-with-a-smart-bulb/index.json
+fswatch hugo/content | xargs -n1 -I{} bash -c '(cd hugo && hugo --buildDrafts --destination build-readability) && ./src/analyze_post.py ./hugo/build/healthy-breathing-with-a-smart-bulb/index.json'
 ```
 
 ## Setup

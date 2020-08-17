@@ -31,21 +31,57 @@ tags:
 -   LIFX
 ---
 
-## Introduction
+## Breathing
 
 Pause. Inhale as deeply as you can. Then exhale slowly and fully. Something as simple as a deep breath can
-reset a bad mood or offer a fresh perspective on a problem. Merely being present and breathing deeply is beneficial.
-Yet research 
+reset a bad mood or offer a fresh perspective on a problem. Merely being present and breathing deeply is
+beneficial. Yet breathing in a specific way has suprising and proven benefits.
+
+Focus on your stomach and put one hand on your stomach. Keep your rib cage and chest fixed. Instead, imagine
+you can only breath in while moving your stomach outwards then inwards. Inhale as deeply as you can. Then
+exhale slowly and fully. Repeat 3 times. By moving only your stomach you are doing **diaphragmatic
+breathing**, i.e. **belly breating**. You may find it easier to do this lying down, but over time you can do
+this sitting upright. Diaphragmatic breathing is more efficient than breathing with you chest, lowers your
+heart rate, and lowers your blood pressure [^5].
+
+Continue to focus on your stomach and belly breathing. Inhale for 5 seconds, then exhale for 5 seconds.
+Breathing in pattern means you are breathing **once every 10 seconds**, i.e. **6 breaths per minute**. Ancient
+practices such as yoga acknowledge that breathing 6 times per minute is optimally beneficial. However, you can
+also try a different exalation to inhalation ratio. A ratio of 1:2 (inhale for 3 seconds, exhale for 7
+seconds) further encourages alertness, focus, and stress tolerance  [^1].
+
+Research suggests this patten optimizes the respiratory sinus arrythmia (RSA) and the high-frequency (HF)
+power in your heart rate frequency. Changes in the RSA and HF of your heart beat are associated with a better
+capacity to adapt to stressful situations [^1]. Breathing is not a magic cure-all for conditions, but
+breathing 6 times a minute is associated with reducing tension, insomnia, high blood pressure, and stress,
+even if you breathe like this for only 10-15 minutes a day [^2] [^3]. There is weaker evidence that breathing
+in this way improves your thinking [^4].
 
 {{< newsletter_signup >}}
 
-## Prior art
+## Using a smart bulb
 
-Foobat
+When I'm working on my widescreen monitor I find it difficult to use breathing aids either on my phone or as a
+moving image on the computer. Instead I realized that changing the colors on a smart bulb to match inhalation
+and exhalation cycles would help me remember to breath correctly whilst workign.
 
----
+Hence [I wrote a program](https://github.com/asimihsan/lifx-breathing) that I run on a Raspberry Pi that uses
+the [lifxlan](https://github.com/mclarkk/lifxlan) Python module that helps me maintain a breathing pattern. A
+[LIFX](https://www.lifx.com) bulb gradually changes color to indicate inhalation or exhalation, and then
+quickly switches off then on to indicate to change from inhaling to exhaling.
 
-## References, research papers, and articles
+Here's a video of it in action:
+
+TODO
+
+I'm now able to work or watch TV and have the ambient colors of a LIFX smart bulb optimally guide my breathing.
+
+## Future work
+
+- Instead of me remembering to turn on the bulb, I'd like the bulbs to be scheduled to run at certain times
+  and locations so that I'm proactively reminded to breath correctly.
+- There might be demand for selling Raspberry Pi's pre-configured to detect LIFX bulbs and run breathing
+  programs for you.
 
 [^1]: Diest, Ilse Van et al. ["Inhalation/Exhalation Ratio Modulates the Effect of Slow Breathing on Heart
     Rate Variability and Relaxation."](https://lirias.kuleuven.be/retrieve/285986) Applied Psychophysiology
@@ -155,3 +191,7 @@ Foobat
         higher mental functions"
     -   "**The results suggest that a short, simple breathing practice can be helpful in improving cognitive
         processes.**"
+
+[^5]: Harvard Medical School, ["Learning diaphragmatic breathing"](https://www.health.harvard.edu/lung-health-and-disease/learning-diaphragmatic-breathing)
+
+    -   **Relearning how to breathe from the diaphragm is beneficial for everyone**. Diaphragmatic breathing (also called "abdominal breathing" or "belly breathing") encourages full oxygen exchange — that is, the beneficial trade of incoming oxygen for outgoing carbon dioxide. Not surprisingly, this type of breathing **slows the heartbeat and can lower or stabilize blood pressure.**

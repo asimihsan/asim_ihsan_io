@@ -8,6 +8,10 @@ body {
     line-height: 1.3;
 }
 
+.container {
+    max-width: 64rem;
+}
+
 .tableOfContents {
     background-color: #eee;
     padding: 0.5em 1em 1em 1em;
@@ -83,4 +87,8 @@ background-color:#5B4F73;
 .about-page figure {
     margin-left: 0;
     text-align: left;
+}
+
+.highlight pre {
+    background-color: #f0f0f0 !important;
 }
