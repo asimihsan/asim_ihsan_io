@@ -4,7 +4,7 @@
     {{ if eq (getenv "HUGO_ENV") "production" | or (eq .Site.Params.env "production")  }}
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' f.convertkit.com 'unsafe-inline'; img-src 'self' 'unsafe-inline' data:; style-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self' app.convertkit.com; frame-src www.youtube.com">
     {{ else }}
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src 'self' 192.168.1.17; script-src 'self' f.convertkit.com 'unsafe-inline'; img-src 'self' 'unsafe-inline' data:; style-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self' app.convertkit.com; frame-src www.youtube.com">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; connect-src 'self' 192.168.1.17:5000; script-src 'self' f.convertkit.com 'unsafe-inline'; img-src 'self' 'unsafe-inline' data:; style-src 'self' 'unsafe-inline'; base-uri 'self'; form-action 'self' app.convertkit.com; frame-src www.youtube.com">
     {{ end }} 
 
     {{ $title := print .Title " | " .Site.Title }}

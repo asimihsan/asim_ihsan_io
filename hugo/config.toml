@@ -12,9 +12,14 @@ title = "Asim Ihsan's Meanderings"
         weight = 1
 
     [[menu.main]]
+        name = "Contact"
+        url = "/contact/"
+        weight = 2
+
+    [[menu.main]]
         name = "Posts"
         url = "/posts/"
-        weight = 2
+        weight = 3
     
 #    [[menu.main]]
 #        name = "Projects"

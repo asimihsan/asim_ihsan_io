@@ -2,8 +2,12 @@ package com.myorg;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;
 import software.amazon.awscdk.core.*;
+import software.amazon.awscdk.core.Stack;
+import software.amazon.awscdk.services.athena.CfnNamedQuery;
+import software.amazon.awscdk.services.athena.CfnNamedQueryProps;
 import software.amazon.awscdk.services.certificatemanager.DnsValidatedCertificate;
 import software.amazon.awscdk.services.certificatemanager.ICertificate;
 import software.amazon.awscdk.services.cloudformation.CustomResource;
@@ -12,19 +16,17 @@ import software.amazon.awscdk.services.iam.Effect;
 import software.amazon.awscdk.services.iam.PolicyStatement;
 import software.amazon.awscdk.services.lambda.*;
 import software.amazon.awscdk.services.lambda.Runtime;
+import software.amazon.awscdk.services.logs.RetentionDays;
 import software.amazon.awscdk.services.route53.*;
 import software.amazon.awscdk.services.route53.targets.CloudFrontTarget;
-import software.amazon.awscdk.services.s3.Bucket;
-import software.amazon.awscdk.services.s3.BucketEncryption;
-import software.amazon.awscdk.services.s3.BucketProps;
+import software.amazon.awscdk.services.s3.*;
 import software.amazon.awscdk.services.s3.deployment.BucketDeployment;
 import software.amazon.awscdk.services.s3.deployment.ISource;
 import software.amazon.awscdk.services.s3.deployment.Source;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 public class CdkStack extends Stack {
     public CdkStack(final Construct scope,
@@ -112,7 +114,24 @@ public class CdkStack extends Stack {
                 .build();
         final String rewriteLambdaArn = stackLookup.getAttString("Output");
         final IVersion rewriteLambdaVersion = Version.fromVersionArn(this, "RewriteLambda", rewriteLambdaArn);
+
         // --------------------------------------------------------------------
+        //  S3 bucket for CloudFront access logs.
+        // --------------------------------------------------------------------
+        final Bucket cloudFrontAccessLogsBucket = new Bucket(this, "CloudFrontAccessLogsBucket", BucketProps.builder()
+                .publicReadAccess(false)
+                .blockPublicAccess(BlockPublicAccess.BLOCK_ALL)
+                .removalPolicy(RemovalPolicy.DESTROY)
+                .versioned(false)
+                .encryption(BucketEncryption.S3_MANAGED)
+                .lifecycleRules(Collections.singletonList(
+                        LifecycleRule.builder()
+                                .expiration(Duration.days(60))
+                                .enabled(true)
+                                .build()
+                ))
+                .build());
+        // -------------------------------------------------------------------
 
         // --------------------------------------------------------------------
         //  CloudFront distribution for assets.
@@ -165,6 +184,10 @@ public class CdkStack extends Stack {
                         .viewerProtocolPolicy(ViewerProtocolPolicy.REDIRECT_TO_HTTPS)
                         .priceClass(PriceClass.PRICE_CLASS_200)
                         .defaultRootObject("")
+                        .loggingConfig(LoggingConfiguration.builder()
+                                .bucket(cloudFrontAccessLogsBucket)
+                                .includeCookies(false)
+                                .build())
                         .build());
         // --------------------------------------------------------------------
 
@@ -189,6 +212,22 @@ public class CdkStack extends Stack {
 //                .principals(Collections.singletonList(cloudFrontIdentity.getGrantPrincipal()))
 //                .build());
         // --------------------------------------------------------------------
+
+        // --------------------------------------------------------------------
+        //  Athena for querying the CloudFront access logs.
+        // --------------------------------------------------------------------
+//        final String athenaNamedQueryTemplate = Resources.toString(
+//                Resources.getResource("athena_cloudfront_query.txt"), Charsets.UTF_8);
+//        final String athenaNamedQueryString = String.format(athenaNamedQueryTemplate,
+//                cloudFrontAccessLogsBucket.getBucketName());
+//        final CfnNamedQuery athenaNamedQuery = new CfnNamedQuery(this, "AthenaCloudFrontQuery",
+//                CfnNamedQueryProps.builder()
+//                        .database("default")
+//                        .name("cloudfront_logs")
+//                        .queryString(athenaNamedQueryString)
+//                        .build());
+        // --------------------------------------------------------------------
+
 
         // --------------------------------------------------------------------
 
@@ -228,6 +267,14 @@ public class CdkStack extends Stack {
 
         CfnOutput.Builder.create(this, "BlogBucketArn")
                 .value(bucket.getBucketArn())
+                .build();
+
+        CfnOutput.Builder.create(this, "CloudFrontAccessLogsBucketName")
+                .value(cloudFrontAccessLogsBucket.getBucketName())
+                .build();
+
+        CfnOutput.Builder.create(this, "CloudFrontAccessLogsBucketArn")
+                .value(cloudFrontAccessLogsBucket.getBucketArn())
                 .build();
     }
 }

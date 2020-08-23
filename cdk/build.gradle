@@ -16,6 +16,7 @@ application {
 }
 
 dependencies {
+    implementation 'software.amazon.awscdk:athena:1.59.0'
     implementation 'software.amazon.awscdk:cloudfront:1.59.0'
     implementation 'software.amazon.awscdk:core:1.59.0'
     implementation 'software.amazon.awscdk:events-targets:1.59.0'
