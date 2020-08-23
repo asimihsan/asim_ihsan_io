@@ -23,10 +23,11 @@ RE_TO_SKIP = re.compile("|".join(elem for elem in KEY_RE_TO_SKIP))
 
 def ping_url(url: str, http_conn: http.client.HTTPSConnection) -> None:
     print(f"ping_url entry. url: {url}")
-    for accept_encoding in [None, "gzip, deflate", "gzip, deflate, br"]:
+    for accept_encoding in ["gzip, deflate", "gzip, deflate, br"]:
         headers: Dict[str, str] = {}
         if accept_encoding is not None:
             headers["Accept-Encoding"] = accept_encoding
+        headers["User-Agent"] = "Pinger v0.1"
         http_conn.request("GET", url, None, headers)
         resp = http_conn.getresponse()
         resp.read()
