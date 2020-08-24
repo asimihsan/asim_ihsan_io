@@ -32,6 +32,7 @@ title = "Asim Ihsan's Meanderings"
     homeText = """
 Hi, I'm Asim. I work as a software engineer.
 """
+    recaptchaV2SiteKey = "6LcGPMIZAAAAAPnC_pt8UFNBWN2n8MBB_zyIidBS"
 
 [markup]
     [markup.tableOfContents]
