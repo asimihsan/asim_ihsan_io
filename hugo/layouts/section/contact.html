@@ -4,7 +4,53 @@
     <h1 class="title">Contact me</h1>
     <div class="columns">
         <div class="column">
-            TODO
+            <form id="contact-form" action="" method="post">
+                <div class="field">
+                    <label class="label">Your name</label>
+                    <div class="control">
+                        <input name="name" class="input" type="text" placeholder="Your name">
+                    </div>
+                </div>
+    
+                <div class="field">
+                    <label class="label">Your email address</label>
+                    <div class="control">
+                        <input name="email1" class="input" type="email" placeholder="Email address" value="">
+                    </div>
+                </div>
+    
+                <div class="field">
+                    <label class="label">Confirm email address</label>
+                    <div class="control">
+                        <input name="email2" class="input" type="email" placeholder="Email address" value="">
+                    </div>
+                </div>
+    
+                <div class="field">
+                    <label class="label">Message</label>
+                    <div class="control">
+                        <textarea name="message" class="textarea" placeholder="Your message"></textarea>
+                    </div>
+                </div>
+    
+                <div class="g-recaptcha" data-sitekey="{{ .Site.Params.recaptchaV2SiteKey }}" data-callback="enableSubmitButton"></div>
+
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button id="contact-submit-button" class="button is-link">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id="contact-form-status" class="column is-one-quarter" style="visibility: collapse;">
+            <div id="contact-form-success" class="notification is-success">
+                <button class="delete"></button>
+                Successfully sent contact form!
+            </div>
+            <div id="contact-form-failure" class="notification is-danger">
+                <button class="delete"></button>
+                Failed to send contact form!
+            </div>
         </div>
     </div>
 </div>

@@ -1,4 +1,16 @@
 {{ partial "mathjax.html" . }}
 
-{{ $custom_js := resources.Get "js/custom.js" | minify | fingerprint }}
-<script src="{{ $custom_js.Permalink }}" integrity="{{ $custom_js.Data.Integrity }}" type="text/javascript"></script>
+{{ $custom_js_template := resources.Get "js/template-custom.js" }}
+{{ $custom_js := $custom_js_template | resources.ExecuteAsTemplate "js/custom.js" . }}
+
+{{ $js := "" }}
+{{ if eq (getenv "HUGO_ENV") "production" | or (eq .Site.Params.env "production")  }}
+{{ $js = $custom_js | minify | fingerprint }}
+{{ else }}
+{{ $js = $custom_js | fingerprint }}
+{{ end }}
+<script src="{{ $js.Permalink }}" integrity="{{ $js.Data.Integrity }}" type="text/javascript"></script>
+
+{{ if (eq .Section "contact") }}
+<script src="https://www.google.com/recaptcha/api.js" type="text/javascript"></script>
+{{ end }}
