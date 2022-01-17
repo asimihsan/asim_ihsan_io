@@ -28,7 +28,10 @@ fact {
 	all p : Package | no (p & p.upgrade)
 
 	// No orphan versions
-	all v : Version, p : Package | some (v & p.version)
+	all v : Version | some (Package.version & v)
+	
+	// Package can't require itself
+	all p : Package | no (p & p.requires)
 }
 
 one sig System {
@@ -70,4 +73,15 @@ fact {
 	)
 }
 
-run example {} for 5
+run example {
+	// Want a trace with some package in it, avoid trivial package manager.
+	some Package
+
+	// Packages should require something. This should be removed for proofs
+	// but for exploration we want something non-trivial.
+	some Package.requires
+
+	// Packages should upgrade to something. Again remove for proofs
+	// but for exploration useful.
+	some Package.upgrade
+} for 3

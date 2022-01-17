@@ -12,12 +12,16 @@
    <type name="Int"/>
    <type name="Package"/>
    <type name="String"/>
+   <type name="Stutter"/>
    <type name="System"/>
    <type name="univ"/>
-   <type name="Version"/>
    <type name="open$3/Ord"/>
    <type name="ordering/Ord"/>
    <type name="seq/Int"/>
+</node>
+
+<node hideunconnected="yes">
+   <type name="Version"/>
 </node>
 
 <node hideunconnected="yes" shape="Parallelogram" color="Red">
