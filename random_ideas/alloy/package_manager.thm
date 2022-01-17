@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<alloy>
+
+<view>
+
+<defaultnode/>
+
+<defaultedge/>
+
+<node>
+   <type name="Install"/>
+   <type name="Int"/>
+   <type name="Package"/>
+   <type name="String"/>
+   <type name="System"/>
+   <type name="univ"/>
+   <type name="Version"/>
+   <type name="open$3/Ord"/>
+   <type name="ordering/Ord"/>
+   <type name="seq/Int"/>
+</node>
+
+<node hideunconnected="yes" shape="Parallelogram" color="Red">
+   <type name="Event"/>
+</node>
+
+<edge style="inherit">
+   <relation name="installed"> <type name="System"/> <type name="Package"/> </relation>
+</edge>
+
+<edge visible="no" attribute="yes">
+   <relation name="version"> <type name="Package"/> <type name="Version"/> </relation>
+</edge>
+
+</view>
+
+</alloy>
