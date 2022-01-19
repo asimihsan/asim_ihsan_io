@@ -1,6 +1,9 @@
 baseURL = "/"
 languageCode = "en-us"
 title = "Asim Ihsan's Meanderings"
+pygmentsUseClassic = true
+pygmentsUseClasses = true
+pygmentsCodeFences = false
 
 [permalinks]
     posts = "/:filename/"
@@ -41,13 +44,12 @@ Hi, I'm Asim. I work as a software engineer.
         startLevel = 2
 
   [markup.highlight]
-        codeFences = true
         guessSyntax = false
         hl_Lines = ""
         lineNoStart = 1
         lineNos = false
         lineNumbersInTable = true
-        noClasses = true
+        noClasses = false
         style = "monokailight"
         tabWidth = 4
 
