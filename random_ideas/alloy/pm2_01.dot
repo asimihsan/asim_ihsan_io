@@ -1,0 +1,11 @@
+digraph "graph" {
+graph [fontsize=12]
+node [fontsize=12]
+edge [fontsize=12]
+rankdir=TB;
+"N2" -> "N2" [uuid = "<Package1, Package1>", color = "#e41a1c", fontcolor = "#e41a1c", style = "solid", label = "requires", dir = "forward", weight = "1"]
+"N1" -> "N0" [uuid = "<Package2, Package0>", color = "#e41a1c", fontcolor = "#e41a1c", style = "solid", label = "requires", dir = "forward", weight = "1"]
+"N0" [uuid="Package0", label="Package0", color="#ffd700", fontcolor = "#000000", shape = "box", style = "filled, solid"]
+"N1" [uuid="Package2", label="Package2", color="#ffd700", fontcolor = "#000000", shape = "box", style = "filled, solid"]
+"N2" [uuid="Package1", label="Package1", color="#ffd700", fontcolor = "#000000", shape = "box", style = "filled, solid"]
+}

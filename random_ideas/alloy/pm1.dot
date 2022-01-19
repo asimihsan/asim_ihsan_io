@@ -1,0 +1,7 @@
+digraph "graph" {
+graph [fontsize=12]
+node [fontsize=12]
+edge [fontsize=12]
+rankdir=TB;
+"N0" [uuid="Package", label="Package", color="#ffd700", fontcolor = "#000000", shape = "box", style = "filled, solid"]
+}

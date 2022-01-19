@@ -10,11 +10,18 @@ Content for https://asim.ihsan.io website.
 
 ### First time setup
 
+```
+brew install hugo
+```
+
 Install pyenv, then
 
 ```
-pyenv install miniconda3-latest
-pyenv virtualenv miniconda3-latest asim_ihsan_io
+pyenv install miniconda3-4.7.12
+pyenv virtualenv miniconda3-4.7.12 asim_ihsan_io
+pyenv local asim_ihsan_io
+pyenv version
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 

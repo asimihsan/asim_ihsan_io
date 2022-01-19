@@ -56,11 +56,15 @@ pred install[p : Package] {
 
 	// effect on installed
 //	p.name not in InstalledPackage.name implies InstalledPackage' = InstalledPackage + p
-//										else    InstalledPackage' = InstalledPackage
+//									x	else    InstalledPackage' = InstalledPackage
 //
 //	all p2 : p.requires | install[p2]
 
-	InstalledPackage' = InstalledPackage + p.*requires
+	// This enforces only one package with same name installed at any given time
+	InstalledPackage' = p.*requires + {p2 : InstalledPackage | p2.name not in (p.*requires).name}
+
+	// This allows multiple names installed.
+	// InstalledPackage' = p.*requires + InstalledPackage
 
 	// no frame conditions
 }
@@ -82,12 +86,12 @@ fun stutter_happens : set Event {
 fact {
 	always (
 		stutter or
-		some p : Package | install[p]
+		one p : Package - InstalledPackage | install[p]
 	)
 }
 
 assert PackagesHaveDependencies {
-	always (all p : Package | p in InstalledPackage implies p.*requires in InstalledPackage)
+	always (all p : InstalledPackage | p.*requires in InstalledPackage)
 }
 
 check PackagesHaveDependencies for 5
@@ -102,7 +106,10 @@ run example {
 	some Package.requires
 
 	// Just to make interesting examples.
-	// #(Package.name) <= 2
+	#(Package.name) <= 2
+
+	// Getting some interesting examples, requirements in common
+	some disj p1, p2 : Package | some(p1.^requires & p2.^requires)
 
 	// Packages should upgrade to something. Again remove for proofs
 	// but for exploration useful.
