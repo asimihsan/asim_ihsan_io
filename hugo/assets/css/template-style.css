@@ -30,6 +30,38 @@
     font-style: italic;
 }
 
+@font-face {
+    font-family: "Fira Mono";
+    src: url("/font/fira-mono-regular-subset.woff2") format("woff2"),
+         url("/fonts/fira-mono-regular-subset.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Fira Mono";
+    src: url("/font/fira-mono-bold-subset.woff2") format("woff2"),
+         url("/fonts/fira-mono-bold-subset.woff") format("woff");
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Fira Mono";
+    src: url("/font/fira-mono-italic-subset.woff2") format("woff2"),
+         url("/fonts/fira-mono-italic-subset.woff") format("woff");
+    font-weight: normal;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Fira Mono";
+    src: url("/font/fira-mono-bolditalic-subset.woff2") format("woff2"),
+         url("/fonts/fira-mono-bolditalic-subset.woff") format("woff");
+    font-weight: bold;
+    font-style: italic;
+}
+
 html, .card {
     background-color: {{ .Site.Params.backgroundColor | default "#FFFFFF" }};
 }
@@ -124,6 +156,10 @@ background-color:#5B4F73;
 
 .highlight pre {
     background-color: #f0f0f0 !important;
+}
+
+pre, code {
+    font-family: "Fira Mono", monospace !important;
 }
 
 /* pygmentize -f html -S default */
