@@ -51,7 +51,7 @@ TODO automate, but for now change directory to root then:
 ```
 rm -rf hugo/build
 (cd hugo && HUGO_ENV=production HUGO_BASEURL='https://preprod-asim.ihsan.io' hugo --buildDrafts --destination build)
-find hugo/build -name '*.html' | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
+fd . -e html hugo/build | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'preprod*')
 ```
@@ -61,7 +61,7 @@ find hugo/build -name '*.html' | xargs -P 4 -I{} bash -c 'echo {} && cat {} | cr
 ```
 rm -rf hugo/build
 (cd hugo && HUGO_ENV=production HUGO_BASEURL='https://asim.ihsan.io' hugo --buildDrafts --destination build)
-find hugo/build -name '*.html' | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
+fd . -e html hugo/build | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'prod*')
 ```
@@ -71,13 +71,13 @@ find hugo/build -name '*.html' | xargs -P 4 -I{} bash -c 'echo {} && cat {} | cr
 ```
 rm -rf hugo/build
 (cd hugo && HUGO_BASEURL='https://preprod-asim.ihsan.io' hugo --buildDrafts --destination build)
-find hugo/build -name '*.html' | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
+fd . -e html hugo/build | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'preprod*')
 
 rm -rf hugo/build
 (cd hugo && HUGO_ENV=production HUGO_BASEURL='https://asim.ihsan.io' hugo --buildDrafts --destination build)
-find hugo/build -name '*.html' | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
+fd . -e html hugo/build | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'prod*')
 ```
