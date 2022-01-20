@@ -40,6 +40,9 @@ fact {
 	
 	// Package can't require itself (by name)
 	all p : Package | no (p.name & p.requires.name)
+
+	// Package can only require one version of a named package
+	all p1 : Package, disj p2, p3 : p1.*requires | p2.name != p3.name
 }
 
 // Since this constraint has no temporal operators, it only applies to the
@@ -94,7 +97,7 @@ assert PackagesHaveDependencies {
 	always (all p : InstalledPackage | p.*requires in InstalledPackage)
 }
 
-check PackagesHaveDependencies for 5
+check PackagesHaveDependencies for 3
 
 
 run example {
@@ -114,4 +117,4 @@ run example {
 	// Packages should upgrade to something. Again remove for proofs
 	// but for exploration useful.
 //	some Package.upgrade
-} for 5
+} for 3

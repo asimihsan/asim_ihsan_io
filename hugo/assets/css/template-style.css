@@ -1,7 +1,7 @@
 @font-face {
     font-family: "Fira Sans";
     src: url("/font/firasans-regular-subset.woff2") format("woff2"),
-         url("/fonts/firasans-regular-subset.woff") format("woff");
+         url("/font/firasans-regular-subset.woff") format("woff");
     font-weight: normal;
     font-style: normal;
 }
@@ -9,7 +9,7 @@
 @font-face {
     font-family: "Fira Sans";
     src: url("/font/firasans-bold-subset.woff2") format("woff2"),
-         url("/fonts/firasans-bold-subset.woff") format("woff");
+         url("/font/firasans-bold-subset.woff") format("woff");
     font-weight: bold;
     font-style: normal;
 }
@@ -17,7 +17,7 @@
 @font-face {
     font-family: "Fira Sans";
     src: url("/font/firasans-italic-subset.woff2") format("woff2"),
-         url("/fonts/firasans-italic-subset.woff") format("woff");
+         url("/font/firasans-italic-subset.woff") format("woff");
     font-weight: normal;
     font-style: italic;
 }
@@ -25,7 +25,7 @@
 @font-face {
     font-family: "Fira Sans";
     src: url("/font/firasans-bolditalic-subset.woff2") format("woff2"),
-         url("/fonts/firasans-bolditalic-subset.woff") format("woff");
+         url("/font/firasans-bolditalic-subset.woff") format("woff");
     font-weight: bold;
     font-style: italic;
 }
@@ -33,7 +33,7 @@
 @font-face {
     font-family: "Fira Mono";
     src: url("/font/fira-mono-regular-subset.woff2") format("woff2"),
-         url("/fonts/fira-mono-regular-subset.woff") format("woff");
+         url("/font/fira-mono-regular-subset.woff") format("woff");
     font-weight: normal;
     font-style: normal;
 }
@@ -41,7 +41,7 @@
 @font-face {
     font-family: "Fira Mono";
     src: url("/font/fira-mono-bold-subset.woff2") format("woff2"),
-         url("/fonts/fira-mono-bold-subset.woff") format("woff");
+         url("/font/fira-mono-bold-subset.woff") format("woff");
     font-weight: bold;
     font-style: normal;
 }
@@ -49,7 +49,7 @@
 @font-face {
     font-family: "Fira Mono";
     src: url("/font/fira-mono-italic-subset.woff2") format("woff2"),
-         url("/fonts/fira-mono-italic-subset.woff") format("woff");
+         url("/font/fira-mono-italic-subset.woff") format("woff");
     font-weight: normal;
     font-style: italic;
 }
@@ -57,9 +57,82 @@
 @font-face {
     font-family: "Fira Mono";
     src: url("/font/fira-mono-bolditalic-subset.woff2") format("woff2"),
-         url("/fonts/fira-mono-bolditalic-subset.woff") format("woff");
+         url("/font/fira-mono-bolditalic-subset.woff") format("woff");
     font-weight: bold;
     font-style: italic;
+}
+
+
+@font-face {
+	font-family: 'Iosevka Custom';
+	font-display: swap;
+	font-weight: 400;
+	font-stretch: normal;
+	font-style: normal;
+	src: url('/font/iosevka-custom-regular-subset.woff2') format('woff2'), url('/font/iosevka-custom-regular-subset.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Iosevka Custom';
+	font-display: swap;
+	font-weight: 400;
+	font-stretch: normal;
+	font-style: italic;
+	src: url('/font/iosevka-custom-italic-subset.woff2') format('woff2'), url('/font/iosevka-custom-italic-subset.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Iosevka Custom';
+	font-display: swap;
+	font-weight: 700;
+	font-stretch: normal;
+	font-style: normal;
+	src: url('/font/iosevka-custom-bold-subset.woff2') format('woff2'), url('/font/iosevka-custom-bold-subset.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Iosevka Custom';
+	font-display: swap;
+	font-weight: 700;
+	font-stretch: normal;
+	font-style: italic;
+	src: url('/font/iosevka-custom-bolditalic-subset.woff2') format('woff2'), url('/font/iosevka-custom-bolditalic-subset.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Fira Sans Condensed';
+	font-display: swap;
+	font-weight: 400;
+	font-stretch: normal;
+	font-style: normal;
+	src: url('/font/FiraSansCondensed-Regular-subset.woff2') format('woff2'), url('/font/FiraSansCondensed-Regular-subset.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Fira Sans Condensed';
+	font-display: swap;
+	font-weight: 400;
+	font-stretch: normal;
+	font-style: italic;
+	src: url('/font/FiraSansCondensed-Italic-subset.woff2') format('woff2'), url('/font/FiraSansCondensed-Italic-subset.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Fira Sans Condensed';
+	font-display: swap;
+	font-weight: 700;
+	font-stretch: normal;
+	font-style: normal;
+	src: url('/font/FiraSansCondensed-Bold-subset.woff2') format('woff2'), url('/font/FiraSansCondensed-Bold-subset.ttf') format('truetype');
+}
+
+@font-face {
+	font-family: 'Fira Sans Condensed';
+	font-display: swap;
+	font-weight: 700;
+	font-stretch: normal;
+	font-style: italic;
+	src: url('/font/FiraSansCondensed-BoldItalic-subset.woff2') format('woff2'), url('/font/FiraSansCondensed-BoldItalic-subset.ttf') format('truetype');
 }
 
 html, .card {
@@ -70,7 +143,7 @@ body {
     background-color: {{ .Site.Params.backgroundColor | default "#FFFFFF" }};
     color: {{ .Site.Params.textColor | default "#000000" }};
     line-height: 1.3;
-    font-family: "Fira Sans", BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    font-family: 'Fira Sans', BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
 }
 
 .container {
@@ -159,7 +232,7 @@ background-color:#5B4F73;
 }
 
 pre, code {
-    font-family: "Fira Mono", monospace !important;
+    font-family: "Iosevka Custom", monospace !important;
 }
 
 /* pygmentize -f html -S default */

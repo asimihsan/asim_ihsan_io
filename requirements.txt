@@ -1,8 +1,10 @@
 beautifulsoup4
 brotli
+fonttools
 git+https://github.com/andreasvc/readability.git@master#egg=readability
 ipdb
 lxml
 Pygments
 spacy
 termcolor
+zopfli
