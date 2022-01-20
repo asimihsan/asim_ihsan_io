@@ -256,7 +256,7 @@ Put it all together and get an example.
 _(see
 [pm6.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm6-als))_
 
-![](pm6.svg)
+![](pm6.png)
 
 The left boxes are time 0 and the right are time 1. We know this means we're installing
 Package2, and hence Package0, but it's a bit hard to interpret this. We use a trick to
