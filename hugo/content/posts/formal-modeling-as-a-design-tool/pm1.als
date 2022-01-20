@@ -1,0 +1,3 @@
+sig Package {}
+
+run example {}

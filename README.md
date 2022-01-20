@@ -23,6 +23,7 @@ pyenv local asim_ihsan_io
 pyenv version
 pip install --upgrade pip
 pip install -r requirements.txt
+pyenv rehash
 ```
 
 Also need critical for above-fold CSS inlining, and need moreutils for sponge:
@@ -141,6 +142,133 @@ npm start
 ```
 cd hugo/themse/ananke/src
 npm run build:production
+```
+
+## How to build Iosevka font
+
+```
+git clone https://github.com/be5invis/Iosevka.git --branch v11.2.6 --single-branch
+cd Iosevka
+tee private-build-plans.toml <<EOF >/dev/null EOF
+[buildPlans.iosevka-custom]
+family = "Iosevka Custom"
+spacing = "normal"
+#spacing = "quasi-proportional"
+serifs = "sans"
+no-cv-ss = true
+no-ligation = true
+
+[buildPlans.iosevka-custom.weights.regular]
+shape = 400
+menu = 400
+css = 400
+
+[buildPlans.iosevka-custom.weights.bold]
+shape = 700
+menu = 700
+css = 700
+
+[buildPlans.iosevka-custom.slopes.upright]
+angle = 0
+shape = "upright"
+menu = "upright"
+css = "normal"
+
+[buildPlans.iosevka-custom.slopes.italic]
+angle = 9.4
+shape = "italic"
+menu = "italic"
+css = "italic"
+EOF
+brew install ttfautohint
+npm install
+npm run build -- contents::iosevka-custom
+```
+
+Now follow https://markoskon.com/creating-font-subsets/ to subset:
+
+```
+destination=/Users/asimi/asim_ihsan_io/hugo/static/font
+pyenv local asim_ihsan_io
+unicode_range="U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,\
+    U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,\
+    U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD"
+declare -a arr
+arr=(
+    "ttf/iosevka-custom-regular.ttf"
+    "ttf/iosevka-custom-bold.ttf"
+    "ttf/iosevka-custom-italic.ttf"
+    "ttf/iosevka-custom-bolditalic.ttf"
+)
+for val in "${arr[@]}"; do
+    dir_name="$(dirname "${val}")"
+    new_name="${dir_name}"/"$(basename "${val}" | cut -f 1 -d '.')"-subset."${dir_name}"
+    echo "new name: ${new_name}"
+    pyftsubset \
+    dist/iosevka-custom/"${val}" \
+    --output-file=dist/iosevka-custom/"${new_name}" \
+    --layout-features='*' \
+    --unicodes="${unicode_range}"
+    rsync -av dist/iosevka-custom/"${new_name}" "${destination}"
+done
+declare -a arr
+arr=(
+    "woff2/iosevka-custom-regular.woff2"
+    "woff2/iosevka-custom-bold.woff2"
+    "woff2/iosevka-custom-italic.woff2"
+    "woff2/iosevka-custom-bolditalic.woff2"
+)
+for val in "${arr[@]}"; do
+    dir_name="$(dirname "${val}")"
+    new_name="${dir_name}"/"$(basename "${val}" | cut -f 1 -d '.')"-subset."${dir_name}"
+    echo "new name: ${new_name}"
+    pyftsubset \
+    dist/iosevka-custom/"${val}" \
+    --output-file=dist/iosevka-custom/"${new_name}" \
+    --flavor="${dir_name}" \
+    --layout-features='*' \
+    --unicodes="${unicode_range}"
+    rsync -av dist/iosevka-custom/"${new_name}" "${destination}"
+done
+```
+
+Same for Fira Sans Condensed:
+
+```
+destination=/Users/asimi/asim_ihsan_io/hugo/static/font
+pyenv local asim_ihsan_io
+unicode_range="U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,\
+    U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,\
+    U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD"
+cd /Users/asimi/Downloads/firasans/inst/fonts/fira-sans
+declare -a arr
+arr=(
+    "FiraSansCondensed-Bold.ttf"
+    "FiraSansCondensed-BoldItalic.ttf"
+    "FiraSansCondensed-Italic.ttf"
+    "FiraSansCondensed-Regular.ttf"
+)
+for val in "${arr[@]}"; do
+    new_name="$(basename "${val}" | cut -f 1 -d '.')"-subset.ttf
+    echo "new name: ${new_name}"
+    pyftsubset \
+    "${val}" \
+    --output-file="${new_name}" \
+    --layout-features='*' \
+    --unicodes="${unicode_range}"
+    rsync -av "${new_name}" "${destination}"
+done
+for val in "${arr[@]}"; do
+    new_name="$(basename "${val}" | cut -f 1 -d '.')"-subset.woff2
+    echo "new name: ${new_name}"
+    pyftsubset \
+    "${val}" \
+    --output-file="${new_name}" \
+    --flavor=woff2 \
+    --layout-features='*' \
+    --unicodes="${unicode_range}"
+    rsync -av "${new_name}" "${destination}"
+done
 ```
 
 ## How to subset and generate web-optimized fonts
