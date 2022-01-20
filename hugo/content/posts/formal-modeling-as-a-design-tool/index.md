@@ -1,10 +1,10 @@
 ---
-title: "[DRAFT] Formal modeling as a design tool"
+title: "Formal modeling as a design tool"
 date: 2022-01-18T20:14:00-07:00
 aliases:
   - /posts/formal-modeling-as-a-design-tool/
   - /formal-modeling-as-a-design-tool/
-draft: true
+draft: false
 summary: |
     [Alloy](https://alloytools.org/) is a language and analyzer for formal software modeling. As a way of starting to learn Alloy I model a toy design that I know to be broken: Python pip's legacy dependency resolution algorithm.
 objectives: |
@@ -23,9 +23,13 @@ tags:
 
 ## Introduction
 
-It is well known that Python's pip's legacy dependency resolution algorithm allows users to uninstall previously installed packages with different versions. This can break previously installed packages, or even worse be relied upon in order for them to work. The new version of pip has a new dependency resolver to prevent this from happening.
+It is well known that Python's pip's legacy dependency resolution algorithm allows users
+to uninstall previously installed packages with different versions. This can break
+previously installed packages, or even worse be relied upon in order for them to work. The
+new version of pip has a new dependency resolver to prevent this from happening.
 
-In this article we iterately design a package manager using formal methods and discover that pip's approach was doomed. We then use the model to see options for resolving this.
+In this article we iterately design a package manager using formal methods and discover
+that pip's approach was doomed. We then use the model to see options for resolving this.
 
 You can follow along by [downloading Alloy](https://alloytools.org/download.html) if you'd
 like.
@@ -63,7 +67,8 @@ sig Package {}
 run example {}
 ```
 
-_(see [pm1.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm2-als))_
+_(see
+[pm1.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm1-als))_
 
 One of the matching examples is:
 
@@ -92,7 +97,8 @@ sig Version {}
 run example {}
 ```
 
-_(see [pm2.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm1-als))_
+_(see
+[pm2.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm2-als))_
 
 _(I change the Alloy theme to set "Show as arcs" to off for name and version)_
 
@@ -124,7 +130,8 @@ fact "only one package version in dependency graph for package" {
 run example {}
 ```
 
-_(see [pm3.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm1-als))_
+_(see
+[pm3.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm1-als))_
 
 Let's pick another example:
 
@@ -149,7 +156,8 @@ run example {
 } for 5
 ```
 
-_(see [pm4.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm4-als))_
+_(see
+[pm4.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm4-als))_
 
 ![](pm4.svg)
 
@@ -173,7 +181,8 @@ installation state of a package.
 sig InstalledPackage in Package {}
 ```
 
-_(see [pm5.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm5-als))_
+_(see
+[pm5.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm5-als))_
 
 ![](pm5.svg)
 
@@ -244,25 +253,29 @@ fact {
 
 Put it all together and get an example.
 
-_(see [pm6.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm6-als))_
+_(see
+[pm6.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm6-als))_
 
 ![](pm6.svg)
 
-The left boxes are time 0 and the right are time 1. We know this means we're installing Package2, and hence Package0, but it's a bit hard to interpret this. We use a trick to make the events appear explicitly by adding:
+The left boxes are time 0 and the right are time 1. We know this means we're installing
+Package2, and hence Package0, but it's a bit hard to interpret this. We use a trick to
+make the events appear explicitly by adding:
 
 ```alloy
 enum Event { Stutter, Install }
 
 fun install_happens : set Event -> Package {
-	{ e : Install, p: Package | install[p] }
+    { e : Install, p: Package | install[p] }
 }
 
 fun stutter_happens : set Event {
-	{ e : Stutter | stutter }
+    { e : Stutter | stutter }
 }
 ```
 
-_(see [pm7.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm7-als))_
+_(see
+[pm7.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm7-als))_
 
 ![](pm7.png)
 
@@ -270,24 +283,28 @@ Finally let's actually check that installed packages always have their dependenc
 
 ```alloy
 assert PackagesHaveDependencies {
-	always (all p : InstalledPackage | p.*requires in InstalledPackage)
+    always (all p : InstalledPackage | p.*requires in InstalledPackage)
 }
 
 check PackagesHaveDependencies for 3
 ```
 
-_(see [pm8.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm8-als))_
+_(see
+[pm8.als](https://gist.github.com/asimihsan/b77d5f8da77dbde6ed394760a9d0b598#file-pm8-als))_
 
 And they don't:
 
 ![](pm8.png)
 
-Package0 is installed and requires Package2 (Name0 at Version1). Then we install Name0 at Version0. Whoops, we removed Name0 at Version1 and broke Package2.
+Package0 is installed and requires Package2 (Name0 at Version1). Then we install Name0 at
+Version0. Whoops, we removed Name0 at Version1 and broke Package2.
 
 How do we fix this? There are two options that the model are telling us:
 
-1. The `install` predicate lacks a guard to prevent it from uninstalling already installed packages. We could add such a predicate. This is how pip's new resolver logic works.
-2. The `install` predicate effect's could somehow support packages with the same name and multiple versions.
+1. The `install` predicate lacks a guard to prevent it from uninstalling already installed
+   packages. We could add such a predicate. This is how pip's new resolver logic works.
+2. The `install` predicate effect's could somehow support packages with the same name and
+   multiple versions.
 
 ## Future work and areas for improvement
 
