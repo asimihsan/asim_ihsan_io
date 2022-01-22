@@ -24,9 +24,10 @@ tags:
 ## Introduction
 
 It is well known that Python's pip's legacy dependency resolution algorithm allows users
-to uninstall previously installed packages with different versions. This can break
-previously installed packages, or even worse be relied upon in order for them to work. The
-new version of pip has a new dependency resolver to prevent this from happening.
+to uninstall previously installed packages with different versions. This can [break
+previously installed packages](https://github.com/pypa/pip/issues/8104), or even worse be
+relied upon in order for them to work. The new version of pip has a new dependency
+resolver to prevent this from happening.
 
 In this article we iterately design a package manager using formal methods and discover
 that pip's approach was doomed. We then use the model to see options for resolving this.
@@ -77,7 +78,7 @@ One of the matching examples is:
 There a class (signature) `Package`, and in this example two objects (atoms) `Package0`
 and `Package1`. So far so good.
 
-The simplest way of representing packages would be to add three new fields:
+One way of representing packages is to add three new fields:
 
 - **name**, e.g. "scipy" or "face-detector-lib".
 - **version**, e.g. "1.0" or "0.9".
@@ -211,7 +212,7 @@ legacy algorithm. An event is a **predicate** split up into three parts:
 2. **Effects**, what temporal variables to change
 3. **Frame conditions**, what temporal variables to keep the same.
 
-```
+```alloy
 pred install[p : Package] {
     // guard
     p not in InstalledPackage
@@ -219,14 +220,24 @@ pred install[p : Package] {
     // effects
 
     // This enforces only one package with same name installed at any given time
-    InstalledPackage' = p.*requires + {p2 : InstalledPackage | p2.name not in (p.*requires).name}
+    InstalledPackage' = p.*requires +
+                        {p2 : InstalledPackage | p2.name not in (p.*requires).name}
 
     // no frame conditions
 }
 ```
 
-Notice how we do not guard against removing existing packages, and the effect enforces
-only one package version installed at a time.
+Notice how we do not guard against removing existing packages.
+
+The single effect is a lot to unpack. It's saying:
+
+- `InstalledPackage' = `: The new InstalledPackage set is equal to...
+-   `p.*requires +`: all of the package's dependencies including itself, union with...
+-   `{p2 : InstalledPackage | p2.name not in (p.*requires).name}`: all currently installed
+    packages whose names do not conflict with the new package's dependencies.
+
+Notice how there are no frame conditions; we are not preserving any other temporal
+variables as their old contents.
 
 We need a second `stutter` event that does nothing. This allows Alloy to always explore
 infinitely long traces, which is a condition of using `var`.
@@ -235,7 +246,9 @@ infinitely long traces, which is a condition of using `var`.
 pred stutter {
     // no guard
     // no effects
-    InstalledPackage' = InstalledPackage	// frame condition
+
+    // frame condition
+    InstalledPackage' = InstalledPackage
 }
 ```
 
@@ -308,4 +321,18 @@ How do we fix this? There are two options that the model are telling us:
 
 ## Future work and areas for improvement
 
-TODO
+In this model the local package manager is omnipotent, but in reality we need to download
+package specifications from a server. Moreover, maintainers can arbitrarily update
+specifications at any time. An older version of PyPI allowed maintainers to overwrite
+existing versions with new dependencies. I wonder what kinds of issues this could have
+caused?
+
+Instead of just installing packages we could model a local file system. That way we can be
+fairer to the Python ecosystem, which emphasizes separating installation environments.
+
+How do npm (JavaScript), Cargo (Rust), gem (Ruby), CPAN (Perl), and other languages
+resolve dependencies? Is there a single unifying formal model that expresses all of these
+and highlights tradeoffs they make? [MinNPM: Customizable Optimizing Dependency
+Resolution](https://pretalx.com/packagingcon-2021/talk/K8C9HR/)
+([video](https://www.youtube.com/watch?v=KF4H63CVcaM)) looks like relevant research in
+this area.

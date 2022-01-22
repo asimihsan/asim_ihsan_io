@@ -4,7 +4,7 @@ date: 2020-08-25T20:47:00-07:00
 aliases:
   - /posts/intro-formal-verification-dafny/
   - /intro-formal-verification-dafny/
-draft: false
+draft: true
 summary: |
     summary
 objectives: |
