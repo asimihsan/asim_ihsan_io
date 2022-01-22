@@ -1,5 +1,4 @@
 {
-  "@aws-cdk/core:enableStackNameDuplicates": "true",
   "aws-cdk:enableDiffNoFail": "true",
   "hosted-zone:account=519160639284:domainName=ihsan.io:privateZone=false:region=us-east-2": {
     "Id": "/hostedzone/Z1KH3MBB4U7A4M",

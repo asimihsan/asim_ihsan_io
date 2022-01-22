@@ -3,10 +3,10 @@ package com.myorg;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;
-import software.amazon.awscdk.core.App;
-import software.amazon.awscdk.core.Environment;
-import software.amazon.awscdk.core.Stack;
-import software.amazon.awscdk.core.StackProps;
+import software.amazon.awscdk.App;
+import software.amazon.awscdk.Environment;
+import software.amazon.awscdk.Stack;
+import software.amazon.awscdk.StackProps;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

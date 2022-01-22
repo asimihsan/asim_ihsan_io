@@ -61,25 +61,33 @@ fd . -e html hugo/build | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical 
 ```
 rm -rf hugo/build
 (cd hugo && HUGO_ENV=production HUGO_BASEURL='https://asim.ihsan.io' hugo --destination build)
+tee hugo/build/$INDEX_NOW_API_KEY.txt <<EOF >/dev/null
+$INDEX_NOW_API_KEY
+EOF
 fd . -e html hugo/build | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'prod*')
+./src/index_now.py
 ```
 
 #### Deploy both pre-prod and prod
 
 ```
 rm -rf hugo/build
-(cd hugo && HUGO_BASEURL='https://preprod-asim.ihsan.io' hugo --buildDrafts --destination build)
+(cd hugo && HUGO_BASEURL='https://preprod-asim.ihsan.io' hugo --destination build)
 fd . -e html hugo/build | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'preprod*')
 
 rm -rf hugo/build
-(cd hugo && HUGO_ENV=production HUGO_BASEURL='https://asim.ihsan.io' hugo --buildDrafts --destination build)
+(cd hugo && HUGO_ENV=production HUGO_BASEURL='https://asim.ihsan.io' hugo --destination build)
+tee hugo/build/$INDEX_NOW_API_KEY.txt <<EOF >/dev/null
+$INDEX_NOW_API_KEY
+EOF
 fd . -e html hugo/build | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'prod*')
+./src/index_now.py
 ```
 
 ### Live rebuilding during blog writing

@@ -2,31 +2,63 @@ package com.myorg;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.hash.Hashing;
 import com.google.common.io.Resources;
-import software.amazon.awscdk.core.*;
-import software.amazon.awscdk.core.Stack;
-import software.amazon.awscdk.services.athena.CfnNamedQuery;
-import software.amazon.awscdk.services.athena.CfnNamedQueryProps;
+import software.amazon.awscdk.CfnOutput;
+import software.amazon.awscdk.CustomResource;
+import software.amazon.awscdk.Duration;
+import software.amazon.awscdk.RemovalPolicy;
+import software.amazon.awscdk.Stack;
+import software.amazon.awscdk.StackProps;
+import software.amazon.awscdk.customresources.Provider;
 import software.amazon.awscdk.services.certificatemanager.DnsValidatedCertificate;
 import software.amazon.awscdk.services.certificatemanager.ICertificate;
-import software.amazon.awscdk.services.cloudformation.CustomResource;
-import software.amazon.awscdk.services.cloudfront.*;
+import software.amazon.awscdk.services.cloudfront.Behavior;
+import software.amazon.awscdk.services.cloudfront.CfnDistribution;
+import software.amazon.awscdk.services.cloudfront.CloudFrontAllowedMethods;
+import software.amazon.awscdk.services.cloudfront.CloudFrontWebDistribution;
+import software.amazon.awscdk.services.cloudfront.CloudFrontWebDistributionProps;
+import software.amazon.awscdk.services.cloudfront.HttpVersion;
+import software.amazon.awscdk.services.cloudfront.LambdaEdgeEventType;
+import software.amazon.awscdk.services.cloudfront.LambdaFunctionAssociation;
+import software.amazon.awscdk.services.cloudfront.LoggingConfiguration;
+import software.amazon.awscdk.services.cloudfront.PriceClass;
+import software.amazon.awscdk.services.cloudfront.S3OriginConfig;
+import software.amazon.awscdk.services.cloudfront.SSLMethod;
+import software.amazon.awscdk.services.cloudfront.SecurityPolicyProtocol;
+import software.amazon.awscdk.services.cloudfront.SourceConfiguration;
+import software.amazon.awscdk.services.cloudfront.ViewerCertificate;
+import software.amazon.awscdk.services.cloudfront.ViewerCertificateOptions;
+import software.amazon.awscdk.services.cloudfront.ViewerProtocolPolicy;
 import software.amazon.awscdk.services.iam.Effect;
 import software.amazon.awscdk.services.iam.PolicyStatement;
-import software.amazon.awscdk.services.lambda.*;
+import software.amazon.awscdk.services.iam.Role;
+import software.amazon.awscdk.services.iam.ServicePrincipal;
+import software.amazon.awscdk.services.lambda.Code;
+import software.amazon.awscdk.services.lambda.IVersion;
 import software.amazon.awscdk.services.lambda.Runtime;
+import software.amazon.awscdk.services.lambda.SingletonFunction;
+import software.amazon.awscdk.services.lambda.Version;
 import software.amazon.awscdk.services.logs.RetentionDays;
-import software.amazon.awscdk.services.route53.*;
+import software.amazon.awscdk.services.route53.ARecord;
+import software.amazon.awscdk.services.route53.HostedZone;
+import software.amazon.awscdk.services.route53.HostedZoneProviderProps;
+import software.amazon.awscdk.services.route53.IHostedZone;
+import software.amazon.awscdk.services.route53.RecordTarget;
 import software.amazon.awscdk.services.route53.targets.CloudFrontTarget;
-import software.amazon.awscdk.services.s3.*;
+import software.amazon.awscdk.services.s3.BlockPublicAccess;
+import software.amazon.awscdk.services.s3.Bucket;
+import software.amazon.awscdk.services.s3.BucketEncryption;
+import software.amazon.awscdk.services.s3.BucketProps;
+import software.amazon.awscdk.services.s3.LifecycleRule;
 import software.amazon.awscdk.services.s3.deployment.BucketDeployment;
 import software.amazon.awscdk.services.s3.deployment.ISource;
 import software.amazon.awscdk.services.s3.deployment.Source;
+import software.constructs.Construct;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class CdkStack extends Stack {
     public CdkStack(final Construct scope,
@@ -84,24 +116,32 @@ public class CdkStack extends Stack {
         // --------------------------------------------------------------------
         final String stackLookupLambdaCode = Resources.toString(
                 Resources.getResource("cfn_stack_lookup.js"), Charsets.UTF_8);
-        final SingletonFunction stackLookupLambda = SingletonFunction.Builder.create(this, "StackLookupLambda")
-                .uuid("f7d4f730-4ee1-11e8-9c2d-fa7ae01bbebc")
+        final SingletonFunction stackLookupLambda = SingletonFunction.Builder.create(this, "StackLookupLambda2")
+                .uuid("338343db-190a-40d9-94e6-9e0a9cfe7340")
                 .handler("index.handler")
                 .runtime(Runtime.NODEJS_12_X)
                 .code(Code.fromInline(stackLookupLambdaCode))
                 .timeout(Duration.seconds(60))
                 .build();
 
-        final software.amazon.awscdk.services.cloudformation.CustomResourceProvider stackLookupProvider = software.amazon.awscdk.services.cloudformation.CustomResourceProvider.fromLambda(stackLookupLambda);
-        stackLookupLambda.addToRolePolicy(PolicyStatement.Builder.create()
+        final Role stackLookupProviderRole =
+                Role.Builder.create(this, "RewriteLambdaArnCfnStackLookupRole")
+                        .assumedBy(new ServicePrincipal("lambda.amazonaws.com"))
+                        .build();
+        stackLookupProviderRole.addToPolicy(PolicyStatement.Builder.create()
                 .effect(Effect.ALLOW)
                 .actions(Collections.singletonList("cloudformation:DescribeStacks"))
                 .resources(Collections.singletonList(
                         String.format("arn:aws:cloudformation:*:*:stack/%s/*", rewriteLambdaStackName)))
                 .build());
-        final software.amazon.awscdk.services.cloudformation.CustomResource stackLookup =
-                CustomResource.Builder.create(this, "RewriteLambdaArnCfnStackLookupOutput")
-                .provider(stackLookupProvider)
+        final Provider stackLookupProvider = Provider.Builder.create(this,
+                        "RewriteLambdaArnCfnStackLookupLookupProvider2")
+                .onEventHandler(stackLookupLambda)
+                .logRetention(RetentionDays.ONE_YEAR)
+                .role(stackLookupProviderRole)
+                .build();
+        final CustomResource stackLookup = CustomResource.Builder.create(this, "RewriteLambdaArnCfnStackLookupOutput2")
+                .serviceToken(stackLookupProvider.getServiceToken())
                 .properties(ImmutableMap.of(
                         "StackName", rewriteLambdaStackName,
                         "OutputKey", rewriteLambdaOutputName,
@@ -112,6 +152,7 @@ public class CdkStack extends Stack {
 
                 ))
                 .build();
+
         final String rewriteLambdaArn = stackLookup.getAttString("Output");
         final IVersion rewriteLambdaVersion = Version.fromVersionArn(this, "RewriteLambda", rewriteLambdaArn);
 
@@ -258,7 +299,7 @@ public class CdkStack extends Stack {
         // --------------------------------------------------------------------
 
         CfnOutput.Builder.create(this, "CloudfrontDomainNameExport")
-                .value(distribution.getDomainName())
+                .value(distribution.getDistributionDomainName())
                 .build();
 
         CfnOutput.Builder.create(this, "BlogBucketName")

@@ -16,18 +16,11 @@ application {
 }
 
 dependencies {
-    implementation 'software.amazon.awscdk:athena:1.59.0'
-    implementation 'software.amazon.awscdk:cloudfront:1.59.0'
-    implementation 'software.amazon.awscdk:core:1.59.0'
-    implementation 'software.amazon.awscdk:events-targets:1.59.0'
-    implementation 'software.amazon.awscdk:events:1.59.0'
-    implementation 'software.amazon.awscdk:route53-targets:1.59.0'
-    implementation 'software.amazon.awscdk:route53:1.59.0'
-    implementation 'software.amazon.awscdk:s3-deployment:1.59.0'
-    implementation 'software.amazon.awscdk:s3:1.59.0'
-    implementation 'com.google.guava:guava:28.2-jre'
+    implementation 'software.amazon.awscdk:aws-cdk-lib:2.8.0'
+    implementation 'software.constructs:constructs:10.0.40'
+    implementation 'com.google.guava:guava:31.0.1-jre'
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
 }
 
 group = 'com.myorg'
