@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<alloy>
+
+<view>
+
+<defaultnode/>
+
+<defaultedge/>
+
+<node>
+   <type name="Candidate"/>
+   <type name="Follower"/>
+   <type name="Int"/>
+   <type name="Leader"/>
+   <type name="Message"/>
+   <type name="Node"/>
+   <type name="String"/>
+   <type name="univ"/>
+   <type name="ordering/Ord"/>
+   <type name="seq/Int"/>
+</node>
+
+<node hideunconnected="yes">
+   <type name="NodeState"/>
+</node>
+
+<edge style="inherit">
+   <relation name="inbox"> <type name="Node"/> <type name="Message"/> </relation>
+   <relation name="outbox"> <type name="Node"/> <type name="Message"/> </relation>
+</edge>
+
+<edge style="inherit" visible="no" attribute="yes">
+   <relation name="state"> <type name="Node"/> <type name="NodeState"/> </relation>
+   <relation name="term"> <type name="Node"/> <type name="Int"/> </relation>
+</edge>
+
+</view>
+
+</alloy>
