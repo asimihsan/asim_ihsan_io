@@ -1,15 +1,11 @@
 package com.myorg;
 
-import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.io.Resources;
 import software.amazon.awscdk.CfnOutput;
-import software.amazon.awscdk.CustomResource;
 import software.amazon.awscdk.Duration;
+import software.amazon.awscdk.PhysicalName;
 import software.amazon.awscdk.RemovalPolicy;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
-import software.amazon.awscdk.customresources.Provider;
 import software.amazon.awscdk.services.certificatemanager.DnsValidatedCertificate;
 import software.amazon.awscdk.services.certificatemanager.ICertificate;
 import software.amazon.awscdk.services.cloudfront.Behavior;
@@ -17,9 +13,10 @@ import software.amazon.awscdk.services.cloudfront.CfnDistribution;
 import software.amazon.awscdk.services.cloudfront.CloudFrontAllowedMethods;
 import software.amazon.awscdk.services.cloudfront.CloudFrontWebDistribution;
 import software.amazon.awscdk.services.cloudfront.CloudFrontWebDistributionProps;
+import software.amazon.awscdk.services.cloudfront.Function;
+import software.amazon.awscdk.services.cloudfront.FunctionAssociation;
+import software.amazon.awscdk.services.cloudfront.FunctionEventType;
 import software.amazon.awscdk.services.cloudfront.HttpVersion;
-import software.amazon.awscdk.services.cloudfront.LambdaEdgeEventType;
-import software.amazon.awscdk.services.cloudfront.LambdaFunctionAssociation;
 import software.amazon.awscdk.services.cloudfront.LoggingConfiguration;
 import software.amazon.awscdk.services.cloudfront.PriceClass;
 import software.amazon.awscdk.services.cloudfront.S3OriginConfig;
@@ -29,16 +26,6 @@ import software.amazon.awscdk.services.cloudfront.SourceConfiguration;
 import software.amazon.awscdk.services.cloudfront.ViewerCertificate;
 import software.amazon.awscdk.services.cloudfront.ViewerCertificateOptions;
 import software.amazon.awscdk.services.cloudfront.ViewerProtocolPolicy;
-import software.amazon.awscdk.services.iam.Effect;
-import software.amazon.awscdk.services.iam.PolicyStatement;
-import software.amazon.awscdk.services.iam.Role;
-import software.amazon.awscdk.services.iam.ServicePrincipal;
-import software.amazon.awscdk.services.lambda.Code;
-import software.amazon.awscdk.services.lambda.IVersion;
-import software.amazon.awscdk.services.lambda.Runtime;
-import software.amazon.awscdk.services.lambda.SingletonFunction;
-import software.amazon.awscdk.services.lambda.Version;
-import software.amazon.awscdk.services.logs.RetentionDays;
 import software.amazon.awscdk.services.route53.ARecord;
 import software.amazon.awscdk.services.route53.HostedZone;
 import software.amazon.awscdk.services.route53.HostedZoneProviderProps;
@@ -49,6 +36,7 @@ import software.amazon.awscdk.services.s3.BlockPublicAccess;
 import software.amazon.awscdk.services.s3.Bucket;
 import software.amazon.awscdk.services.s3.BucketEncryption;
 import software.amazon.awscdk.services.s3.BucketProps;
+import software.amazon.awscdk.services.s3.IBucket;
 import software.amazon.awscdk.services.s3.LifecycleRule;
 import software.amazon.awscdk.services.s3.deployment.BucketDeployment;
 import software.amazon.awscdk.services.s3.deployment.ISource;
@@ -61,12 +49,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class CdkStack extends Stack {
+    public final IBucket blogBucket;
+
     public CdkStack(final Construct scope,
                     final String id,
                     final String domainName,
-                    final String rewriteLambdaStackName,
-                    final String rewriteLambdaOutputName,
-                    final String rewriteLambdaCodeHash,
+                    final String rewriteLambdaCode,
                     final StackProps props) throws IOException {
         super(scope, id, props);
 
@@ -74,6 +62,7 @@ public class CdkStack extends Stack {
         //  S3 bucket for static blog assets.
         // --------------------------------------------------------------------
         final Bucket bucket = new Bucket(this, "BlogBucket", BucketProps.builder()
+                .bucketName(PhysicalName.GENERATE_IF_NEEDED)
 
                 // TODO couldn't get S3 working without public access. I've had to add it as a static website
                 // origin rather than an S3 origin, that may be the reason.
@@ -95,9 +84,9 @@ public class CdkStack extends Stack {
                         .privateZone(false)
                         .build());
         final ICertificate certificate = DnsValidatedCertificate.Builder.create(
-                this,
-                "BlogCertificate"
-        )
+                        this,
+                        "BlogCertificate"
+                )
                 .domainName(domainName)
 
                 // CloudFront requires ACM certificates be in us-east-1
@@ -107,54 +96,6 @@ public class CdkStack extends Stack {
                 .build();
 
         // --------------------------------------------------------------------
-
-        // --------------------------------------------------------------------
-        //  Custom resource to get the Lambda@Edge name from the us-east-1 stack. CDK does not support this because
-        //  it's in a different region, and Lambda@Edge only supports functions created in us-east-1.
-        //
-        //  See: https://github.com/aws/aws-cdk/issues/1575#issuecomment-480738659
-        // --------------------------------------------------------------------
-        final String stackLookupLambdaCode = Resources.toString(
-                Resources.getResource("cfn_stack_lookup.js"), Charsets.UTF_8);
-        final SingletonFunction stackLookupLambda = SingletonFunction.Builder.create(this, "StackLookupLambda2")
-                .uuid("338343db-190a-40d9-94e6-9e0a9cfe7340")
-                .handler("index.handler")
-                .runtime(Runtime.NODEJS_12_X)
-                .code(Code.fromInline(stackLookupLambdaCode))
-                .timeout(Duration.seconds(60))
-                .build();
-
-        final Role stackLookupProviderRole =
-                Role.Builder.create(this, "RewriteLambdaArnCfnStackLookupRole")
-                        .assumedBy(new ServicePrincipal("lambda.amazonaws.com"))
-                        .build();
-        stackLookupProviderRole.addToPolicy(PolicyStatement.Builder.create()
-                .effect(Effect.ALLOW)
-                .actions(Collections.singletonList("cloudformation:DescribeStacks"))
-                .resources(Collections.singletonList(
-                        String.format("arn:aws:cloudformation:*:*:stack/%s/*", rewriteLambdaStackName)))
-                .build());
-        final Provider stackLookupProvider = Provider.Builder.create(this,
-                        "RewriteLambdaArnCfnStackLookupLookupProvider2")
-                .onEventHandler(stackLookupLambda)
-                .logRetention(RetentionDays.ONE_YEAR)
-                .role(stackLookupProviderRole)
-                .build();
-        final CustomResource stackLookup = CustomResource.Builder.create(this, "RewriteLambdaArnCfnStackLookupOutput2")
-                .serviceToken(stackLookupProvider.getServiceToken())
-                .properties(ImmutableMap.of(
-                        "StackName", rewriteLambdaStackName,
-                        "OutputKey", rewriteLambdaOutputName,
-                        "Region", "us-east-1",
-
-                        // Need a key that changes when the rewrite Lambda code changes, or else we never re-deploy it.
-                        "LambdaHash", rewriteLambdaCodeHash
-
-                ))
-                .build();
-
-        final String rewriteLambdaArn = stackLookup.getAttString("Output");
-        final IVersion rewriteLambdaVersion = Version.fromVersionArn(this, "RewriteLambda", rewriteLambdaArn);
 
         // --------------------------------------------------------------------
         //  S3 bucket for CloudFront access logs.
@@ -177,6 +118,12 @@ public class CdkStack extends Stack {
         // --------------------------------------------------------------------
         //  CloudFront distribution for assets.
         // --------------------------------------------------------------------
+        final software.amazon.awscdk.services.cloudfront.FunctionCode cloudfrontFunctionCode =
+                software.amazon.awscdk.services.cloudfront.FunctionCode.fromInline(rewriteLambdaCode);
+        final software.amazon.awscdk.services.cloudfront.Function cloudfrontFunction =
+                Function.Builder.create(this, "CloudFrontFunction")
+                        .code(cloudfrontFunctionCode)
+                        .build();
         final List<SourceConfiguration> sourceConfigurations = Collections.singletonList(
                 SourceConfiguration.builder()
                         .s3OriginSource(S3OriginConfig.builder()
@@ -185,19 +132,6 @@ public class CdkStack extends Stack {
                         .behaviors(Collections.singletonList(Behavior.builder()
                                 .isDefaultBehavior(true)
                                 .compress(false)
-                                .lambdaFunctionAssociations(Arrays.asList(
-                                        LambdaFunctionAssociation.builder()
-                                                .eventType(LambdaEdgeEventType.ORIGIN_REQUEST)
-                                                .lambdaFunction(rewriteLambdaVersion)
-                                                .build(),
-
-                                        // Note that S3 deployment bucket does not set Content-Type or Content-Encoding
-                                        // correctly, so for now use Lambda@Edge to set this.
-                                        // https://github.com/aws/aws-cdk/issues/7090
-                                        LambdaFunctionAssociation.builder()
-                                                .eventType(LambdaEdgeEventType.ORIGIN_RESPONSE)
-                                                .lambdaFunction(rewriteLambdaVersion)
-                                                .build()))
                                 .allowedMethods(CloudFrontAllowedMethods.GET_HEAD_OPTIONS)
                                 .forwardedValues(CfnDistribution.ForwardedValuesProperty.builder()
                                         .queryString(false)
@@ -209,6 +143,15 @@ public class CdkStack extends Stack {
                                                 "CloudFront-Forwarded-Proto"
                                         ))
                                         .build())
+                                .functionAssociations(Arrays.asList(
+                                        FunctionAssociation.builder()
+                                                .function(cloudfrontFunction)
+                                                .eventType(FunctionEventType.VIEWER_REQUEST)
+                                                .build(),
+                                        FunctionAssociation.builder()
+                                                .function(cloudfrontFunction)
+                                                .eventType(FunctionEventType.VIEWER_RESPONSE)
+                                                .build()))
                                 .build()))
                         .build()
         );
@@ -219,7 +162,7 @@ public class CdkStack extends Stack {
                         .viewerCertificate(ViewerCertificate.fromAcmCertificate(certificate,
                                 ViewerCertificateOptions.builder()
                                         .aliases(Collections.singletonList(domainName))
-                                        .securityPolicy(SecurityPolicyProtocol.TLS_V1_2_2018)
+                                        .securityPolicy(SecurityPolicyProtocol.TLS_V1_2_2021)
                                         .sslMethod(SSLMethod.SNI)
                                         .build()))
                         .viewerProtocolPolicy(ViewerProtocolPolicy.REDIRECT_TO_HTTPS)
@@ -290,13 +233,15 @@ public class CdkStack extends Stack {
         final List<ISource> bucketDeploymentSources = Collections.singletonList(
                 Source.asset("./../hugo/build")
         );
-        BucketDeployment.Builder.create(this, "DeployWebsite2")
+        BucketDeployment.Builder.create(this, "DeployWebsite")
                 .sources(bucketDeploymentSources)
                 .destinationBucket(bucket)
                 .distribution(distribution)
-                .memoryLimit(1792)
+                .memoryLimit(3072)
                 .build();
         // --------------------------------------------------------------------
+
+        this.blogBucket = bucket;
 
         CfnOutput.Builder.create(this, "CloudfrontDomainNameExport")
                 .value(distribution.getDistributionDomainName())
