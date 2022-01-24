@@ -42,7 +42,7 @@ def gzip_compress(contents: ByteString, extension: str, destination: str) -> Non
 
 def compress() -> None:
     # Compress all frontend files
-    compressed_extensions: Set[str] = {".gz", ".br"}
+    compressed_extensions: Set[str] = {".woff2", ".png", ".jpg", ".gif", ".gz", ".br"}
     for root, dirs, files in os.walk(FRONTEND_DIR):
         for file in files:
             fullpath: str = os.path.join(root, file)

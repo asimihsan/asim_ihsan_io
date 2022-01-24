@@ -54,6 +54,61 @@ rm -rf hugo/build
 fd . -e html hugo/build | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'preprod*')
+
+BLOG_BUCKET_REGION=us-east-2
+BLOG_BUCKET_NAME=$(aws --region $BLOG_BUCKET_REGION cloudformation describe-stacks | jq -r '.Stacks | .[] | select(.StackId | contains("preprod-AsimIhsanIoCdkStack")) | .Outputs | .[] | select(.OutputKey == "BlogBucketName") | .OutputValue')
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.html.br" \
+  --acl 'public-read' \
+  --content-encoding br \
+  --content-type="text/html; charset=UTF-8" \
+  --metadata-directive REPLACE --recursive
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.html.gz" \
+  --acl 'public-read' \
+  --content-encoding gz \
+  --content-type="text/html; charset=UTF-8" \
+  --metadata-directive REPLACE --recursive
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.js.br" \
+  --acl 'public-read' \
+  --content-encoding br \
+  --content-type="application/javascript" \
+  --metadata-directive REPLACE --recursive
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.js.gz" \
+  --acl 'public-read' \
+  --content-encoding gz \
+  --content-type="application/javascript" \
+  --metadata-directive REPLACE --recursive
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.css.br" \
+  --acl 'public-read' \
+  --content-encoding br \
+  --content-type="text/css" \
+  --metadata-directive REPLACE --recursive
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.css.gz" \
+  --acl 'public-read' \
+  --content-encoding gz \
+  --content-type="text/css" \
+  --metadata-directive REPLACE --recursive
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.svg.br" \
+  --acl 'public-read' \
+  --content-encoding br \
+  --content-type="image/svg+xml" \
+  --metadata-directive REPLACE --recursive
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.svg.gz" \
+  --acl 'public-read' \
+  --content-encoding gz \
+  --content-type="image/svg+xml" \
+  --metadata-directive REPLACE --recursive
+
+CLOUDFRONT_REGION=us-east-2
+CLOUDFRONT_DISTRIBUTION=$(aws --region $CLOUDFRONT_REGION cloudformation describe-stacks | jq -r '.Stacks | .[] | select(.StackId | contains("preprod-AsimIhsanIoCdkStack")) | .Outputs | .[] | select(.OutputKey == "CloudfrontDistribution") | .OutputValue')
+aws --region $CLOUDFRONT_REGION cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION" --paths "/*"
 ```
 
 ### Building to production environment
@@ -67,26 +122,62 @@ EOF
 fd . -e html hugo/build | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
 ./src/compress_build.py
 (cd cdk && cdk deploy --require-approval never 'prod*')
-./src/index_now.py
-```
 
-#### Deploy both pre-prod and prod
+BLOG_BUCKET_REGION=us-east-2
+#BLOG_BUCKET_NAME=$(aws --region $BLOG_BUCKET_REGION cloudformation describe-stacks | jq -r '.Stacks | .[] | select(.StackId | contains("prod-AsimIhsanIoCdkStack")) | .Outputs | .[] | select(.OutputKey == "BlogBucketName") | .OutputValue')
+BLOG_BUCKET_NAME=prod-asimihsaniocdkstackkstackblogbucketff0f1834c90cbe8c0085
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.html.br" \
+  --acl 'public-read' \
+  --content-encoding br \
+  --content-type="text/html; charset=UTF-8" \
+  --metadata-directive REPLACE --recursive
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.html.gz" \
+  --acl 'public-read' \
+  --content-encoding gz \
+  --content-type="text/html; charset=UTF-8" \
+  --metadata-directive REPLACE --recursive
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.js.br" \
+  --acl 'public-read' \
+  --content-encoding br \
+  --content-type="application/javascript" \
+  --metadata-directive REPLACE --recursive
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.js.gz" \
+  --acl 'public-read' \
+  --content-encoding gz \
+  --content-type="application/javascript" \
+  --metadata-directive REPLACE --recursive
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.css.br" \
+  --acl 'public-read' \
+  --content-encoding br \
+  --content-type="text/css" \
+  --metadata-directive REPLACE --recursive
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.css.gz" \
+  --acl 'public-read' \
+  --content-encoding gz \
+  --content-type="text/css" \
+  --metadata-directive REPLACE --recursive
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.svg.br" \
+  --acl 'public-read' \
+  --content-encoding br \
+  --content-type="image/svg+xml" \
+  --metadata-directive REPLACE --recursive
+aws --region $BLOG_BUCKET_REGION s3 cp hugo/build "s3://${BLOG_BUCKET_NAME}" \
+  --exclude="*" --include="*.svg.gz" \
+  --acl 'public-read' \
+  --content-encoding gz \
+  --content-type="image/svg+xml" \
+  --metadata-directive REPLACE --recursive
 
-```
-rm -rf hugo/build
-(cd hugo && HUGO_BASEURL='https://preprod-asim.ihsan.io' hugo --destination build)
-fd . -e html hugo/build | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
-./src/compress_build.py
-(cd cdk && cdk deploy --require-approval never 'preprod*')
-
-rm -rf hugo/build
-(cd hugo && HUGO_ENV=production HUGO_BASEURL='https://asim.ihsan.io' hugo --destination build)
-tee hugo/build/$INDEX_NOW_API_KEY.txt <<EOF >/dev/null
-$INDEX_NOW_API_KEY
-EOF
-fd . -e html hugo/build | xargs -P 4 -I{} bash -c 'echo {} && cat {} | critical --base text/fixture --inline | sponge {}'
-./src/compress_build.py
-(cd cdk && cdk deploy --require-approval never 'prod*')
+CLOUDFRONT_REGION=us-east-2
+CLOUDFRONT_DISTRIBUTION=$(aws --region $CLOUDFRONT_REGION cloudformation describe-stacks | jq -r '.Stacks | .[] | select(.StackId | contains("prod-AsimIhsanIoCdkStack")) | .Outputs | .[] | select(.OutputKey == "CloudfrontDistribution") | .OutputValue')
+aws --region $CLOUDFRONT_REGION cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION" --paths "/*"
 ./src/index_now.py
 ```
 
