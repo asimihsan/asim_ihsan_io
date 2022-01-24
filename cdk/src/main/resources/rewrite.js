@@ -25,12 +25,12 @@ var regexps_length = regexps.length;
 function handler(event) {
     console.log("EVENT");
     console.log(JSON.stringify(event));
+    var request = event.request;
     if (event.context.eventType === "viewer-request") {
         console.log("REQUEST");
-        var request = event.request;
+        var request_headers = request.headers;
         var uri = request.uri;
-        var headers = request.headers;
-        var acceptEncodingHeader = headers['accept-encoding'];
+        var acceptEncodingHeader = request_headers['accept-encoding'];
 
         if (uri.endsWith("/")) {
             // If requesting a directory redirect to index.html
@@ -40,54 +40,44 @@ function handler(event) {
             // No Accept-Encoding header, just pass-through request.
             return request;
         }
-        if (request.uri.endsWith(".woff2")) {
-            // WOFF2 is already Brotli-compressed so don't serve a compressed version of it.
+        if (request.uri.endsWith(".woff2") ||
+            request.uri.endsWith(".png") ||
+            request.uri.endsWith(".jpg") ||
+            request.uri.endsWith(".gif") ||
+            request.uri.endsWith(".woff")) {
+            // Already compressed so don't serve a compressed version of it.
             return request;
         }
 
-        var gzip = false;
-        var brotli = false;
-
-        for (var i = 0; i < acceptEncodingHeader.length; i++) {
-            var value = acceptEncodingHeader[i].value;
-            var elems = value.split(',').map(x => x.split(';')[0].trim());
-            if (elems.indexOf('br') !== -1) {
-                brotli = true;
-                break;
-            }
-            if (elems.indexOf('gzip') !== -1) {
-                gzip = true;
-                break;
-            }
-        }
-
-        if (brotli) {
+        var value = acceptEncodingHeader.value;
+        var elems = value.split(',').map(x => x.trim());
+        console.log(elems);
+        if (elems.indexOf('br') !== -1) {
             request.uri += '.br';
-        } else if (gzip) {
+        }
+        else if (elems.indexOf('gzip') !== -1) {
             request.uri += '.gz';
         }
+
         return request;
     } else {
         console.log("RESPONSE");
-        var request = event.request;
         var response = event.response;
-        var headers = response.headers;
-        if (request.uri.endsWith(".br")) {
-            headers["content-encoding"] = {value: "br"};
-        } else if (request.uri.endsWith(".gz")) {
-            headers["content-encoding"] = {value: "gzip"};
-        }
+        var response_headers = response.headers;
         for (var i = 0; i < regexps_length; i++) {
             var elem = regexps[i];
             var re = elem[0];
             var mime = elem[1];
             if (re.test(request.uri)) {
-                headers["content-type"] = {value: mime};
+                response_headers["content-type"] = {value: mime};
                 break;
             }
         }
 
-        headers['strict-transport-security'] = {value: 'max-age=63072000; includeSubdomains; preload'};
+        response_headers['strict-transport-security'] = {value: 'max-age=63072000; includeSubdomains; preload'};
+        response_headers['x-content-type-options'] = { value: 'nosniff'};
+        response_headers['x-frame-options'] = {value: 'DENY'};
+        response_headers['x-xss-protection'] = {value: '1; mode=block'};
 
         /*
         work in progress! I use inline CSS for syntax highlighting. JS is a mess too, need inline and eval.
@@ -104,4 +94,4 @@ function handler(event) {
 
         return response;
     }
-};
+}

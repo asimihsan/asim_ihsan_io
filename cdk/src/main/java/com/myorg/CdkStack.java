@@ -247,6 +247,10 @@ public class CdkStack extends Stack {
                 .value(distribution.getDistributionDomainName())
                 .build();
 
+        CfnOutput.Builder.create(this, "CloudfrontDistribution")
+                .value(distribution.getDistributionId())
+                .build();
+
         CfnOutput.Builder.create(this, "BlogBucketName")
                 .value(bucket.getBucketName())
                 .build();
