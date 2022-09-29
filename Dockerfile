@@ -75,12 +75,11 @@ ENV VERSION_NVM=0.39.1
 ENV VERSION_NODE=14.16.1
 
 # Install Node
-RUN --mount=type=cache,target=/root/.nvm,sharing=locked \
-    --mount=type=cache,target=/root/.npm,sharing=locked \
+RUN --mount=type=cache,target=/root/.cache,sharing=locked \
     curl -o- https://raw.githubusercontent.com/creationix/nvm/v${VERSION_NVM}/install.sh | bash && \
     /bin/bash -c ". ~/.nvm/nvm.sh && \
         nvm install $VERSION_NODE && nvm use $VERSION_NODE && \
-        nvm alias default node && nvm cache clear" && \
+        nvm alias default node" && \
     # Install Node dependencies
     /bin/bash -c '. ~/.nvm/nvm.sh && npm install netlify-cli -g --unsafe-perm=true' && \
     /bin/bash -c '. ~/.nvm/nvm.sh && npm install critical -g --unsafe-perm=true' && \
@@ -132,6 +131,7 @@ RUN apt-get clean && \
     echo 'export PATH="$HOME/.pyenv/bin:/usr/local/bin:$PATH"' >> ~/.bashrc && \
     echo 'eval "$(pyenv init -)"' >> ~/.bashrc  && \
     echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc && \
+    echo '. ~/.nvm/nvm.sh' > ~/.bashrc && \
     echo 'export PATH="$HOME/.nvm/versions/node/${VERSION_NODE}/bin:${PATH}"' >> ~/.bashrc && \
     echo 'export LANG=en_US.utf8' >> ~/.bashrc
 # -----------------------------------------------------------------------------
