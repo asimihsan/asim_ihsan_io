@@ -1,4 +1,5 @@
 # asim_ihsan_io
+
 Content for https://asim.ihsan.io website.
 
 ## TODO
@@ -11,27 +12,16 @@ Content for https://asim.ihsan.io website.
 ### First time setup
 
 ```
-brew install hugo
+make docker-build
 ```
 
-Install pyenv, then
+### Live rebuilding during blog writing
 
 ```
-pyenv install miniconda3-4.7.12
-pyenv virtualenv miniconda3-4.7.12 asim_ihsan_io
-pyenv local asim_ihsan_io
-pyenv version
-pip install --upgrade pip
-pip install -r requirements.txt
-pyenv rehash
+make hugo-draft
 ```
 
-Also need critical for above-fold CSS inlining, and need moreutils for sponge:
-
-```
-brew install moreutils
-npm install -g critical
-```
+**Old below**
 
 ### First-time CDK setup
 
