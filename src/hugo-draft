@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
+
+(cd "$SCRIPT_DIR"/../hugo && \
+    hugo --buildDrafts \
+        --destination build \
+        --watch server \
+        --disableFastRender \
+        --bind 0.0.0.0 \
+        --baseURL "http://127.0.0.1" \
+        --enableGitInfo \
+        --port 5000)

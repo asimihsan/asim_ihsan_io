@@ -15,37 +15,42 @@ ENV PYENV_PYTHON='3.9.13'
 
 RUN --mount=type=cache,target=/var/cache/apt \
     apt-get update && \
+    apt-get upgrade -y && \
     apt-get install -y \
-    # Python dependencies
-    build-essential \ 
-    curl \ 
-    libbz2-dev \ 
-    libffi-dev \ 
-    liblzma-dev \
-    libncursesw5-dev \ 
-    libreadline-dev \ 
-    libsqlite3-dev \ 
-    libssl-dev \ 
-    libxcursor1 \
-    libxdamage-dev \
-    libxml2-dev \ 
-    libxmlsec1-dev \ 
-    llvm \ 
-    make \ 
-    tk-dev \ 
-    wget \ 
-    xz-utils \ 
-    zlib1g-dev \
-    # Other
-    ca-certificates \
-    fd-find \
-    git \
-    locales \
-    moreutils \
-    ripgrep \
-    unzip \
-    vim && \
+        # Python dependencies
+        build-essential \ 
+        curl \ 
+        libbz2-dev \ 
+        libffi-dev \ 
+        liblzma-dev \
+        libncursesw5-dev \ 
+        libreadline-dev \ 
+        libsqlite3-dev \ 
+        libssl-dev \ 
+        libxcursor1 \
+        libxdamage-dev \
+        libxml2-dev \ 
+        libxmlsec1-dev \ 
+        llvm \ 
+        make \ 
+        tk-dev \ 
+        wget \ 
+        xz-utils \ 
+        zlib1g-dev \
+        # Other
+        ca-certificates \
+        chromium-browser \
+        default-jre \
+        fd-find \
+        git \
+        jq \
+        locales \
+        moreutils \
+        ripgrep \
+        unzip \
+        vim && \
 	localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 && \
+    ln -s /usr/bin/fdfind /usr/local/bin/fd && \
     # AWS CLI
     curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64-$AWSCLI_VERSION.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
@@ -70,6 +75,7 @@ RUN /bin/bash -c ". ~/.nvm/nvm.sh && \
 # Install Node dependencies
 RUN /bin/bash -c '. ~/.nvm/nvm.sh && npm install netlify-cli -g --unsafe-perm=true'
 RUN /bin/bash -c '. ~/.nvm/nvm.sh && npm install critical -g --unsafe-perm=true'
+RUN /bin/bash -c '. ~/.nvm/nvm.sh && npm install puppeteer -g --unsafe-perm=true'
 RUN /bin/bash -c '. ~/.nvm/nvm.sh && npm install aws-cdk -g --unsafe-perm=true'
 # -----------------------------------------------------------------------------
 
