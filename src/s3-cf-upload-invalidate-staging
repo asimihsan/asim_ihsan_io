@@ -4,8 +4,6 @@ set -euxo pipefail
 
 SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
-apt install -y jq
-
 BLOG_BUCKET_REGION=us-east-2
 BLOG_BUCKET_NAME=$(aws --region $BLOG_BUCKET_REGION cloudformation describe-stacks | jq -r '.Stacks | .[] | select(.StackId | contains("preprod-AsimIhsanIoCdkStack")) | .Outputs | .[] | select(.OutputKey == "BlogBucketName") | .OutputValue')
 aws --region $BLOG_BUCKET_REGION s3 cp "$SCRIPT_DIR"/../hugo/build "s3://${BLOG_BUCKET_NAME}" \
