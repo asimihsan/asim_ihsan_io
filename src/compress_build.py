@@ -7,10 +7,11 @@ Accept-Encoding.
 """
 
 
+from typing import ByteString, Set
+import concurrent.futures
+import gzip
 import os
 import os.path
-import gzip
-from typing import ByteString, Set
 
 import brotli
 
@@ -40,7 +41,9 @@ def gzip_compress(contents: ByteString, extension: str, destination: str) -> Non
         f_out.write(gzip_compressed)
 
 
-def compress() -> None:
+def compress(executor: concurrent.futures.Executor) -> None:
+    futures: list[concurrent.futures.Future] = []
+
     # Compress all frontend files
     compressed_extensions: Set[str] = {".woff2", ".png", ".jpg", ".gif", ".gz", ".br"}
     for root, dirs, files in os.walk(FRONTEND_DIR):
@@ -61,13 +64,19 @@ def compress() -> None:
             with open(fullpath, "rb") as f_in:
                 contents = f_in.read()
             if not os.path.isfile(brotli_path):
-                brotli_compress(contents, extension, brotli_path)
+                future = executor.submit(brotli_compress, contents, extension, brotli_path)
+                futures.append(future)
             if not os.path.isfile(gzip_path):
-                gzip_compress(contents, extension, gzip_path)
+                future = executor.submit(gzip_compress, contents, extension, gzip_path)
+                futures.append(future)
 
+    print("waiting...")
+    concurrent.futures.wait(futures)
+    print("done.")
 
 def main() -> None:
-    compress()
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        compress(executor)
 
 
 if __name__ == "__main__":

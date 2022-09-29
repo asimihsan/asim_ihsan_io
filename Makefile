@@ -9,12 +9,20 @@ hugo-draft:
 		--workdir /workspace \
 		-p 127.0.0.1:5000:5000/tcp \
 		-it asim_ihsan_io \
-		bash -c '(cd /workspace/hugo && \
-			hugo --buildDrafts \
-			--destination build \
-			--watch server \
-			--disableFastRender \
-			--bind 0.0.0.0 \
-			--baseURL "http://127.0.0.1" \
-			--enableGitInfo \
-			--port 5000)'
+		bash -i -c '/workspace/src/hugo-draft'
+
+hugo-staging:
+	 docker run \
+	 	--volume "$(MAKEFILE_DIR):/workspace" \
+		--workdir /workspace \
+		--env-file $(HOME)/.aws_retail_docker \
+		-it asim_ihsan_io \
+		bash -i -c '/workspace/src/hugo-staging'
+
+s3-cf-upload-invalidate-staging:
+	 docker run \
+	 	--volume "$(MAKEFILE_DIR):/workspace" \
+		--workdir /workspace \
+		--env-file $(HOME)/.aws_retail_docker \
+		-it asim_ihsan_io \
+		bash -i -c '/workspace/src/s3-cf-upload-invalidate-staging'
