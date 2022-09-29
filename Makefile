@@ -1,7 +1,14 @@
 MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 docker-build:
-	docker build -t asim_ihsan_io .
+	docker buildx build -t asim_ihsan_io .
+
+docker-shell:
+	docker run \
+		--volume "$(MAKEFILE_DIR):/workspace" \
+		--workdir /workspace \
+		-it asim_ihsan_io \
+		/bin/bash -i
 
 hugo-draft:
 	 docker run \

@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+
 # -----------------------------------------------------------------------------
 #   Base Ubuntu
 # -----------------------------------------------------------------------------
@@ -13,7 +15,11 @@ ENV LANG en_US.utf8
 ENV PYENV_GIT_TAG=v2.3.4
 ENV PYENV_PYTHON='3.9.13'
 
-RUN --mount=type=cache,target=/var/cache/apt \
+RUN rm -f /etc/apt/apt.conf.d/docker-clean; \
+    echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+RUN --mount=type=cache,target=/var/cache,sharing=locked \
+    --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt/lists,sharing=locked \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y \
@@ -52,6 +58,8 @@ RUN --mount=type=cache,target=/var/cache/apt \
 	localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 && \
     ln -s /usr/bin/fdfind /usr/local/bin/fd && \
     # AWS CLI
+    cd /var/cache && \
+    rm -rf aws && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64-$AWSCLI_VERSION.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
@@ -67,16 +75,17 @@ ENV VERSION_NVM=0.39.1
 ENV VERSION_NODE=14.16.1
 
 # Install Node
-RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v${VERSION_NVM}/install.sh | bash
-RUN /bin/bash -c ". ~/.nvm/nvm.sh && \
-    nvm install $VERSION_NODE && nvm use $VERSION_NODE && \
-    nvm alias default node && nvm cache clear"
-
-# Install Node dependencies
-RUN /bin/bash -c '. ~/.nvm/nvm.sh && npm install netlify-cli -g --unsafe-perm=true'
-RUN /bin/bash -c '. ~/.nvm/nvm.sh && npm install critical -g --unsafe-perm=true'
-RUN /bin/bash -c '. ~/.nvm/nvm.sh && npm install puppeteer -g --unsafe-perm=true'
-RUN /bin/bash -c '. ~/.nvm/nvm.sh && npm install aws-cdk -g --unsafe-perm=true'
+RUN --mount=type=cache,target=/root/.nvm,sharing=locked \
+    --mount=type=cache,target=/root/.npm,sharing=locked \
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v${VERSION_NVM}/install.sh | bash && \
+    /bin/bash -c ". ~/.nvm/nvm.sh && \
+        nvm install $VERSION_NODE && nvm use $VERSION_NODE && \
+        nvm alias default node && nvm cache clear" && \
+    # Install Node dependencies
+    /bin/bash -c '. ~/.nvm/nvm.sh && npm install netlify-cli -g --unsafe-perm=true' && \
+    /bin/bash -c '. ~/.nvm/nvm.sh && npm install critical -g --unsafe-perm=true' && \
+    /bin/bash -c '. ~/.nvm/nvm.sh && npm install puppeteer -g --unsafe-perm=true' && \
+    /bin/bash -c '. ~/.nvm/nvm.sh && npm install aws-cdk -g --unsafe-perm=true'
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -84,19 +93,20 @@ RUN /bin/bash -c '. ~/.nvm/nvm.sh && npm install aws-cdk -g --unsafe-perm=true'
 # -----------------------------------------------------------------------------
 FROM base as python
 
+ADD Pipfile Pipfile.lock /root/
+
 # Setup pyenv and install extra python versions
 RUN curl https://pyenv.run | bash && \
     echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bashrc && \
     echo 'eval "$(pyenv init -)"' >> ~/.bashrc  && \
-    echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc && \
-    bash -i -c "pyenv install $PYENV_PYTHON" && \
-    bash -i -c "pyenv global $PYENV_PYTHON" && \
+    echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
+RUN --mount=type=cache,target=/root/.pyenv/versions,sharing=locked \
+    --mount=type=cache,target=/root/.pyenv/cache,sharing=locked \
+    bash -i -c "[[ -d /root/.pyenv/versions/$PYENV_PYTHON ]] || /root/.pyenv/bin/pyenv install $PYENV_PYTHON" && \
+    bash -i -c "/root/.pyenv/bin/pyenv global $PYENV_PYTHON" && \
     bash -i -c 'pip install --upgrade pip' && \
-    bash -i -c 'pip install pipenv'
-
-ADD Pipfile Pipfile.lock /root/
-RUN bash -i -c 'cd /root/ && pipenv install --system --deploy'
-
+    bash -i -c 'pip install pipenv' && \
+    bash -i -c 'cd /root/ && pipenv install --system --deploy'
 # -----------------------------------------------------------------------------
 #   Hugo
 # -----------------------------------------------------------------------------
@@ -118,7 +128,8 @@ COPY --from=node /root/.nvm /root/.nvm
 COPY --from=python /root/.pyenv /root/.pyenv
 COPY --from=hugo /usr/local/bin/hugo /usr/local/bin/hugo
 
-RUN echo 'export PATH="$HOME/.pyenv/bin:/usr/local/bin:$PATH"' >> ~/.bashrc && \
+RUN apt-get clean && \
+    echo 'export PATH="$HOME/.pyenv/bin:/usr/local/bin:$PATH"' >> ~/.bashrc && \
     echo 'eval "$(pyenv init -)"' >> ~/.bashrc  && \
     echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc && \
     echo 'export PATH="$HOME/.nvm/versions/node/${VERSION_NODE}/bin:${PATH}"' >> ~/.bashrc && \
