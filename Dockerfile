@@ -1,12 +1,14 @@
 # -----------------------------------------------------------------------------
 #   Base Ubuntu
 # -----------------------------------------------------------------------------
-FROM ubuntu:latest as base
+FROM ubuntu:jammy-20220815 as base
 
 # See: https://pipenv.pypa.io/en/latest/basics/
 # See: https://docs.docker.com/build/building/cache/
 
+ENV AWSCLI_VERSION='2.7.35'
 ENV DEBIAN_FRONTEND "noninteractive"
+ENV HUGO_VERSION='0.104.1'
 ENV LANG en_US.utf8
 ENV PYENV_GIT_TAG=v2.3.4
 ENV PYENV_PYTHON='3.9.13'
@@ -36,10 +38,19 @@ RUN --mount=type=cache,target=/var/cache/apt \
     zlib1g-dev \
     # Other
     ca-certificates \
+    fd-find \
     git \
     locales \
-    moreutils && \
-	localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+    moreutils \
+    ripgrep \
+    unzip \
+    vim && \
+	localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 && \
+    # AWS CLI
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64-$AWSCLI_VERSION.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    ./aws/install && \
+    rm -f awscliv2.zip
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -59,6 +70,7 @@ RUN /bin/bash -c ". ~/.nvm/nvm.sh && \
 # Install Node dependencies
 RUN /bin/bash -c '. ~/.nvm/nvm.sh && npm install netlify-cli -g --unsafe-perm=true'
 RUN /bin/bash -c '. ~/.nvm/nvm.sh && npm install critical -g --unsafe-perm=true'
+RUN /bin/bash -c '. ~/.nvm/nvm.sh && npm install aws-cdk -g --unsafe-perm=true'
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
@@ -80,6 +92,15 @@ ADD Pipfile Pipfile.lock /root/
 RUN bash -i -c 'cd /root/ && pipenv install --system --deploy'
 
 # -----------------------------------------------------------------------------
+#   Hugo
+# -----------------------------------------------------------------------------
+FROM base as hugo
+
+RUN curl -L https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-arm64.tar.gz | tar -xz && \
+    mv hugo /usr/local/bin/hugo
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
 #   Final
 # -----------------------------------------------------------------------------
 FROM base as final
@@ -88,12 +109,12 @@ ENV VERSION_NODE=v14.16.1
 
 COPY --from=node /root/.npm /root/.npm
 COPY --from=node /root/.nvm /root/.nvm
-
-COPY --from=python /root/.local /root/.local
 COPY --from=python /root/.pyenv /root/.pyenv
+COPY --from=hugo /usr/local/bin/hugo /usr/local/bin/hugo
 
-RUN echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bashrc && \
+RUN echo 'export PATH="$HOME/.pyenv/bin:/usr/local/bin:$PATH"' >> ~/.bashrc && \
     echo 'eval "$(pyenv init -)"' >> ~/.bashrc  && \
     echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc && \
-    echo 'export PATH="$HOME/.nvm/versions/node/${VERSION_NODE}/bin:${PATH}"' >> ~/.bashrc
+    echo 'export PATH="$HOME/.nvm/versions/node/${VERSION_NODE}/bin:${PATH}"' >> ~/.bashrc && \
+    echo 'export LANG=en_US.utf8' >> ~/.bashrc
 # -----------------------------------------------------------------------------
