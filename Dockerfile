@@ -99,9 +99,8 @@ RUN curl https://pyenv.run | bash && \
     echo 'export PATH="$HOME/.pyenv/bin:$PATH"' >> ~/.bashrc && \
     echo 'eval "$(pyenv init -)"' >> ~/.bashrc  && \
     echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc
-RUN --mount=type=cache,target=/root/.pyenv/versions,sharing=locked \
-    --mount=type=cache,target=/root/.pyenv/cache,sharing=locked \
-    bash -i -c "[[ -d /root/.pyenv/versions/$PYENV_PYTHON ]] || /root/.pyenv/bin/pyenv install $PYENV_PYTHON" && \
+RUN --mount=type=cache,target=/root/.pyenv/cache,sharing=locked \
+    bash -i -c "/root/.pyenv/bin/pyenv install $PYENV_PYTHON" && \
     bash -i -c "/root/.pyenv/bin/pyenv global $PYENV_PYTHON" && \
     bash -i -c 'pip install --upgrade pip' && \
     bash -i -c 'pip install pipenv' && \
@@ -131,7 +130,7 @@ RUN apt-get clean && \
     echo 'export PATH="$HOME/.pyenv/bin:/usr/local/bin:$PATH"' >> ~/.bashrc && \
     echo 'eval "$(pyenv init -)"' >> ~/.bashrc  && \
     echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc && \
-    echo '. ~/.nvm/nvm.sh' > ~/.bashrc && \
+    echo '. ~/.nvm/nvm.sh' >> ~/.bashrc && \
     echo 'export PATH="$HOME/.nvm/versions/node/${VERSION_NODE}/bin:${PATH}"' >> ~/.bashrc && \
     echo 'export LANG=en_US.utf8' >> ~/.bashrc
 # -----------------------------------------------------------------------------

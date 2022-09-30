@@ -4,8 +4,7 @@ slug: "04"
 subheading: "Software Assurance Automation, Chapter 4"
 date: 2022-09-29
 summary: |
-
-
+    Chaos testing, gamedays.
 tags:
 - aws
 enable_link: False

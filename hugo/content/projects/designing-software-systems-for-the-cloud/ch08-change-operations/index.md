@@ -4,7 +4,7 @@ slug: "08"
 subheading: "Designing Software Systems for the Cloud, Chapter 2"
 date: 2022-09-29
 summary: |
-    
+    Change is a continuum, deployment types, monitoring production, faking customers, testing in production.
 
 tags:
 - aws

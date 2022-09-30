@@ -4,7 +4,7 @@ slug: "02"
 subheading: "Designing Software Systems for the Cloud, Chapter 2"
 date: 2022-09-29
 summary: |
-    A brief end-to-end play around with AWS.
+    Two services with different focuses.
 
 tags:
 - aws
