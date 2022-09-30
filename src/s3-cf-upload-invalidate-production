@@ -5,7 +5,7 @@ set -euxo pipefail
 SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
 BLOG_BUCKET_REGION=us-east-2
-BLOG_BUCKET_NAME=$(aws --region $BLOG_BUCKET_REGION cloudformation describe-stacks | jq -r '.Stacks | .[] | select(.StackId | contains("/preprod-AsimIhsanIoCdkStack")) | .Outputs | .[] | select(.OutputKey == "BlogBucketName") | .OutputValue')
+BLOG_BUCKET_NAME=$(aws --region $BLOG_BUCKET_REGION cloudformation describe-stacks | jq -r '.Stacks | .[] | select(.StackId | contains("/prod-AsimIhsanIoCdkStack")) | .Outputs | .[] | select(.OutputKey == "BlogBucketName") | .OutputValue')
 aws --region $BLOG_BUCKET_REGION s3 cp "$SCRIPT_DIR"/../hugo/build "s3://${BLOG_BUCKET_NAME}" \
   --exclude="*" --include="*.html.br" \
   --acl 'public-read' \
@@ -68,5 +68,5 @@ aws --region $BLOG_BUCKET_REGION s3 cp "$SCRIPT_DIR"/../hugo/build "s3://${BLOG_
   --metadata-directive REPLACE --recursive  
 
 CLOUDFRONT_REGION=us-east-2
-CLOUDFRONT_DISTRIBUTION=$(aws --region $CLOUDFRONT_REGION cloudformation describe-stacks | jq -r '.Stacks | .[] | select(.StackId | contains("preprod-AsimIhsanIoCdkStack")) | .Outputs | .[] | select(.OutputKey == "CloudfrontDistribution") | .OutputValue')
+CLOUDFRONT_DISTRIBUTION=$(aws --region $CLOUDFRONT_REGION cloudformation describe-stacks | jq -r '.Stacks | .[] | select(.StackId | contains("/prod-AsimIhsanIoCdkStack")) | .Outputs | .[] | select(.OutputKey == "CloudfrontDistribution") | .OutputValue')
 aws --region $CLOUDFRONT_REGION cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION" --paths "/*"

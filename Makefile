@@ -33,3 +33,19 @@ s3-cf-upload-invalidate-staging:
 		--env-file $(HOME)/.aws_retail_docker \
 		-it asim_ihsan_io \
 		bash -i -c '/workspace/src/s3-cf-upload-invalidate-staging'
+
+hugo-production:
+	 docker run \
+	 	--volume "$(MAKEFILE_DIR):/workspace" \
+		--workdir /workspace \
+		--env-file $(HOME)/.aws_retail_docker \
+		-it asim_ihsan_io \
+		bash -i -c '/workspace/src/hugo-production'
+
+s3-cf-upload-invalidate-production:
+	 docker run \
+	 	--volume "$(MAKEFILE_DIR):/workspace" \
+		--workdir /workspace \
+		--env-file $(HOME)/.aws_retail_docker \
+		-it asim_ihsan_io \
+		bash -i -c '/workspace/src/s3-cf-upload-invalidate-production'

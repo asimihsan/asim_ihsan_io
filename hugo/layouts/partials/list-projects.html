@@ -32,13 +32,16 @@
 
                     <p>Table of contents</p>
 
-                    <ol>
+                    <ol class="project-toc">
                         {{ range $idx, $item := sort .Pages ".Slug" }}
                         <li>
                             {{ if $item.Params.enable_link }}
-                            <a href="{{ $item.RelPermalink }}">{{ $item.Title }}</a> <br />
+                            <a href="{{ $item.RelPermalink }}">{{ $item.Title }}</a>
                             {{ else }}
-                            {{ $item.Title }}<br />
+                            {{ $item.Title }}
+                            {{ end }}
+                            {{ if $item.Params.summary }}
+                            <br/><i>{{ $item.Params.summary | markdownify }}</i>
                             {{ end }}
                         </li>
                         {{ end }}
