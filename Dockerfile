@@ -43,9 +43,46 @@ RUN --mount=type=cache,target=/var/cache,sharing=locked \
         wget \ 
         xz-utils \ 
         zlib1g-dev \
+        # Chromium \
+        # ca-certificates \
+        # fonts-liberation \
+        # libappindicator3-1 \
+        # libasound2 \
+        # libatk-bridge2.0-0 \
+        # libatk1.0-0 \
+        # libc6 \
+        # libcairo2 \
+        # libcups2 \
+        # libdbus-1-3 \
+        # libexpat1 \
+        # libfontconfig1 \
+        # libgbm1 \
+        # libgcc1 \
+        # libglib2.0-0 \
+        # libgtk-3-0 \
+        # libnspr4 \
+        # libnss3 \
+        # libpango-1.0-0 \
+        # libpangocairo-1.0-0 \
+        # libstdc++6 \
+        # libx11-6 \
+        # libx11-xcb1 \
+        # libxcb1 \
+        # libxcomposite1 \
+        # libxcursor1 \
+        # libxdamage1 \
+        # libxext6 \
+        # libxfixes3 \
+        # libxi6 \
+        # libxrandr2 \
+        # libxrender1 \
+        # libxss1 \
+        # libxtst6 \
+        # lsb-release \
+        # wget \
+        # xdg-utils \
         # Other
         ca-certificates \
-        chromium-browser \
         default-jre \
         fd-find \
         git \
@@ -61,6 +98,7 @@ RUN --mount=type=cache,target=/var/cache,sharing=locked \
     cd /var/cache && \
     rm -rf aws && \
     curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64-$AWSCLI_VERSION.zip" -o "awscliv2.zip" && \
+    # curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-$AWSCLI_VERSION.zip" -o "awscliv2.zip" && \
     unzip awscliv2.zip && \
     ./aws/install && \
     rm -f awscliv2.zip
@@ -71,8 +109,8 @@ RUN --mount=type=cache,target=/var/cache,sharing=locked \
 # -----------------------------------------------------------------------------
 FROM base as node
 
-ENV VERSION_NVM=0.39.1
 ENV VERSION_NODE=14.16.1
+ENV VERSION_NVM=0.39.1
 
 # Install Node
 RUN --mount=type=cache,target=/root/.cache,sharing=locked \
@@ -82,8 +120,8 @@ RUN --mount=type=cache,target=/root/.cache,sharing=locked \
         nvm alias default node" && \
     # Install Node dependencies
     /bin/bash -c '. ~/.nvm/nvm.sh && npm install netlify-cli -g --unsafe-perm=true' && \
-    /bin/bash -c '. ~/.nvm/nvm.sh && npm install critical -g --unsafe-perm=true' && \
-    /bin/bash -c '. ~/.nvm/nvm.sh && npm install puppeteer -g --unsafe-perm=true' && \
+    # /bin/bash -c '. ~/.nvm/nvm.sh && npm install critical -g --unsafe-perm=true' && \
+    # /bin/bash -c '. ~/.nvm/nvm.sh && npm install puppeteer -g --unsafe-perm=true' && \
     /bin/bash -c '. ~/.nvm/nvm.sh && npm install aws-cdk -g --unsafe-perm=true'
 # -----------------------------------------------------------------------------
 
@@ -110,6 +148,7 @@ RUN --mount=type=cache,target=/root/.pyenv/cache,sharing=locked \
 # -----------------------------------------------------------------------------
 FROM base as hugo
 
+# RUN curl -L https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz | tar -xz && \
 RUN curl -L https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-arm64.tar.gz | tar -xz && \
     mv hugo /usr/local/bin/hugo
 # -----------------------------------------------------------------------------

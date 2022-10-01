@@ -1,0 +1,39 @@
+{{ define "main" }}
+
+<h1 class="title">{{ .Title }}</h1>
+<div class="column">
+    <div class="content">
+        <div class="summary-body">
+            {{ .Summary }}
+        </div>
+
+        <br />
+        <p>By the end of this series you will be able to:</p>
+
+        <ul>
+            {{ range $idx, $item := .Params.learning_objectives }}
+            <li>{{ $item }}</li>
+            {{ end }}
+        </ul>
+
+        <p>Table of contents</p>
+
+        <ol class="project-toc">
+            {{ range $idx, $item := sort .Pages ".Slug" }}
+            <li>
+                {{ if $item.Params.enable_link }}
+                <a href="{{ $item.RelPermalink }}">{{ $item.Title }}</a>
+                {{ else }}
+                {{ $item.Title }}
+                {{ end }}
+                {{ if $item.Params.summary }}
+                <br /><i>{{ $item.Params.summary | markdownify }}</i>
+                {{ end }}
+            </li>
+            {{ end }}
+        </ol>
+    </div>
+</div>
+</div>
+
+{{ end }}

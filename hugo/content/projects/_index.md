@@ -1,3 +1,4 @@
 ---
+type: projects
 title: Projects
 ---
