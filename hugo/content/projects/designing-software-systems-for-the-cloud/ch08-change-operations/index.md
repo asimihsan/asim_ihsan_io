@@ -1,6 +1,7 @@
 ---
 title: "Change and Operations"
 slug: "08"
+url: /dssftc/08/
 subheading: "Designing Software Systems for the Cloud, Chapter 2"
 date: 2022-09-29
 summary: |

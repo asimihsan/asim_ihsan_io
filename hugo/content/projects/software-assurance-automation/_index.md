@@ -4,6 +4,7 @@ date: 2022-09-29
 aliases:
   - /projects/saa/
   - /saa/
+enable_project: False
 summary: |
   Just like data structures and algorithms, there are many tools in your toolbox for verifying software. This is a
   cookbook with recipes and when to use given tools. Intended audience: software engineers, software engineering

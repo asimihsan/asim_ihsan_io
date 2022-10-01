@@ -1,6 +1,7 @@
 ---
 title: "Performance and Cost Efficiency"
 slug: "09"
+url: /dssftc/09/
 subheading: "Designing Software Systems for the Cloud, Chapter 9"
 date: 2022-09-29
 summary: |

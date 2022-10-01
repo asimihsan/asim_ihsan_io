@@ -1,9 +1,12 @@
 ---
+type: projects/project
 title: Designing Software Systems for the Cloud
 date: 2022-09-29
 aliases:
   - /projects/dssftc/
   - /dssftc/
+url: /dssftc/
+enable_project: True
 summary: |
   Existing AWS tutorials and books focus too much on AWS itself, glossing over details, and the console. This
   series focuses on the principles underlying software design for cloud-based systems. You will come away with
