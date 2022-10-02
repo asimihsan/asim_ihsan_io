@@ -157,7 +157,7 @@ public class CdkStack extends Stack {
         );
         final CloudFrontWebDistribution distribution = new CloudFrontWebDistribution(this, "CloudFront",
                 CloudFrontWebDistributionProps.builder()
-                        .httpVersion(HttpVersion.HTTP2)
+                        .httpVersion(HttpVersion.HTTP2_AND_3)
                         .originConfigs(sourceConfigurations)
                         .viewerCertificate(ViewerCertificate.fromAcmCertificate(certificate,
                                 ViewerCertificateOptions.builder()

@@ -1,8 +1,10 @@
 {{ partial "mathjax.html" . }}
 
+{{ $instantpage := "js/instantpage.js" | absURL }}
+<script src="{{ $instantpage }}" type="module" defer></script>
+
 {{ $custom_js_template := resources.Get "js/template-custom.js" }}
 {{ $custom_js := $custom_js_template | resources.ExecuteAsTemplate "js/custom.js" . }}
-
 {{ $js := "" }}
 {{ if eq (getenv "HUGO_ENV") "production" | or (eq .Site.Params.env "production")  }}
 {{ $js = $custom_js | minify | fingerprint }}
