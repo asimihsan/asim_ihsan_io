@@ -11,6 +11,10 @@ docker-shell:
 		-it asim_ihsan_io \
 		/bin/bash -i
 
+render-sheeptext:
+	fd -e '.sheeptext' -x sheeptext {} -f png -o {.}.png
+	fd -e '.sheeptext' -x sheeptext {} -f svg -o {.}.svg
+
 hugo-draft:
 	 docker run \
 	 	--volume "$(MAKEFILE_DIR):/workspace" \

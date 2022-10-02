@@ -1,0 +1,15 @@
+Staging_APIG: icon name "aws_Arch_Amazon-API-Gateway" "API" "Gateway"
+arrow
+Staging_Lambda: icon name "aws_Res_AWS-Lambda_Lambda-Function_Light" "Lambda" "function"
+arrow
+Staging_DDB: icon name "aws_Res_Amazon-DynamoDB_Table_Light" "DynamoDB" "Table"
+StagingBox: box from Staging_APIG.nw - (20, 20) to Staging_DDB.se + (40, 50) fill #eee 0.3 send to back dashed
+text "Staging" italic with .sw at StagingBox.nw - (0, 5)
+
+Prod_APIG: icon name "aws_Arch_Amazon-API-Gateway" "API" "Gateway" with .n at Staging_APIG.s + (0, 140)
+arrow
+Prod_Lambda: icon name "aws_Res_AWS-Lambda_Lambda-Function_Light" "Lambda" "function"
+arrow
+Prod_DDB: icon name "aws_Res_Amazon-DynamoDB_Table_Light" "DynamoDB" "Table"
+ProdBox: box from Prod_APIG.nw - (20, 20) to Prod_DDB.se + (40, 50) fill #eee 0.3 send to back dashed
+text "Prod" italic with .sw at ProdBox.nw - (0, 5)

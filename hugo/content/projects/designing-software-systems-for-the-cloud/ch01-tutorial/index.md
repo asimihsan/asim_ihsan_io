@@ -12,3 +12,7 @@ enable_link: True
 ---
 
 {{< banner_info >}}This is a draft post, still writing it{{< /banner_info >}}
+
+## Introduction
+
+![](01_overview.svg)
