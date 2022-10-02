@@ -29,48 +29,49 @@
     // ------------------------------------------------------------------------
     //  Contact form.
     // ------------------------------------------------------------------------
-    {{ if eq (getenv "HUGO_ENV") "production" | or (eq .Site.Params.env "production")  }}
-    const contactEndpoint = "https://contact.ihsan.io";
-    {{ else }}
-    const contactEndpoint = "https://preprod-contact.ihsan.io";
-    {{ end }}
-
     const $contactForm = document.getElementById("contact-form");
-    $contactForm.onsubmit = async (e) => {
-      e.preventDefault();
-      disableSubmitButton();
-      const data = {};
-      for (let i = 0; i < $contactForm.elements.length; i++) {
-        const element = $contactForm.elements[i];
-        if (element.name === "") {
-          continue;
+    if ($contactForm !== null) {
+      {{ if eq (getenv "HUGO_ENV") "production" | or (eq .Site.Params.env "production")  }}
+      const contactEndpoint = "https://contact.ihsan.io";
+      {{ else }}
+      const contactEndpoint = "https://preprod-contact.ihsan.io";
+      {{ end }}
+      $contactForm.onsubmit = async (e) => {
+        e.preventDefault();
+        disableSubmitButton();
+        const data = {};
+        for (let i = 0; i < $contactForm.elements.length; i++) {
+          const element = $contactForm.elements[i];
+          if (element.name === "") {
+            continue;
+          }
+          data[element.name] = element.value;
         }
-        data[element.name] = element.value;
-      }
-      const body = JSON.stringify(data);
-      console.log(body);
-      let response = await fetch(contactEndpoint + '/api/post_contact_form', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: body
-      });
-      let result = await response.json();
-      enableSubmitButton();
-      console.log(result);
-      if (result.success) {
-        showContactFormSuccess();
-      } else {
-        showContactFormFailure();
-      }
-    };
-
-    document.getElementById("contact-submit-button").disabled = true;
-    document.getElementById("contact-form-status").style.visibility = "collapse";
-    document.getElementById("contact-form-success").style.visibility = "collapse";
-    document.getElementById("contact-form-failure").style.visibility = "collapse";
+        const body = JSON.stringify(data);
+        console.log(body);
+        let response = await fetch(contactEndpoint + '/api/post_contact_form', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: body
+        });
+        let result = await response.json();
+        enableSubmitButton();
+        console.log(result);
+        if (result.success) {
+          showContactFormSuccess();
+        } else {
+          showContactFormFailure();
+        }
+      };
+  
+      document.getElementById("contact-submit-button").disabled = true;
+      document.getElementById("contact-form-status").style.visibility = "collapse";
+      document.getElementById("contact-form-success").style.visibility = "collapse";
+      document.getElementById("contact-form-failure").style.visibility = "collapse";
+    }
     // ------------------------------------------------------------------------
 })();
 
