@@ -21,10 +21,11 @@
 
     <link rel="preload" href="/font/firasans-regular-subset.woff2" as="font" type="font/woff2">
     <link rel="preload" href="/font/iosevka-custom-regular-subset.woff2" as="font" type="font/woff2">
+    {{ partial "critical-css.html" . }}
 
     {{ $bulma_css := resources.Get "css/bulma.css" }}
     {{ $custom_css_template := resources.Get "css/template-style.css" }}
     {{ $custom_css := $custom_css_template | resources.ExecuteAsTemplate "css/custom.css" . }}
     {{ $css := slice $bulma_css $custom_css | resources.Concat "css/style.css" | minify | fingerprint }}
-    <link rel="stylesheet" type="text/css" href="{{ $css.Permalink }}" integrity="{{ $css.Data.Integrity }}">
+    <link rel="preload" as="style" href="{{ $css.Permalink }}" integrity="{{ $css.Data.Integrity }}">
 </head>
