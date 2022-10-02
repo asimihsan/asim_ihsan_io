@@ -119,10 +119,10 @@ RUN --mount=type=cache,target=/root/.cache,sharing=locked \
         nvm install $VERSION_NODE && nvm use $VERSION_NODE && \
         nvm alias default node" && \
     # Install Node dependencies
-    /bin/bash -c '. ~/.nvm/nvm.sh && npm install netlify-cli -g --unsafe-perm=true' && \
+    /bin/bash -c '. ~/.nvm/nvm.sh && npm install netlify-cli@12.0.1 -g --unsafe-perm=true' && \
     # /bin/bash -c '. ~/.nvm/nvm.sh && npm install critical -g --unsafe-perm=true' && \
     # /bin/bash -c '. ~/.nvm/nvm.sh && npm install puppeteer -g --unsafe-perm=true' && \
-    /bin/bash -c '. ~/.nvm/nvm.sh && npm install aws-cdk -g --unsafe-perm=true'
+    /bin/bash -c '. ~/.nvm/nvm.sh && npm install aws-cdk@2.44.0 -g --unsafe-perm=true'
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
