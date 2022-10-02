@@ -19,9 +19,8 @@
     <meta property="og:url" content="{{ .Site.BaseURL | absURL }}">
     <meta property="og:image" content="">
 
-    <link rel="preload" href="/font/firasans-regular-subset.woff2" as="font" type="font/woff2">
-    <link rel="preload" href="/font/iosevka-custom-regular-subset.woff2" as="font" type="font/woff2">
     {{ partial "critical-css.html" . }}
+    <link rel="preload" href="/font/iosevka-custom-regular-subset.woff2" as="font" type="font/woff2">
 
     {{ $bulma_css := resources.Get "css/bulma.css" }}
     {{ $custom_css_template := resources.Get "css/template-style.css" }}
