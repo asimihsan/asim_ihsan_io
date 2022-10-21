@@ -11,9 +11,9 @@ docker-shell:
 		-it asim_ihsan_io \
 		/bin/bash -i
 
-render-sheeptext:
-	fd -e '.sheeptext' -x sheeptext {} -f png -o {.}.png
-	fd -e '.sheeptext' -x sheeptext {} -f svg -o {.}.svg
+.PHONY: watch-diagrams
+watch-diagrams:
+	$(MAKEFILE_DIR)watch-diagrams
 
 hugo-draft:
 	 docker run \

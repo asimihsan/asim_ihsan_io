@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+
+kill_processes() {
+    # shellcheck disable=SC2064
+    kill $(jobs -p)
+}
+
+(watchman-wait --max-events 0 "$SCRIPT_DIR"/hugo/content -p '**/*.sheeptext' | \
+    while read -r source; do
+        echo "$source"
+        destination="${source%.*}"
+        # sheeptext "$source" -f png -o "$destination".png || true
+        sheeptext "$source" -f svg -o "$destination".svg || true
+    done 2>&1)&
+
+(watchman-wait --max-events 0 "$SCRIPT_DIR"/hugo/content -p '**/*.plantuml' | \
+    while read -r source; do
+        echo "$source"
+        # plantuml "$source" -tpng || true
+        plantuml "$source" -tsvg || true
+    done 2>&1)&
+
+jobs -p
+
+# shellcheck disable=SC2064
+trap "kill_processes" SIGTERM
+
+# shellcheck disable=SC2046
+wait $(jobs -p)
