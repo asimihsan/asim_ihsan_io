@@ -20,7 +20,7 @@ objectives: |
     - Use P to clarify the requirements of a harder problem, checking that
       customers not only accept the newest valid terms of service but that we
       also know that they did so.
-    - Explore different solutions to the harder problem iteratively using P.
+    - Explore different solutions to the harder problem interactively using P.
 
 tags:
 - formalmodel
@@ -30,7 +30,7 @@ tags:
 
 ## Introduction
 
-Foo
+Foobar
 
 {{< newsletter_signup >}}
 
