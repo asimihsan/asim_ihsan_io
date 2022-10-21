@@ -1,0 +1,4 @@
+@startuml
+Client ->(10) Server: ClientHello
+Server ->(10) Client: ServerHello
+@enduml
