@@ -4,9 +4,9 @@ set -euxo pipefail
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-kill_processes() {
-    # shellcheck disable=SC2064
-    kill $(jobs -p)
+kill_child_processes() {
+    # See: https://unix.stackexchange.com/questions/124127/kill-all-descendant-processes
+    pkill -P $$
 }
 
 (watchman-wait --max-events 0 "$SCRIPT_DIR"/hugo/content -p '**/*.sheeptext' | \
@@ -24,10 +24,8 @@ kill_processes() {
         plantuml "$source" -tsvg || true
     done 2>&1)&
 
-jobs -p
-
 # shellcheck disable=SC2064
-trap "kill_processes" SIGTERM
+trap "kill_child_processes" SIGINT
 
 # shellcheck disable=SC2046
 wait $(jobs -p)
