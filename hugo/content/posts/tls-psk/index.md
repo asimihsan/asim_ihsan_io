@@ -34,19 +34,36 @@ tags:
 
 ## Introduction
 
-Foo
-
 ![](tls-sequence.svg)
 
 ![](system-design.svg)
 
 {{< newsletter_signup >}}
 
-## Prior art, references, and other resources
+## Threat model, TLS 1.3 asymmetric key-pairs vs. PSKs
 
-Bar
+- What problem is TLS solving
+- Show network stack, TCP <-> TCP end-to-end, TLS on top, HTTP on top of TLS
+- Confidentiality, integrity, authentication
+- Confidentiality is current session and all previous sessions (forward secrecy)
 
-## Future work and areas for improvement
+## TLS in action with OpenSSL CLI
+
+- `openssl` command line easy to use, just look at the terminal!
+- Also great way of verifying interoperability.
+- Show some key sections, what means what
+
+## End-to-end encryption in action with stunnel
+
+- stunnel, host to host, what problem it solves
+
+## End-to-end encryption in action with your own code
+
+- Uses Rust but most of the code is actual OpenSSL over FFI
+- Show Wireshark, decryption mode
+- Show effect of OpenSSL flags
+
+## Open issues and areas for investigation
 
 ## References
 
