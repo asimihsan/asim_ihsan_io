@@ -126,6 +126,7 @@ public class CdkStack extends Stack {
                         .build();
         final List<SourceConfiguration> sourceConfigurations = Collections.singletonList(
                 SourceConfiguration.builder()
+                        .originShieldRegion(this.getRegion())
                         .s3OriginSource(S3OriginConfig.builder()
                                 .s3BucketSource(bucket)
                                 .build())
