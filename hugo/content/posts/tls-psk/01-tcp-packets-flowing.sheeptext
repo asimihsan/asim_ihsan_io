@@ -1,0 +1,36 @@
+boxht = 50
+boxwid = boxht * 1.618
+stack_spacing = 50
+
+down
+Laptop: icon name "osa_laptop"
+TCPLaptop: box "TCP"
+IPLaptop: box "IP"
+WiFiLaptop: box "Wi-Fi"
+PhysicalLaptop: box "Physical"
+text "Laptop 1" with .s at Laptop.n
+
+WiFiRouter: box "Wi-Fi" with .w at WiFiLaptop.e + (stack_spacing, 0)
+PhysicalRouter: box "Physical"
+Router: icon name "osa_device-wireless-router" \
+    with .s at WiFiRouter.n - (0, boxht * 2 + 1)
+text "WiFi Router" with .s at Router.n
+
+TCPLaptop2: box "TCP" with .w at TCPLaptop.e + (stack_spacing + boxwid + stack_spacing, 0)
+IPLaptop2: box "IP"
+WiFiLaptop2: box "Wi-Fi"
+PhysicalLaptop2: box "Physical"
+Laptop2: icon name "osa_laptop" with .s at TCPLaptop2.n - (0, 1)
+text "Laptop 2" with .s at Laptop2.n
+
+arrow "TCP connection" dashed 4 from TCPLaptop.e to TCPLaptop2.w
+
+arrow stroke_width 2 \
+    from TCPLaptop.nw + (10, 10) \
+    to PhysicalLaptop.sw + (10, 20) \
+    to PhysicalRouter.sw + (10, 20) \
+    to WiFiRouter.nw + (10, 10) \
+    to WiFiRouter.ne + (-10, 10) \
+    to PhysicalRouter.se + (-10, 20) \
+    to PhysicalLaptop2.sw + (10, 20) \
+    to TCPLaptop2.nw + (10, 10)

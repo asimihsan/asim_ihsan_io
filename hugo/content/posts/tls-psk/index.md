@@ -40,12 +40,47 @@ tags:
 
 {{< newsletter_signup >}}
 
-## Threat model, TLS 1.3 asymmetric key-pairs vs. PSKs
+## Threat model
 
+When two computers talk over a network using an in-order reliable byte stream
+protocol like the Transmission Control Protocol (TCP), TCP forms a logical
+end-to-end connection, yet the data may flow through many other routers and
+devices. For example, consider two laptops talking to each other via a wifi
+router on a local network:
+
+![TCP packets flowing end-to-end](01-tcp-packets-flowing.svg)
+
+When laptop 1 talks to laptop 2, the actual data flows down a network stack and
+is sent through the air as electromagnetic waves to the WiFi router. The WiFi
+router interprets the WiFi data and forwards this again as electromagnetic waves
+to laptop 2. The data travels up laptop 2's network stack, which interprets it
+as TCP data. However, it is simpler and still accurate to think of a "logical"
+TCP connection existing directly between laptop 1 and laptop 2.
+
+In practice, when two computers talk over the Internet there are many more
+devices involved in the network path, yet still a single end-to-end logical TCP
+connection. This presents a problem from a security point of view. How do you
+keep the TCP connection "secure" whilst also flinging the packets across tens of
+devices you don't trust?
+
+Concretely, let's focus on defining a secure connection from laptop 1 to
+laptop 2 as:
+
+- **Confidentiality - now**: only laptop 2 knows what data laptop 1 sends, the WiFi
+  router in this example cannot see the data.
+- **Confidentiality - forward secrecy**: Even if an adversary records all data
+  and cracks some "key" that secures the data, on cracking the key the adversary
+  cannot decrypt data sent in the past.
+- **Integrity**: Laptop 2 is confident that data is not modified accidentally or
+  deliberately in transit.
+- **Authentication**: Laptop 2 knows that data it receives is from laptop 1, and
+  laptop 1 knows that it is talking to laptop 2.
 - What problem is TLS solving
 - Show network stack, TCP <-> TCP end-to-end, TLS on top, HTTP on top of TLS
 - Confidentiality, integrity, authentication
 - Confidentiality is current session and all previous sessions (forward secrecy)
+
+## TLS 1.3 asymmetric key-pairs vs. PSKs
 
 ## TLS in action with OpenSSL CLI
 
