@@ -22,8 +22,8 @@ application {
 }
 
 dependencies {
-    implementation 'software.amazon.awscdk:aws-cdk-lib:2.44.0'
-    implementation 'software.constructs:constructs:10.1.119'
+    implementation 'software.amazon.awscdk:aws-cdk-lib:2.47.0'
+    implementation 'software.constructs:constructs:10.1.135'
     implementation 'com.google.guava:guava:31.1-jre'
 
     testImplementation 'junit:junit:4.13.2'
