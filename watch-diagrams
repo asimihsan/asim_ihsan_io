@@ -2,27 +2,27 @@
 
 set -euxo pipefail
 
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
 kill_child_processes() {
-    # See: https://unix.stackexchange.com/questions/124127/kill-all-descendant-processes
+    # See:https://unix.stackexchange.com/questions/124127/kill-all-descendant-processes
     pkill -P $$
 }
 
-(watchman-wait --max-events 0 "$SCRIPT_DIR"/hugo/content -p '**/*.sheeptext' | \
+(watchman-wait --max-events 0 "$SCRIPT_DIR"/hugo/content -p '**/*.sheeptext' |
     while read -r source; do
         echo "$source"
         destination="${source%.*}"
         # sheeptext "$source" -f png -o "$destination".png || true
         sheeptext "$source" -f svg -o "$destination".svg || true
-    done 2>&1)&
+    done 2>&1) &
 
-(watchman-wait --max-events 0 "$SCRIPT_DIR"/hugo/content -p '**/*.plantuml' | \
+(watchman-wait --max-events 0 "$SCRIPT_DIR"/hugo/content -p '**/*.plantuml' |
     while read -r source; do
         echo "$source"
         # plantuml "$source" -tpng || true
         plantuml "$source" -tsvg || true
-    done 2>&1)&
+    done 2>&1) &
 
 # shellcheck disable=SC2064
 trap "kill_child_processes" SIGINT
