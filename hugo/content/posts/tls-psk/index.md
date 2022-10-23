@@ -19,6 +19,7 @@ summary: |
 objectives: |
   By the end of this article you will be able to:
 
+  - Understand what problem TLS solves.
   - Understand what TLS 1.3 PSK+DHE is.
   - Use the OpenSSL command-line tool and Wireshark to explore TLS 1.3
     PSK+DHE.
@@ -90,7 +91,22 @@ laptop 1 establishes a TLS session it again calls an HTTP method. Also notice
 how the squiggly arrow's path does not change, we are still traversing tens of
 untrusted devices but establishing trust nonetheless.
 
-## TLS 1.3 asymmetric key-pairs vs. PSKs
+On top of these desired security properties, we're worried about adversaries
+that can monitor all traffic, tries to pretend the client or the server, and can
+replay recorded traffic in the future.
+
+## TLS 1.3, asymmetric key-pairs vs. PSKs
+
+TLS is immense and complex, let alone TLS 1.3 and the changes from TLS 1.2 to
+1.3 [^1]. At a basic level there are three parts to setting up a TLS session:
+
+1. **Handshake Protocol**, a) establishing a shared key and b) authentication
+   of the client / server and the key.
+2. **Record Protocol**, how the client and server exchange messages securely.
+
+In this article I'm curious about the handshake protocol, how asymmetric
+cryptography is typically used, and why and how Preshared Keys (PSKs) are an
+optipn.
 
 ![](tls-sequence.svg)
 
@@ -113,5 +129,9 @@ untrusted devices but establishing trust nonetheless.
 ## Open issues and areas for investigation
 
 ## References
+
+[^1]:
+    [Rescorla, Eric. The Transport Layer Security (TLS) Protocol Version 1.3.
+    No. RFC 8446. 2018.](https://www.rfc-editor.org/rfc/rfc8446.html)
 
 ## Appendix
