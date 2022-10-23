@@ -4,7 +4,7 @@ date: 2022-10-18T00:00:00-07:00
 aliases:
   - /posts/tls-13-psk/
   - /tls-13-psk/
-draft: true
+draft: false
 summary: |
   Transport Layer Security (TLS) is an application-layer protocol that sits on
   top of e.g. the Transmission Control Protocol (TCP) and provides a secure
@@ -79,9 +79,9 @@ laptop 2 as:
    and laptop 1 knows that it is talking to laptop 2.
 
 Transport Layer Security (TLS) solves the problem of providing these four
-security properties. It does so by adding yet another logical layer on top of
-TCP. Once laptop 1 establishes a TCP connection to laptop 2, it can set up a TLS
-session:
+security properties. It does so without requiring any changes to applications
+that use HTTP by adding yet another logical layer on top of TCP. Once laptop 1
+establishes a TCP connection to laptop 2, it can set up a TLS session:
 
 ![HTTP on top of TLS on top of TCP](02-tls-packets.svg)
 
@@ -98,7 +98,8 @@ replay recorded traffic in the future.
 ## TLS 1.3, asymmetric key-pairs vs. PSKs
 
 TLS is immense and complex, let alone TLS 1.3 and the changes from TLS 1.2 to
-1.3 [^1]. At a basic level there are three parts to setting up a TLS session:
+1.3 [^rfc8446]. At a basic level there are three parts to setting up a TLS
+session:
 
 1. **Handshake Protocol**, a) establishing a shared key and b) authentication
    of the client / server and the key.
@@ -108,7 +109,7 @@ In this article I'm curious about the handshake protocol, how asymmetric
 cryptography is typically used, and why and how Preshared Keys (PSKs) are an
 optipn.
 
-![](tls-sequence.svg)
+![removeme](tls-sequence.svg)
 
 ## TLS in action with OpenSSL CLI
 
@@ -130,7 +131,7 @@ optipn.
 
 ## References
 
-[^1]:
+[^rfc8446]:
     [Rescorla, Eric. The Transport Layer Security (TLS) Protocol Version 1.3.
     No. RFC 8446. 2018.](https://www.rfc-editor.org/rfc/rfc8446.html)
 
