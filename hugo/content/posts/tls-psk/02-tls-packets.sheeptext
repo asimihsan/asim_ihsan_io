@@ -1,10 +1,12 @@
 boxht = 50
 boxwid = boxht * 1.618
 stack_spacing = 50
+yellow_box_padding = 5
 
 down
 Laptop: icon name "osa_laptop"
 HTTPLaptop: box "HTTP"
+TLSLaptop: box "TLS"
 TCPLaptop: box "TCP"
 IPLaptop: box "IP"
 WiFiLaptop: box "Wi-Fi"
@@ -15,10 +17,11 @@ IPRouter: box "IP" with .w at IPLaptop.e + (stack_spacing, 0)
 WiFiRouter: box "Wi-Fi"
 PhysicalRouter: box "Physical"
 Router: icon name "osa_device-wireless-router" \
-    with .s at WiFiRouter.n - (0, boxht * 3 + 1)
+    with .s at WiFiRouter.n - (0, boxht * 4 + 1)
 text "WiFi Router" with .s at Router.n
 
 HTTPLaptop2: box "HTTP" with .w at HTTPLaptop.e + (stack_spacing + boxwid + stack_spacing, 0)
+TLSLaptop2: box "TLS"
 TCPLaptop2: box "TCP"
 IPLaptop2: box "IP"
 WiFiLaptop2: box "Wi-Fi"
@@ -27,7 +30,12 @@ Laptop2: icon name "osa_laptop" with .s at HTTPLaptop2.n - (0, 1)
 text "Laptop 2" with .s at Laptop2.n
 
 arrow "(1) TCP connection" dashed 4 from TCPLaptop.e to TCPLaptop2.w
-arrow "(2) HTTP GET" dashed 4 from HTTPLaptop.e to HTTPLaptop2.w
+arrow "(2) TLS session" dashed 4 from TLSLaptop.e to TLSLaptop2.w
+arrow "(3) HTTP GET" dashed 4 from HTTPLaptop.e to HTTPLaptop2.w
+
+box fill yellow 0.3 stroke none \
+    from TLSLaptop.nw - (yellow_box_padding, yellow_box_padding) \
+    to TLSLaptop2.se + (yellow_box_padding, yellow_box_padding)
 
 arrow stroke_width 2 \
     from HTTPLaptop.nw + (10, 10) \

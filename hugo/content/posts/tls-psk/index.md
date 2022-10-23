@@ -32,21 +32,19 @@ tags:
   - wireshark
 ---
 
-## Introduction
-
-![](tls-sequence.svg)
-
-![](system-design.svg)
-
 {{< newsletter_signup >}}
 
-## Threat model
+## Introduction
+
+Before going into the specifics of the Transport Layer Session (TLS) protocol we
+need to be clear about what problems it solves.
 
 When two computers talk over a network using an in-order reliable byte stream
 protocol like the Transmission Control Protocol (TCP), TCP forms a logical
 end-to-end connection, yet the data may flow through many other routers and
 devices. For example, consider two laptops talking to each other via a wifi
-router on a local network:
+router on a local network, where the first laptop wants to call an HTTP method
+on the second laptop:
 
 ![TCP packets flowing end-to-end](01-tcp-packets-flowing.svg)
 
@@ -55,7 +53,8 @@ is sent through the air as electromagnetic waves to the WiFi router. The WiFi
 router interprets the WiFi data and forwards this again as electromagnetic waves
 to laptop 2. The data travels up laptop 2's network stack, which interprets it
 as TCP data. However, it is simpler and still accurate to think of a "logical"
-TCP connection existing directly between laptop 1 and laptop 2.
+TCP connection existing directly between laptop 1 and laptop 2. Once laptop
+establishes a TCP connection it can call an HTTP method on laptop 2.
 
 In practice, when two computers talk over the Internet there are many more
 devices involved in the network path, yet still a single end-to-end logical TCP
@@ -63,24 +62,37 @@ connection. This presents a problem from a security point of view. How do you
 keep the TCP connection "secure" whilst also flinging the packets across tens of
 devices you don't trust?
 
+## Threat model
+
 Concretely, let's focus on defining a secure connection from laptop 1 to
 laptop 2 as:
 
-- **Confidentiality - now**: only laptop 2 knows what data laptop 1 sends, the WiFi
-  router in this example cannot see the data.
-- **Confidentiality - forward secrecy**: Even if an adversary records all data
-  and cracks some "key" that secures the data, on cracking the key the adversary
-  cannot decrypt data sent in the past.
-- **Integrity**: Laptop 2 is confident that data is not modified accidentally or
-  deliberately in transit.
-- **Authentication**: Laptop 2 knows that data it receives is from laptop 1, and
-  laptop 1 knows that it is talking to laptop 2.
-- What problem is TLS solving
-- Show network stack, TCP <-> TCP end-to-end, TLS on top, HTTP on top of TLS
-- Confidentiality, integrity, authentication
-- Confidentiality is current session and all previous sessions (forward secrecy)
+1. **Confidentiality - now**: only laptop 2 knows what data laptop 1 sends, the
+   WiFi router in this example cannot see the data.
+2. **Confidentiality - forward secrecy**: Even if an adversary records all data
+   and cracks some "key" that secures the data, on cracking the key the adversary
+   cannot decrypt data sent in the past.
+3. **Integrity**: Laptop 2 is confident that data is not modified accidentally
+   or deliberately in transit.
+4. **Authentication**: Laptop 2 knows that data it receives is from laptop 1,
+   and laptop 1 knows that it is talking to laptop 2.
+
+Transport Layer Security (TLS) solves the problem of providing these four
+security properties. It does so by adding yet another logical layer on top of
+TCP. Once laptop 1 establishes a TCP connection to laptop 2, it can set up a TLS
+session:
+
+![HTTP on top of TLS on top of TCP](02-tls-packets.svg)
+
+Notice how TLS is the peanut butter and jelly in the network stack sandwich.
+Once laptop 1 establishes a TCP connection it will set up a TLS session. Once
+laptop 1 establishes a TLS session it again calls an HTTP method. Also notice
+how the squiggly arrow's path does not change, we are still traversing tens of
+untrusted devices but establishing trust nonetheless.
 
 ## TLS 1.3 asymmetric key-pairs vs. PSKs
+
+![](tls-sequence.svg)
 
 ## TLS in action with OpenSSL CLI
 
