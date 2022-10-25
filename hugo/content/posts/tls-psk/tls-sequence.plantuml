@@ -1,4 +1,10 @@
 @startuml
-Client ->(10) Server: ClientHello
-Server ->(10) Client: ServerHello
+== (1) Handshake Protocol ==
+Client ->(10) Server: Client Hello
+Server ->(10) Client: Server Hello
+Client ->(10) Server: Change Cipher Spec
+Client ->(10) Server: Finished
+Server ->(10) Client: New Session Ticket
+== (2) Record Protocol ==
+Client <-> Server: Data
 @enduml
