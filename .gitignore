@@ -4,3 +4,4 @@
 .vscode
 {}
 hugo/.hugo_build.lock
+*.svg

@@ -98,18 +98,28 @@ replay recorded traffic in the future.
 ## TLS 1.3, asymmetric key-pairs vs. PSKs
 
 TLS is immense and complex, let alone TLS 1.3 and the changes from TLS 1.2 to
-1.3 [^rfc8446]. At a basic level there are three parts to setting up a TLS
+1.3 [^rfc8446]. At a basic level there are two parts to setting up a TLS
 session:
 
 1. **Handshake Protocol**, a) establishing a shared key and b) authentication
    of the client / server and the key.
-2. **Record Protocol**, how the client and server exchange messages securely.
+2. **Record Protocol**, how the client and server exchange data.
 
-In this article I'm curious about the handshake protocol, how asymmetric
-cryptography is typically used, and why and how Preshared Keys (PSKs) are an
-optipn.
+![TLS handshake and record protocols](tls-sequence.svg)
 
-![removeme](tls-sequence.svg)
+In this article I'm interested in the details of the handshake protocol
+[^rfc8446_4]. The **Client Hello** and **Server Hello** messages are not
+encrypted and at the end of this first round trip the client and server share a
+new, ephemeral (temporary, brand new) symmetric key. The remaining messages in
+the handshake protocol perform:
+
+- authentication (the client can tell the server is who they say they are, and
+  vice-versa),
+- key confirmation (client and server agree that they agree on the new key),
+- handshake integrity (client and server agree the handshake protocol messages
+  were not modified).
+
+There are many possible handshakes
 
 ## TLS in action with OpenSSL CLI
 
@@ -132,7 +142,12 @@ optipn.
 ## References
 
 [^rfc8446]:
-    [Rescorla, Eric. The Transport Layer Security (TLS) Protocol Version 1.3.
-    No. RFC 8446. 2018.](https://www.rfc-editor.org/rfc/rfc8446.html)
+    [RFC 8446 - The Transport Layer Security (TLS) Protocol Version 1.3.
+    (2018)](https://www.rfc-editor.org/rfc/rfc8446.html)
+
+[^rfc8446_4]:
+    [RFC 8446 - The Transport Layer Security (TLS) Protocol Version 1.3. Chapter
+    4 "Handshake Protocol"
+    (2018)](https://www.rfc-editor.org/rfc/rfc8446.html#section-4)
 
 ## Appendix
