@@ -109,6 +109,8 @@ session:
 
 ### Handshake - Key Exchange
 
+TODO
+
 In this article I'm interested in the details of the handshake protocol
 [^rfc8446_4]. The **Client Hello** and **Server Hello** messages are not
 encrypted and at the end of this first round trip the client and server perform
@@ -119,7 +121,22 @@ material. TLS 1.3 supports three key exchange modes:
 2. PSK-only
 3. PSK with ECDHE
 
+During the key exchange the client and server still don't know if they're
+talking to who they think they're talking to.
+
 ### Handshake - Authentication
+
+TODO
+
+After the key exchange the server and client start authenticating each other.
+Confusingly, the server starts by adding more **extensions** to the Server
+Hello. Concretely the server adds `CertificateRequest` and `Certificate` to the
+`ServerHello`, and the client responds with `Certificate`, `CertificateVerify`,
+and `Finished`. This is all only happening if they are doing public-key based
+authentication.
+
+If the client and server are using PSKs, the PSK in and of itself forms the
+authentication. That way the client and server can skip public-key cryptography.
 
 ## TLS in action with OpenSSL CLI
 
