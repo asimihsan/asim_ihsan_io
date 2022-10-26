@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "en-capitalization": true,
+    "en-spell": true,
+    "doubled-spaces": true
+  }
+}
