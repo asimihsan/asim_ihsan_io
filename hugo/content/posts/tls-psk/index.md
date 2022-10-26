@@ -98,7 +98,7 @@ replay recorded traffic in the future.
 ## TLS 1.3, asymmetric key-pairs vs. PSKs
 
 TLS is immense and complex, let alone TLS 1.3 and the changes from TLS 1.2 to
-1.3 [^rfc8446]. At a basic level there are two parts to setting up a TLS
+1.3 [^rfc8446]. At a basic level there are two parts to setting up a TLS 1.3
 session:
 
 1. **Handshake Protocol**, a) establishing a shared key and b) authentication
@@ -107,19 +107,19 @@ session:
 
 ![TLS handshake and record protocols](tls-sequence.svg)
 
+### Handshake - Key Exchange
+
 In this article I'm interested in the details of the handshake protocol
 [^rfc8446_4]. The **Client Hello** and **Server Hello** messages are not
-encrypted and at the end of this first round trip the client and server share a
-new, ephemeral (temporary, brand new) symmetric key. The remaining messages in
-the handshake protocol perform:
+encrypted and at the end of this first round trip the client and server perform
+a **key exchange**; the client and server will share some secret keying
+material. TLS 1.3 supports three key exchange modes:
 
-- authentication (the client can tell the server is who they say they are, and
-  vice-versa),
-- key confirmation (client and server agree that they agree on the new key),
-- handshake integrity (client and server agree the handshake protocol messages
-  were not modified).
+1. ECDHE (i.e. Diffie-Hellman)
+2. PSK-only
+3. PSK with ECDHE
 
-There are many possible handshakes
+### Handshake - Authentication
 
 ## TLS in action with OpenSSL CLI
 
@@ -147,7 +147,7 @@ There are many possible handshakes
 
 [^rfc8446_4]:
     [RFC 8446 - The Transport Layer Security (TLS) Protocol Version 1.3. Chapter
-    4 "Handshake Protocol"
-    (2018)](https://www.rfc-editor.org/rfc/rfc8446.html#section-4)
+    2 "Protocol Overview"
+    (2018)](https://www.rfc-editor.org/rfc/rfc8446.html#section-2)
 
 ## Appendix
