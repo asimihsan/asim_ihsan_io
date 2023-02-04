@@ -1,4 +1,12 @@
 MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+AWS_PROFILE := retail-admin
+AWS_COMMAND := aws-vault exec $(AWS_PROFILE) --region us-west-2 --
+AWS_DOCKER_RUN := $(AWS_COMMAND) docker run \
+	-e LOCK_TABLE_NAME \
+	-e AWS_REGION \
+	-e AWS_ACCESS_KEY_ID \
+	-e AWS_SECRET_ACCESS_KEY \
+	-e AWS_SESSION_TOKEN
 
 docker-build:
 	docker buildx build -t asim_ihsan_io .
@@ -32,33 +40,29 @@ hugo-draft:
 		bash -i -c '/workspace/src/hugo-draft'
 
 hugo-staging: generate-critical
-	 docker run \
+	 $(AWS_DOCKER_RUN) \
 	 	--volume "$(MAKEFILE_DIR):/workspace" \
 		--workdir /workspace \
-		--env-file $(HOME)/.aws_retail_docker \
 		-it asim_ihsan_io \
 		bash -i -c '/workspace/src/hugo-staging'
 
 s3-cf-upload-invalidate-staging:
-	 docker run \
+	 $(AWS_DOCKER_RUN) \
 	 	--volume "$(MAKEFILE_DIR):/workspace" \
 		--workdir /workspace \
-		--env-file $(HOME)/.aws_retail_docker \
 		-it asim_ihsan_io \
 		bash -i -c '/workspace/src/s3-cf-upload-invalidate-staging'
 
 hugo-production: generate-critical
-	 docker run \
+	 $(AWS_DOCKER_RUN) \
 	 	--volume "$(MAKEFILE_DIR):/workspace" \
 		--workdir /workspace \
-		--env-file $(HOME)/.aws_retail_docker \
 		-it asim_ihsan_io \
 		bash -i -c '/workspace/src/hugo-production'
 
 s3-cf-upload-invalidate-production:
-	 docker run \
+	 $(AWS_DOCKER_RUN) \
 	 	--volume "$(MAKEFILE_DIR):/workspace" \
 		--workdir /workspace \
-		--env-file $(HOME)/.aws_retail_docker \
 		-it asim_ihsan_io \
 		bash -i -c '/workspace/src/s3-cf-upload-invalidate-production'
