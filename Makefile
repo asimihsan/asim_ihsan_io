@@ -3,6 +3,9 @@ MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 docker-build:
 	docker buildx build -t asim_ihsan_io .
 
+docker-build-clean:
+	docker buildx build --no-cache -t asim_ihsan_io .
+
 docker-shell:
 	docker run \
 		--privileged \

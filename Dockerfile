@@ -3,17 +3,19 @@
 # -----------------------------------------------------------------------------
 #   Base Ubuntu
 # -----------------------------------------------------------------------------
-FROM ubuntu:jammy-20220815 as base
+FROM ubuntu:latest as base
 
 # See: https://pipenv.pypa.io/en/latest/basics/
 # See: https://docs.docker.com/build/building/cache/
 
-ENV AWSCLI_VERSION='2.7.35'
+ENV AWSCLI_VERSION='2.9.21'
+ENV CDK_VERSION='2.63.0'
 ENV DEBIAN_FRONTEND "noninteractive"
-ENV HUGO_VERSION='0.104.1'
+ENV HUGO_VERSION='0.110.0'
 ENV LANG en_US.utf8
-ENV PYENV_GIT_TAG=v2.3.4
-ENV PYENV_PYTHON='3.9.13'
+ENV NETLIFY_VERSION='12.10.0'
+ENV PYENV_GIT_TAG=v2.3.12
+ENV PYENV_PYTHON='3.9.16'
 
 RUN rm -f /etc/apt/apt.conf.d/docker-clean; \
     echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
@@ -24,24 +26,24 @@ RUN --mount=type=cache,target=/var/cache,sharing=locked \
     apt-get upgrade -y && \
     apt-get install -y \
         # Python dependencies
-        build-essential \ 
-        curl \ 
-        libbz2-dev \ 
-        libffi-dev \ 
+        build-essential \
+        curl \
+        libbz2-dev \
+        libffi-dev \
         liblzma-dev \
-        libncursesw5-dev \ 
-        libreadline-dev \ 
-        libsqlite3-dev \ 
-        libssl-dev \ 
+        libncursesw5-dev \
+        libreadline-dev \
+        libsqlite3-dev \
+        libssl-dev \
         libxcursor1 \
         libxdamage-dev \
-        libxml2-dev \ 
-        libxmlsec1-dev \ 
-        llvm \ 
-        make \ 
-        tk-dev \ 
-        wget \ 
-        xz-utils \ 
+        libxml2-dev \
+        libxmlsec1-dev \
+        llvm \
+        make \
+        tk-dev \
+        wget \
+        xz-utils \
         zlib1g-dev \
         # Chromium \
         # ca-certificates \
@@ -119,10 +121,10 @@ RUN --mount=type=cache,target=/root/.cache,sharing=locked \
         nvm install $VERSION_NODE && nvm use $VERSION_NODE && \
         nvm alias default node" && \
     # Install Node dependencies
-    /bin/bash -c '. ~/.nvm/nvm.sh && npm install netlify-cli@12.0.1 -g --unsafe-perm=true' && \
+    /bin/bash -c '. ~/.nvm/nvm.sh && npm install netlify-cli@"${NETLIFY_VERSION}" -g --unsafe-perm=true' && \
     # /bin/bash -c '. ~/.nvm/nvm.sh && npm install critical -g --unsafe-perm=true' && \
     # /bin/bash -c '. ~/.nvm/nvm.sh && npm install puppeteer -g --unsafe-perm=true' && \
-    /bin/bash -c '. ~/.nvm/nvm.sh && npm install aws-cdk@2.44.0 -g --unsafe-perm=true'
+    /bin/bash -c '. ~/.nvm/nvm.sh && npm install aws-cdk@"${CDK_VERSION}" -g --unsafe-perm=true'
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
