@@ -1,12 +1,12 @@
 plugins {
     id 'java'
     id 'application'
-    id "io.freefair.lombok" version "5.0.0-rc6"
+    id "io.freefair.lombok" version "6.6.1"
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
@@ -22,8 +22,8 @@ application {
 }
 
 dependencies {
-    implementation 'software.amazon.awscdk:aws-cdk-lib:2.47.0'
-    implementation 'software.constructs:constructs:10.1.135'
+    implementation 'software.amazon.awscdk:aws-cdk-lib:2.63.0'
+    implementation 'software.constructs:constructs:10.1.239'
     implementation 'com.google.guava:guava:31.1-jre'
 
     testImplementation 'junit:junit:4.13.2'
