@@ -3,19 +3,21 @@
 # -----------------------------------------------------------------------------
 #   Base Ubuntu
 # -----------------------------------------------------------------------------
-FROM ubuntu:latest as base
+FROM ubuntu:jammy-20230126 as base
 
 # See: https://pipenv.pypa.io/en/latest/basics/
 # See: https://docs.docker.com/build/building/cache/
 
 ENV AWSCLI_VERSION='2.9.21'
-ENV CDK_VERSION='2.63.0'
+ENV CDK_VERSION='2.63.1'
 ENV DEBIAN_FRONTEND "noninteractive"
 ENV HUGO_VERSION='0.110.0'
 ENV LANG en_US.utf8
 ENV NETLIFY_VERSION='12.10.0'
 ENV PYENV_GIT_TAG=v2.3.12
 ENV PYENV_PYTHON='3.9.16'
+ENV VERSION_NODE=v14.16.1
+ENV VERSION_NVM=0.39.1
 
 RUN rm -f /etc/apt/apt.conf.d/docker-clean; \
     echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
@@ -111,9 +113,6 @@ RUN --mount=type=cache,target=/var/cache,sharing=locked \
 # -----------------------------------------------------------------------------
 FROM base as node
 
-ENV VERSION_NODE=14.16.1
-ENV VERSION_NVM=0.39.1
-
 # Install Node
 RUN --mount=type=cache,target=/root/.cache,sharing=locked \
     curl -o- https://raw.githubusercontent.com/creationix/nvm/v${VERSION_NVM}/install.sh | bash && \
@@ -145,6 +144,19 @@ RUN --mount=type=cache,target=/root/.pyenv/cache,sharing=locked \
     bash -i -c 'pip install --upgrade pip' && \
     bash -i -c 'pip install pipenv' && \
     bash -i -c 'cd /root/ && pipenv install --system --deploy'
+
+# -----------------------------------------------------------------------------
+#   Caching CDK dependencies.
+# -----------------------------------------------------------------------------
+FROM node as cdk
+
+ENV PATH="$HOME/.nvm/versions/node/${VERSION_NODE}/bin:${PATH}"
+
+COPY cdk /root/cdk
+
+RUN --mount=type=cache,target=/root/.gradle,sharing=locked \
+    bash -i -c 'cd /root/cdk && mkdir -p /root/hugo/build && ./gradlew run'
+
 # -----------------------------------------------------------------------------
 #   Hugo
 # -----------------------------------------------------------------------------
@@ -160,12 +172,11 @@ RUN curl -L https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/
 # -----------------------------------------------------------------------------
 FROM base as final
 
-ENV VERSION_NODE=v14.16.1
-
 COPY --from=node /root/.npm /root/.npm
 COPY --from=node /root/.nvm /root/.nvm
 COPY --from=python /root/.pyenv /root/.pyenv
 COPY --from=hugo /usr/local/bin/hugo /usr/local/bin/hugo
+COPY --from=cdk /root/.gradle /root/.gradle
 
 RUN apt-get clean && \
     echo 'export PATH="$HOME/.pyenv/bin:/usr/local/bin:$PATH"' >> ~/.bashrc && \
