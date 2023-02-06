@@ -10,6 +10,15 @@
             </div>
         </div>
         {{ end }}
+        {{ if .Params.summary_video_enabled }}
+        <div class="column is-one-third">
+            <div class="card-image">
+                <video controls width="250">
+                    <source src="{{ .Permalink }}{{ .Params.summary_video }}" type="{{ .Params.summary_video_type }}">
+                </video>
+            </div>
+        </div>
+        {{ end }}        
         <div class="column">
             <div class="card-content">
                 <div class="content">

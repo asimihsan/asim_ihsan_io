@@ -19,6 +19,7 @@ KEY_RE_TO_SKIP: List[str] = [
     "README\.md",
     ".br$",
     ".gz$",
+    ".mp4$",
 ]
 RE_TO_SKIP = re.compile("|".join(elem for elem in KEY_RE_TO_SKIP))
 

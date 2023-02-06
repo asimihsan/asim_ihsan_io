@@ -37,7 +37,7 @@ public class PingerCdkStack extends Stack {
         final String pingerLambdaCodeHash = Hashing.sha256()
                 .hashString(pingerLambdaCode, StandardCharsets.UTF_8).toString();
         final Function pingerFunction = Function.Builder.create(this, "PingerLambdaFunction")
-                .runtime(Runtime.PYTHON_3_8)
+                .runtime(Runtime.PYTHON_3_9)
                 .handler("pinger.handler")
                 .code(Code.fromAsset("src/main/resources/"))
                 .memorySize(1024)
