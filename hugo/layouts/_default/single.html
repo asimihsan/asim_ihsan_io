@@ -22,9 +22,22 @@
     <h2 class="summary">Summary</h2>
     <div class="summary-body">
         {{ .Summary }}
+        <br/><br/>
         {{ .Params.Objectives | markdownify }}
-        <p><i>The opinions expressed in this blog are my own and not necessarily those of my employer.</i></p>
     </div>
+
+    {{ if .Params.summary_video }}
+    <br />
+    <div>
+        <figure>
+            <video class="video-shortcode" preload="metadata" controls>
+                <source src="{{ .Params.summary_video }}" type="{{ .Params.summary_video_type }}">
+                There should have been a video here but your browser does not seem
+                to support it.
+            </video>
+        </figure>
+      </div>
+    {{ end }}
 
     <div class="tableOfContents">
         {{ .TableOfContents }}

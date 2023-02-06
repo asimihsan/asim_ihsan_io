@@ -329,3 +329,9 @@ div.content a {
 .content li > ol {
     margin-top: 0.25em;
 }
+
+/* if this is a p element that is the first child of an li, and the li is followed by a ul, then
+   set margin-bottom to 0 */
+.content p:first-child {
+    margin-bottom: 0;
+}
