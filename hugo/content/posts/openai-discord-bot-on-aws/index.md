@@ -35,10 +35,17 @@ tags:
 Creating a collaborative chatbot that can engage in conversations with multiple users is a challenging problem
 that requires a secure, cost-effective, and highly available solution. OpenAI's language models can be used to
 create such a chatbot. However, hosting it on a web application is not ideal because creating a usable web
-user experience would require a lot of work. Using an existing chat platform makes it easier to access the
+user experience would require more work than necessary. Using an existing chat platform makes it easier to access the
 chatbot on any device. Furthermore, the application needs to be secure, cost-effective, and highly available.
 
 ## System overview
+
+![01-system-overview](01-system-overview.png)
+
+0. Multiple bots connect to Discord over WebSocket.
+1. Users connect to Discord using their preferred client. When they chat in channels, the messages are sent to the Discord server.
+2. The Discord server forwards the messages to all connected Discord bots.
+3. All bots try to acquire a lease on the message in DynamoDB. The bot that acquires the lease is the only bot that will send the message to OpenAI.
 
 - System Overview - step-by-step walkthrough of system components
   - Technologies Used - list of technologies used
@@ -50,7 +57,7 @@ chatbot on any device. Furthermore, the application needs to be secure, cost-eff
 - Discord Client - Details of connecting to Discord using a Discord client
 - AWS EC2 Spot Instances - Details of how the Discord bot runs on AWS EC2 spot instances
 - WebSocket Connection - Overview of connecting the Discord bot to Discord over WebSocket
-- OpenAI - Overview of how the bot talks to OpenAI to get chat bot responses
+- OpenAI - Overview of how the bot talks to OpenAI to get chatbot responses
 - End-to-End Sequence - Example of an end-to-end sequence of a user chatting
   - Diagram - Draw a diagram to illustrate the components involved in the end-to-end sequence 
 - Summary - Summarize the system overview
