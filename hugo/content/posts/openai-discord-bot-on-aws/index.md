@@ -60,6 +60,13 @@ available.
 7. The Discord server forwards the response to the Discord clients of all the
    users in the channel.
 
+### Benefits of using OpenAI, AWS, and Discord
+
+Using Discord as a chat platform provides a simple way to create a chatbot that
+can be accessed on any device. Moreover, the Discord Gateway provides a
+WebSocket interface that allows bots to receive events without needing to poll
+the Discord REST API.
+
 - System Overview - step-by-step walkthrough of system components
   - Technologies Used - list of technologies used
   - Code Samples - provide code samples to demonstrate how it works
@@ -92,7 +99,7 @@ account, ensuring their Discord messages are not shared with a third party. AWS
 resources are configured with secure best practices to provide a highly
 available chatbot.
 
-### Benefits of using OpenAI, AWS, and Discord
+
 
 ### Challenges Involved in Creating a Discord Chatbot
 
