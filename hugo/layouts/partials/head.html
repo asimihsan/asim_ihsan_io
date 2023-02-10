@@ -1,12 +1,6 @@
 <head>
     <meta charset="utf-8">
 
-    {{ if eq (getenv "HUGO_ENV") "production" | or (eq .Site.Params.env "production")  }}
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; prefetch-src https://asim.ihsan.io/; connect-src contact.ihsan.io; script-src 'self' f.convertkit.com www.google.com www.gstatic.com 'unsafe-inline'; img-src 'self' 'unsafe-inline' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; base-uri 'self'; form-action 'self' app.convertkit.com; frame-src www.youtube.com www.google.com; media-src https://asim.ihsan.io/">
-    {{ else }}
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; prefetch-src https://preprod-asim.ihsan.io/; connect-src 'self' 192.168.1.17:5000 preprod-contact.ihsan.io contact.ihsan.io; script-src 'self' f.convertkit.com www.google.com www.gstatic.com 'unsafe-inline'; img-src 'self' 'unsafe-inline' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; base-uri 'self'; form-action 'self' app.convertkit.com; frame-src www.youtube.com www.google.com; media-src 127.0.0.1:5000">
-    {{ end }} 
-
     {{ $title := print .Title " | " .Site.Title }}
     {{ if .IsHome }}{{ $title = .Site.Title }}{{ end }}
     <title>{{ $title }} </title>

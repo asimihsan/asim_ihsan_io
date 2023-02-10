@@ -37,8 +37,12 @@ challenging. OpenAI's language models can be used to create such a chatbot, but
 hosting it on a web application is not ideal as it would require a lot of extra
 work. Using an existing chat platform makes it much simpler to access the
 chatbot from any device. Additionally, the application must be secure to protect
-user data, highly available to ensure the bot is always accessible, and
+user data, highly available to ensure a good user experience, and
 cost-effective to prevent costly overhead.
+
+For the initial prototype, I decided to explore a long-term design with a focus
+on cost-effectiveness, rather than high availability verifying scalability using
+load testing.
 
 ## System overview
 
