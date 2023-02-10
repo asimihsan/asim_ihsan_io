@@ -41,8 +41,8 @@ user data, highly available to ensure a good user experience, and
 cost-effective to prevent costly overhead.
 
 For the initial prototype, I decided to explore a long-term design with a focus
-on cost-effectiveness, rather than high availability verifying scalability using
-load testing.
+on cost-effectiveness, rather than focusing on high availability and verifying
+scalability using load testing.
 
 ## System overview
 
