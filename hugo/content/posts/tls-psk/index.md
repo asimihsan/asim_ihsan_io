@@ -4,7 +4,7 @@ date: 2022-10-18T00:00:00-07:00
 aliases:
   - /posts/tls-13-psk/
   - /tls-13-psk/
-draft: false
+draft: true
 summary: |
   Transport Layer Security (TLS) is an application-layer protocol that sits on
   top of e.g. the Transmission Control Protocol (TCP) and provides a secure
