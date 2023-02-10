@@ -32,14 +32,13 @@ tags:
 
 ## Problem statement
 
-Creating a collaborative chatbot that can engage in conversations with multiple
-users is a challenging problem that requires a secure, cost-effective, and
-highly available solution. OpenAI's language models can be used to create such a
-chatbot. However, hosting it on a web application is not ideal because creating
-a usable web user experience would require more work than necessary. Using an
-existing chat platform makes it easier to access the chatbot on any device.
-Furthermore, the application needs to be secure, cost-effective, and highly
-available.
+Creating a chatbot that can have conversations with multiple users can be
+challenging. OpenAI's language models can be used to create such a chatbot, but
+hosting it on a web application is not ideal as it would require a lot of extra
+work. Using an existing chat platform makes it much simpler to access the
+chatbot from any device. Additionally, the application must be secure to protect
+user data, highly available to ensure the bot is always accessible, and
+cost-effective to prevent costly overhead.
 
 ## System overview
 
@@ -60,76 +59,102 @@ available.
 7. The Discord server forwards the response to the Discord clients of all the
    users in the channel.
 
-### Benefits of using OpenAI, AWS, and Discord
+Using Discord as a chat platform provides an easy way to create a bot that can
+be accessed from any device. Moreover, OpenAI makes it easy to create a chatbot
+that can have a natural conversation with users. By combining these two tools,
+we can create a chatbot that can be accessed from any device and can have
+conversations with multiple users.
 
-Using Discord as a chat platform provides a simple way to create a chatbot that
-can be accessed on any device. Moreover, the Discord Gateway provides a
-WebSocket interface that allows bots to receive events without needing to poll
-the Discord REST API.
+Although any computer can run the bot, using AWS provides several benefits,
+which are discussed in the following sections.
 
-- System Overview - step-by-step walkthrough of system components
-  - Technologies Used - list of technologies used
-  - Code Samples - provide code samples to demonstrate how it works
-  - Deployment - explain how the system is deployed
-  - Visuals - include diagrams and screenshots to better explain the system and
-    its components
+## Key challenges
 
-- System Components - Overview of components used in the system
-- Discord Client - Details of connecting to Discord using a Discord client
-- AWS EC2 Spot Instances - Details of how the Discord bot runs on AWS EC2 spot
-  instances
-- WebSocket Connection - Overview of connecting the Discord bot to Discord over
-  WebSocket
-- OpenAI - Overview of how the bot talks to OpenAI to get chatbot responses
-- End-to-End Sequence - Example of an end-to-end sequence of a user chatting
-  - Diagram - Draw a diagram to illustrate the components involved in the
-    end-to-end sequence 
-- Summary - Summarize the system overview
+My current prototype implementation is available on GitHub at
+[openai-discord-bot](https://github.com/asimihsan/openai-discord-bot). To reach
+this stage, I had to overcome several challenges. The following sections discuss
+the challenges I faced and how I solved them.
 
-This system provides an easy-to-use interface for users to create their own
-custom chatbot using OpenAI language models. The bot is hosted on AWS EC2 spot
-instances and connects to Discord over WebSocket. The bot talks to OpenAI to get
-responses, allowing users to have an intelligent conversation with the bot. The
-system is designed to support up to 10 messages per second and can handle
-multiple shards using distributed locking and leases on DynamoDB to reduce calls
-to OpenAI. An end-to-end sequence of a user chatting with the bot can be
-illustrated with a diagram showing the various components involved. The system
-is secure, with users able to run the bot on EC2 instances in their own AWS
-account, ensuring their Discord messages are not shared with a third party. AWS
-resources are configured with secure best practices to provide a highly
-available chatbot.
+### Optimizing for cost whilst maintaining availability
 
+The bot must be highly available to ensure a good user experience. To ensure
+availability, we must always run at least two instances of the bot; as the
+saying goes, "two is one, one is none". However, running two instances increases
+the cost of hosting the bot. To reduce the cost, we can use EC2 spot instances.
+Spot instances are available at a discount compared to on-demand instances;
+t4g.nano instances cost only $0.0016 per hour ($1.2 per month) in us-west-2.
+However, spot instances can be terminated at any time, so we must ensure that
+the bot is always available.
 
+EC2 spot instance interruptions are normally announced 2 minutes in advance. By
+configuring an AWS Auto Scaling Group (ASG) to launch the spot instances, ASG
+will automatically launch a new instance when the current instance is about to
+be terminated. Moreover, we configure the ASG with multiple instance types and
+multiple availability zones. This reduces the likelihood of there not being any
+spot instances available. For infrastructure details, see
+[infra/compute.tf](https://github.com/asimihsan/openai-discord-bot/blob/main/infra/compute.tf).
 
-### Challenges Involved in Creating a Discord Chatbot
+### Handling faults
 
-### Solutions Proposed in this Article
+When a new message arrives in a channel, all of the bot instances try to acquire
+a lease on the message in DynamoDB. The instance that acquires the lease is the
+one that responds to the message. The others ignore the message. This reduces
+the number of unneeded calls to OpenAI, which is expensive and slow. I
+duplicated the algorithms used in the [AWS DynamoDB Lock
+Client](https://github.com/awslabs/amazon-dynamodb-lock-client) in Go; see
+[dynamodb.go](https://github.com/asimihsan/openai-discord-bot/blob/main/src/aws/dynamodb.go).
 
-## Cost-Effective Hosting
+However, several edge cases must be handled. For example, if the bot instance
+that acquired the lease is terminated, the lease will eventually expire and
+another instance will acquire the lease. This does mean that the instances need
+to be aware of expired leases and acquire them. This is done by using a Global
+Secondary Index (GSI) on the DynamoDB Lock table. The GSI is used to query for
+expired leases. The bot instances periodically query the GSI to find expired
+leases and acquire them. To reduce the risk of [GSI
+backpressure](https://aws.amazon.com/premiumsupport/knowledge-center/dynamodb-gsi-throttling-table/)
+the GSI is sharded.
 
-- Automation and configuration for a highly available chatbot
-- Security considerations - secure best practices for AWS resources.
+Another edge case is if the bot instance that acquired the lease pauses for a
+long time, for example, due to garbage collection or a long-running Discord
+call. This may cause another instance to steal the lease and more than one
+message being sent to both OpenAI and the Discord thread. For now I accept this
+risk as at-least-once delivery is acceptable for this use case.
 
-### EC2 Spot Instances
+### Connecting a bot to Discord
 
-## Distributed Locking and Leases
+Using Discord as a chat platform provides an easy way to create a bot that can
+be accessed from any device. The Discord Gateway offers a WebSocket interface
+that allows bots to receive events without the need for polling the Discord REST
+API.
 
-- Leases and Failure Detection
-- Distributed locking and leases on DynamoDB to prevent multiple instances of
-  the bot from responding to the same message, and to minimize the number of API
-  calls to OpenAI.
+This was remarkably difficult to implement, even with the help of
+[discordgo](https://github.com/bwmarrin/discordgo). I found that the lack of
+documentation and the lack of examples made it difficult to get started. With
+some trial and error, I was able to get it working. My hacky implementation is
+available in
+[discord.go](https://github.com/asimihsan/openai-discord-bot/blob/main/src/discord/discord.go).
 
-## Comparison
+### Creating a chatbot with OpenAI
 
-- provide a detailed comparison between the proposed system and alternative
-  solutions
+OpenAI language models enable the bot to have a natural conversation with users.
+By providing a prompt that contains all of the past messages in the
+conversation, the bot can provide useful information in response to the user.
 
-## Future plans
+This was the easiest part of the project. The prompt used is in
+[initial_prompt_01.txt](https://github.com/asimihsan/openai-discord-bot/blob/main/src/openai/initial_prompt_01.txt).
 
-- Outlining potential development and optimization
+## Future work
+
+- Not all of the fault handling is implemented yet.
+- I will need to add some formal modeling to verify that the lease management
+   algorithm is correct.
 
 ## Conclusion
 
-- Summarizing key points and future possibilities
-
-## Appendix
+I have created a chatbot that can be accessed from any device and can have a
+natural conversation with multiple users. The bot uses OpenAI language models
+to generate responses and Discord as a chat platform. The bot is hosted on AWS
+using EC2 spot instances and DynamoDB. The bot is highly available and
+cost-effective. Implementing the prototype gave me a good understanding of how
+to use OpenAI and Discord. I will continue to work on this project to improve
+the fault handling and add more features.
