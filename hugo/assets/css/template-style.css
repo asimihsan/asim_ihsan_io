@@ -72,75 +72,80 @@
 
 
 @font-face {
-	font-family: 'Iosevka Custom';
-	font-display: swap;
-	font-weight: 400;
-	font-stretch: normal;
-	font-style: normal;
-	src: url('/font/iosevka-custom-regular-subset.woff2') format('woff2'), url('/font/iosevka-custom-regular-subset.ttf') format('truetype');
+    font-family: 'Iosevka Custom';
+    font-display: swap;
+    font-weight: 400;
+    font-stretch: normal;
+    font-style: normal;
+    src: url('/font/iosevka-custom-regular-subset.woff2') format('woff2'), url('/font/iosevka-custom-regular-subset.ttf') format('truetype');
 }
 
 @font-face {
-	font-family: 'Iosevka Custom';
-	font-display: swap;
-	font-weight: 400;
-	font-stretch: normal;
-	font-style: italic;
-	src: url('/font/iosevka-custom-italic-subset.woff2') format('woff2'), url('/font/iosevka-custom-italic-subset.ttf') format('truetype');
+    font-family: 'Iosevka Custom';
+    font-display: swap;
+    font-weight: 400;
+    font-stretch: normal;
+    font-style: italic;
+    src: url('/font/iosevka-custom-italic-subset.woff2') format('woff2'), url('/font/iosevka-custom-italic-subset.ttf') format('truetype');
 }
 
 @font-face {
-	font-family: 'Iosevka Custom';
-	font-display: swap;
-	font-weight: 700;
-	font-stretch: normal;
-	font-style: normal;
-	src: url('/font/iosevka-custom-bold-subset.woff2') format('woff2'), url('/font/iosevka-custom-bold-subset.ttf') format('truetype');
+    font-family: 'Iosevka Custom';
+    font-display: swap;
+    font-weight: 700;
+    font-stretch: normal;
+    font-style: normal;
+    src: url('/font/iosevka-custom-bold-subset.woff2') format('woff2'), url('/font/iosevka-custom-bold-subset.ttf') format('truetype');
 }
 
 @font-face {
-	font-family: 'Iosevka Custom';
-	font-display: swap;
-	font-weight: 700;
-	font-stretch: normal;
-	font-style: italic;
-	src: url('/font/iosevka-custom-bolditalic-subset.woff2') format('woff2'), url('/font/iosevka-custom-bolditalic-subset.ttf') format('truetype');
+    font-family: 'Iosevka Custom';
+    font-display: swap;
+    font-weight: 700;
+    font-stretch: normal;
+    font-style: italic;
+    src: url('/font/iosevka-custom-bolditalic-subset.woff2') format('woff2'), url('/font/iosevka-custom-bolditalic-subset.ttf') format('truetype');
 }
 
 @font-face {
-	font-family: 'Fira Sans Condensed';
-	font-display: swap;
-	font-weight: 400;
-	font-stretch: normal;
-	font-style: normal;
-	src: url('/font/FiraSansCondensed-Regular-subset.woff2') format('woff2'), url('/font/FiraSansCondensed-Regular-subset.ttf') format('truetype');
+    font-family: 'Fira Sans Condensed';
+    font-display: swap;
+    font-weight: 400;
+    font-stretch: normal;
+    font-style: normal;
+    src: url('/font/FiraSansCondensed-Regular-subset.woff2') format('woff2'), url('/font/FiraSansCondensed-Regular-subset.ttf') format('truetype');
 }
 
 @font-face {
-	font-family: 'Fira Sans Condensed';
-	font-display: swap;
-	font-weight: 400;
-	font-stretch: normal;
-	font-style: italic;
-	src: url('/font/FiraSansCondensed-Italic-subset.woff2') format('woff2'), url('/font/FiraSansCondensed-Italic-subset.ttf') format('truetype');
+    font-family: 'Fira Sans Condensed';
+    font-display: swap;
+    font-weight: 400;
+    font-stretch: normal;
+    font-style: italic;
+    src: url('/font/FiraSansCondensed-Italic-subset.woff2') format('woff2'), url('/font/FiraSansCondensed-Italic-subset.ttf') format('truetype');
 }
 
 @font-face {
-	font-family: 'Fira Sans Condensed';
-	font-display: swap;
-	font-weight: 700;
-	font-stretch: normal;
-	font-style: normal;
-	src: url('/font/FiraSansCondensed-Bold-subset.woff2') format('woff2'), url('/font/FiraSansCondensed-Bold-subset.ttf') format('truetype');
+    font-family: 'Fira Sans Condensed';
+    font-display: swap;
+    font-weight: 700;
+    font-stretch: normal;
+    font-style: normal;
+    src: url('/font/FiraSansCondensed-Bold-subset.woff2') format('woff2'), url('/font/FiraSansCondensed-Bold-subset.ttf') format('truetype');
 }
 
 @font-face {
-	font-family: 'Fira Sans Condensed';
-	font-display: swap;
-	font-weight: 700;
-	font-stretch: normal;
-	font-style: italic;
-	src: url('/font/FiraSansCondensed-BoldItalic-subset.woff2') format('woff2'), url('/font/FiraSansCondensed-BoldItalic-subset.ttf') format('truetype');
+    font-family: 'Fira Sans Condensed';
+    font-display: swap;
+    font-weight: 700;
+    font-stretch: normal;
+    font-style: italic;
+    src: url('/font/FiraSansCondensed-BoldItalic-subset.woff2') format('woff2'), url('/font/FiraSansCondensed-BoldItalic-subset.ttf') format('truetype');
+}
+
+:root {
+    --background: #fafafa;
+    --foreground: #222222;
 }
 
 html, .card {
