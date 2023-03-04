@@ -6,67 +6,13 @@ SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
 BLOG_BUCKET_REGION=us-east-2
 BLOG_BUCKET_NAME=$(aws --region $BLOG_BUCKET_REGION cloudformation describe-stacks | jq -r '.Stacks | .[] | select(.StackId | contains("/prod-AsimIhsanIoCdkStack")) | .Outputs | .[] | select(.OutputKey == "BlogBucketName") | .OutputValue')
-aws --region $BLOG_BUCKET_REGION s3 cp "$SCRIPT_DIR"/../hugo/build "s3://${BLOG_BUCKET_NAME}" \
-  --exclude="*" --include="*.html.br" \
-  --acl 'public-read' \
-  --content-encoding br \
-  --content-type="text/html; charset=UTF-8" \
-  --metadata-directive REPLACE --recursive
-aws --region $BLOG_BUCKET_REGION s3 cp "$SCRIPT_DIR"/../hugo/build "s3://${BLOG_BUCKET_NAME}" \
-  --exclude="*" --include="*.html.gz" \
-  --acl 'public-read' \
-  --content-encoding gz \
-  --content-type="text/html; charset=UTF-8" \
-  --metadata-directive REPLACE --recursive
-aws --region $BLOG_BUCKET_REGION s3 cp "$SCRIPT_DIR"/../hugo/build "s3://${BLOG_BUCKET_NAME}" \
-  --exclude="*" --include="*.js.br" \
-  --acl 'public-read' \
-  --content-encoding br \
-  --content-type="application/javascript" \
-  --metadata-directive REPLACE --recursive
-aws --region $BLOG_BUCKET_REGION s3 cp "$SCRIPT_DIR"/../hugo/build "s3://${BLOG_BUCKET_NAME}" \
-  --exclude="*" --include="*.js.gz" \
-  --acl 'public-read' \
-  --content-encoding gz \
-  --content-type="application/javascript" \
-  --metadata-directive REPLACE --recursive
-aws --region $BLOG_BUCKET_REGION s3 cp "$SCRIPT_DIR"/../hugo/build "s3://${BLOG_BUCKET_NAME}" \
-  --exclude="*" --include="*.css.br" \
-  --acl 'public-read' \
-  --content-encoding br \
-  --content-type="text/css" \
-  --metadata-directive REPLACE --recursive
-aws --region $BLOG_BUCKET_REGION s3 cp "$SCRIPT_DIR"/../hugo/build "s3://${BLOG_BUCKET_NAME}" \
-  --exclude="*" --include="*.css.gz" \
-  --acl 'public-read' \
-  --content-encoding gz \
-  --content-type="text/css" \
-  --metadata-directive REPLACE --recursive
-aws --region $BLOG_BUCKET_REGION s3 cp "$SCRIPT_DIR"/../hugo/build "s3://${BLOG_BUCKET_NAME}" \
-  --exclude="*" --include="*.svg.br" \
-  --acl 'public-read' \
-  --content-encoding br \
-  --content-type="image/svg+xml" \
-  --metadata-directive REPLACE --recursive
-aws --region $BLOG_BUCKET_REGION s3 cp "$SCRIPT_DIR"/../hugo/build "s3://${BLOG_BUCKET_NAME}" \
-  --exclude="*" --include="*.svg.gz" \
-  --acl 'public-read' \
-  --content-encoding gz \
-  --content-type="image/svg+xml" \
-  --metadata-directive REPLACE --recursive
-aws --region $BLOG_BUCKET_REGION s3 cp "$SCRIPT_DIR"/../hugo/build "s3://${BLOG_BUCKET_NAME}" \
-  --exclude="*" --include="*.webp.br" \
-  --acl 'public-read' \
-  --content-encoding br \
-  --content-type="image/webp" \
-  --metadata-directive REPLACE --recursive
-aws --region $BLOG_BUCKET_REGION s3 cp "$SCRIPT_DIR"/../hugo/build "s3://${BLOG_BUCKET_NAME}" \
-  --exclude="*" --include="*.webp.gz" \
-  --acl 'public-read' \
-  --content-encoding gz \
-  --content-type="image/webp+xml" \
-  --metadata-directive REPLACE --recursive  
+LOCAL_DIRECTORY="$SCRIPT_DIR"/../hugo/build
+
+aws-s3-sync \
+  --local-path "$LOCAL_DIRECTORY" \
+  --bucket "$BLOG_BUCKET_NAME" \
+  --region "$BLOG_BUCKET_REGION"
 
 CLOUDFRONT_REGION=us-east-2
 CLOUDFRONT_DISTRIBUTION=$(aws --region $CLOUDFRONT_REGION cloudformation describe-stacks | jq -r '.Stacks | .[] | select(.StackId | contains("/prod-AsimIhsanIoCdkStack")) | .Outputs | .[] | select(.OutputKey == "CloudfrontDistribution") | .OutputValue')
-aws --region $CLOUDFRONT_REGION cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION" --paths "/*"
+aws --no-cli-pager --region $CLOUDFRONT_REGION cloudfront create-invalidation --distribution-id "$CLOUDFRONT_DISTRIBUTION" --paths "/*"

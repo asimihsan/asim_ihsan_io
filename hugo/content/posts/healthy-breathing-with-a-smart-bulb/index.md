@@ -21,6 +21,10 @@ objectives: |
 summary_image_enabled: true
 summary_image: breathing01.svg
 summary_image_title: Diagram illustrating breathing at a certain rate with the help of a smart bulb.
+
+meta_description: >-
+    Learn how to breathe better and boost your health with a smart bulb. Discover how a smart bulb can guide you to the optimal breathing rate and rhythm.
+
 tags:
 -   breathing
 -   health

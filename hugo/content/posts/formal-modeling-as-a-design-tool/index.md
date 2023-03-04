@@ -13,7 +13,8 @@ objectives: |
     -   Use Alloy to model and analyze a software design with state that varies over time.
     -   Analyze Python pip's legacy dependency resolution algorithm.
     -   Explore a software design iteratively using formal modeling.
-
+meta_description: >-
+    Learn how formal modeling with Alloy can help you design better software systems. Discover how Alloy can help you find bugs, verify properties, and explore design alternatives.
 tags:
 - alloy
 - formalmodel

@@ -22,12 +22,6 @@ docker-shell:
 		-it asim_ihsan_io \
 		/bin/bash -i
 
-generate-critical:
-	rm -f $(MAKEFILE_DIR)hugo/layouts/partials/critical-css.html
-	echo "<style>" >> $(MAKEFILE_DIR)hugo/layouts/partials/critical-css.html
-	cat $(MAKEFILE_DIR)hugo/build/index.html | critical --base $(MAKEFILE_DIR)hugo/build >> $(MAKEFILE_DIR)hugo/layouts/partials/critical-css.html
-	echo "</style>" >> $(MAKEFILE_DIR)hugo/layouts/partials/critical-css.html
-
 watch-diagrams:
 	$(MAKEFILE_DIR)watch-diagrams
 
@@ -39,12 +33,17 @@ hugo-draft:
 		-it asim_ihsan_io \
 		bash -i -c '/workspace/src/hugo-draft'
 
-hugo-staging: generate-critical
+hugo-staging: init-aws-s3-sync
+	./src/generate-critical.sh
 	 $(AWS_DOCKER_RUN) \
 	 	--volume "$(MAKEFILE_DIR):/workspace" \
 		--workdir /workspace \
 		-it asim_ihsan_io \
 		bash -i -c '/workspace/src/hugo-staging'
+
+hugo-staging-local: init-aws-s3-sync
+	./src/generate-critical.sh
+	$(AWS_COMMAND) $(MAKEFILE_DIR)src/hugo-staging
 
 s3-cf-upload-invalidate-staging:
 	 $(AWS_DOCKER_RUN) \
@@ -53,12 +52,17 @@ s3-cf-upload-invalidate-staging:
 		-it asim_ihsan_io \
 		bash -i -c '/workspace/src/s3-cf-upload-invalidate-staging'
 
-hugo-production: generate-critical
+hugo-production: init-aws-s3-sync
+	./src/generate-critical.sh --production
 	 $(AWS_DOCKER_RUN) \
 	 	--volume "$(MAKEFILE_DIR):/workspace" \
 		--workdir /workspace \
 		-it asim_ihsan_io \
 		bash -i -c '/workspace/src/hugo-production'
+
+hugo-production-local: init-aws-s3-sync
+	./src/generate-critical.sh --production
+	$(AWS_COMMAND) $(MAKEFILE_DIR)src/hugo-production
 
 s3-cf-upload-invalidate-production:
 	 $(AWS_DOCKER_RUN) \
@@ -66,3 +70,10 @@ s3-cf-upload-invalidate-production:
 		--workdir /workspace \
 		-it asim_ihsan_io \
 		bash -i -c '/workspace/src/s3-cf-upload-invalidate-production'
+
+cdk-bootstrap:
+	cd cdk && $(AWS_COMMAND) cdk bootstrap
+
+# TODO FIXME temporary until I publish this
+init-aws-s3-sync:
+	cd $(HOME)/workplace/aws-s3-sync && go install

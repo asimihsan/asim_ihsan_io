@@ -3,9 +3,10 @@
 set -euxo pipefail
 
 SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
+ROOT_DIR=$(cd -- "$SCRIPT_DIR"/.. && pwd)
 
-rm -rf "$SCRIPT_DIR"/../hugo/build
-(cd "$SCRIPT_DIR"/../hugo && \
+rm -rf "${ROOT_DIR}"/hugo/build
+(cd "${ROOT_DIR}"/hugo && \
     HUGO_ENV=production HUGO_BASEURL='https://preprod-asim.ihsan.io' hugo --destination build)
 
 # (cd "$SCRIPT_DIR"/../hugo/build && \
@@ -13,9 +14,7 @@ rm -rf "$SCRIPT_DIR"/../hugo/build
 #         'echo {} && cat {} | critical --inline | sponge {}'
 # )
 
-"$SCRIPT_DIR"/../src/compress_build.py
-
 rm -rf cdk/cdk.out
 (cd cdk && cdk deploy --require-approval never 'preprod-AsimIhsanIoCdkStack')
 
-"$SCRIPT_DIR"/../src/s3-cf-upload-invalidate-staging
+"${ROOT_DIR}"/src/s3-cf-upload-invalidate-staging

@@ -8,24 +8,8 @@ import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 import software.amazon.awscdk.services.certificatemanager.DnsValidatedCertificate;
 import software.amazon.awscdk.services.certificatemanager.ICertificate;
-import software.amazon.awscdk.services.cloudfront.Behavior;
-import software.amazon.awscdk.services.cloudfront.CfnDistribution;
-import software.amazon.awscdk.services.cloudfront.CloudFrontAllowedMethods;
-import software.amazon.awscdk.services.cloudfront.CloudFrontWebDistribution;
-import software.amazon.awscdk.services.cloudfront.CloudFrontWebDistributionProps;
-import software.amazon.awscdk.services.cloudfront.Function;
-import software.amazon.awscdk.services.cloudfront.FunctionAssociation;
-import software.amazon.awscdk.services.cloudfront.FunctionEventType;
-import software.amazon.awscdk.services.cloudfront.HttpVersion;
-import software.amazon.awscdk.services.cloudfront.LoggingConfiguration;
-import software.amazon.awscdk.services.cloudfront.PriceClass;
-import software.amazon.awscdk.services.cloudfront.S3OriginConfig;
-import software.amazon.awscdk.services.cloudfront.SSLMethod;
-import software.amazon.awscdk.services.cloudfront.SecurityPolicyProtocol;
-import software.amazon.awscdk.services.cloudfront.SourceConfiguration;
-import software.amazon.awscdk.services.cloudfront.ViewerCertificate;
-import software.amazon.awscdk.services.cloudfront.ViewerCertificateOptions;
-import software.amazon.awscdk.services.cloudfront.ViewerProtocolPolicy;
+import software.amazon.awscdk.services.cloudfront.*;
+import software.amazon.awscdk.services.cloudfront.origins.S3Origin;
 import software.amazon.awscdk.services.route53.ARecord;
 import software.amazon.awscdk.services.route53.HostedZone;
 import software.amazon.awscdk.services.route53.HostedZoneProviderProps;
@@ -63,9 +47,6 @@ public class CdkStack extends Stack {
         // --------------------------------------------------------------------
         final Bucket bucket = new Bucket(this, "BlogBucket", BucketProps.builder()
                 .bucketName(PhysicalName.GENERATE_IF_NEEDED)
-
-                // TODO couldn't get S3 working without public access. I've had to add it as a static website
-                // origin rather than an S3 origin, that may be the reason.
                 .publicReadAccess(true)
                 //.blockPublicAccess(BlockPublicAccess.BLOCK_ALL)
 
@@ -118,62 +99,42 @@ public class CdkStack extends Stack {
         // --------------------------------------------------------------------
         //  CloudFront distribution for assets.
         // --------------------------------------------------------------------
-        final software.amazon.awscdk.services.cloudfront.FunctionCode cloudfrontFunctionCode =
-                software.amazon.awscdk.services.cloudfront.FunctionCode.fromInline(rewriteLambdaCode);
-        final software.amazon.awscdk.services.cloudfront.Function cloudfrontFunction =
-                Function.Builder.create(this, "CloudFrontFunction")
-                        .code(cloudfrontFunctionCode)
-                        .build();
-        final List<SourceConfiguration> sourceConfigurations = Collections.singletonList(
-                SourceConfiguration.builder()
-                        .originShieldRegion(this.getRegion())
-                        .s3OriginSource(S3OriginConfig.builder()
-                                .s3BucketSource(bucket)
+        final Function distributionFunction = Function.Builder.create(this, "CloudFrontFunction")
+                .functionName(id + "-RewriteDefaultIndexRequest")
+                .code(FunctionCode.fromInline(rewriteLambdaCode))
+                .build();
+        final Distribution distribution = Distribution.Builder.create(this, "CloudFront")
+                .enabled(true)
+                .httpVersion(HttpVersion.HTTP2_AND_3)
+                .certificate(certificate)
+                .domainNames(Collections.singletonList(domainName))
+                .defaultRootObject("")
+                .priceClass(PriceClass.PRICE_CLASS_100)
+                .enableLogging(false)
+                .defaultBehavior(BehaviorOptions.builder()
+                        .allowedMethods(AllowedMethods.ALLOW_GET_HEAD_OPTIONS)
+                        .cachedMethods(CachedMethods.CACHE_GET_HEAD_OPTIONS)
+                        .cachePolicy(CachePolicy.Builder.create(this, "CachePolicy")
+                                .defaultTtl(Duration.days(1))
+                                .minTtl(Duration.days(1))
+                                .maxTtl(Duration.days(1))
+                                .enableAcceptEncodingBrotli(true)
+                                .enableAcceptEncodingGzip(true)
                                 .build())
-                        .behaviors(Collections.singletonList(Behavior.builder()
-                                .isDefaultBehavior(true)
-                                .compress(false)
-                                .allowedMethods(CloudFrontAllowedMethods.GET_HEAD_OPTIONS)
-                                .forwardedValues(CfnDistribution.ForwardedValuesProperty.builder()
-                                        .queryString(false)
-                                        .headers(Arrays.asList(
-                                                "Accept-Encoding",
-
-                                                // We want to cache behavior for HTTP requests
-                                                // See: https://stackoverflow.com/questions/52994321/cloudfront-lambdaedge-https-redirect
-                                                "CloudFront-Forwarded-Proto"
-                                        ))
-                                        .build())
-                                .functionAssociations(Arrays.asList(
-                                        FunctionAssociation.builder()
-                                                .function(cloudfrontFunction)
-                                                .eventType(FunctionEventType.VIEWER_REQUEST)
-                                                .build(),
-                                        FunctionAssociation.builder()
-                                                .function(cloudfrontFunction)
-                                                .eventType(FunctionEventType.VIEWER_RESPONSE)
-                                                .build()))
-                                .build()))
-                        .build()
-        );
-        final CloudFrontWebDistribution distribution = new CloudFrontWebDistribution(this, "CloudFront",
-                CloudFrontWebDistributionProps.builder()
-                        .httpVersion(HttpVersion.HTTP2_AND_3)
-                        .originConfigs(sourceConfigurations)
-                        .viewerCertificate(ViewerCertificate.fromAcmCertificate(certificate,
-                                ViewerCertificateOptions.builder()
-                                        .aliases(Collections.singletonList(domainName))
-                                        .securityPolicy(SecurityPolicyProtocol.TLS_V1_2_2021)
-                                        .sslMethod(SSLMethod.SNI)
-                                        .build()))
+                        .compress(true)
+                        .origin(S3Origin.Builder.create(bucket)
+                                .originShieldRegion(this.getRegion())
+                                .build())
                         .viewerProtocolPolicy(ViewerProtocolPolicy.REDIRECT_TO_HTTPS)
-                        .priceClass(PriceClass.PRICE_CLASS_200)
-                        .defaultRootObject("")
-                        .loggingConfig(LoggingConfiguration.builder()
-                                .bucket(cloudFrontAccessLogsBucket)
-                                .includeCookies(false)
-                                .build())
-                        .build());
+                        .functionAssociations(Collections.singletonList(
+                                FunctionAssociation.builder()
+                                        .eventType(FunctionEventType.VIEWER_REQUEST)
+                                        .function(distributionFunction)
+                                        .build()
+                        ))
+                        .build())
+                .minimumProtocolVersion(SecurityPolicyProtocol.TLS_V1_2_2021)
+                .build();
         // --------------------------------------------------------------------
 
         // --------------------------------------------------------------------
@@ -224,21 +185,6 @@ public class CdkStack extends Stack {
                 .zone(hostedZone)
                 .recordName(domainName + ".")
                 .target(RecordTarget.fromAlias(new CloudFrontTarget(distribution)))
-                .build();
-        // --------------------------------------------------------------------
-
-        // --------------------------------------------------------------------
-        //  Deploy local Hugo build to the S3 bucket, and invalidate the
-        //  CloudFront distribution
-        // --------------------------------------------------------------------
-        final List<ISource> bucketDeploymentSources = Collections.singletonList(
-                Source.asset("./../hugo/build")
-        );
-        BucketDeployment.Builder.create(this, "DeployWebsite")
-                .sources(bucketDeploymentSources)
-                .destinationBucket(bucket)
-                .distribution(distribution)
-                .memoryLimit(3072)
                 .build();
         // --------------------------------------------------------------------
 
