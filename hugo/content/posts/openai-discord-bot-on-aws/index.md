@@ -12,6 +12,9 @@ summary: |
   article include using EC2 Spot Instances for cost-effective hosting and using distributed
   locking with leases to prevent duplicate work and handle faults, providing a
   cost-effective and reliable way to create a chatbot.
+meta_description: >-
+   Discover how to build an OpenAI Discord bot on AWS using Python and ChatGPT. See how this
+   software system is cost-effective and highly available.
 summary_video_enabled: true
 summary_video: demo.mp4
 summary_video_type: video/mp4
@@ -112,16 +115,16 @@ However, several edge cases must be handled. For example, if the bot instance
 that acquired the lease is terminated, the lease will eventually expire and
 another instance will acquire the lease. This does mean that the instances need
 to be aware of expired leases and acquire them. This is done by using a Global
-Secondary Index (GSI) on the DynamoDB Lock table. The GSI is used to query for
-expired leases. The bot instances periodically query the GSI to find expired
-leases and acquire them. To reduce the risk of [GSI
+Secondary Index (GSI) on the DynamoDB Lock table. The bot instances periodically
+query the GSI to find expired leases and acquire them. To reduce the risk of
+[GSI
 backpressure](https://aws.amazon.com/premiumsupport/knowledge-center/dynamodb-gsi-throttling-table/)
 the GSI is sharded.
 
 Another edge case is if the bot instance that acquired the lease pauses for a
 long time, for example, due to garbage collection or a long-running Discord
 call. This may cause another instance to steal the lease and more than one
-message being sent to both OpenAI and the Discord thread. For now I accept this
+message sent to both OpenAI and the Discord thread. For now I accept this
 risk as at-least-once delivery is acceptable for this use case.
 
 ### Connecting a bot to Discord

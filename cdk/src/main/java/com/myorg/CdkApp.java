@@ -29,11 +29,11 @@ public class CdkApp {
         // See: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/HowCloudFrontWorks.html
         // See: https://aws.amazon.com/cloudfront/pricing/
         final List<String> pingerRegions = Arrays.asList(
-                "us-west-2",
-                "us-west-1",
-                "us-east-2",
-                "us-east-1",
-                "eu-west-2"
+                // "us-west-2",
+                // "us-west-1",
+                // "us-east-2",
+                // "us-east-1",
+                // "eu-west-2"
         );
 
 

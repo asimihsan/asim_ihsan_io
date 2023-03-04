@@ -3,19 +3,18 @@
 set -euxo pipefail
 
 SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
+ROOT_DIR=$(cd -- "$SCRIPT_DIR"/.. && pwd)
 
-rm -rf "$SCRIPT_DIR"/../hugo/build
-(cd "$SCRIPT_DIR"/../hugo && \
+rm -rf "${ROOT_DIR}"/hugo/build
+(cd "${ROOT_DIR}"/hugo && \
     HUGO_ENV=production HUGO_BASEURL='https://asim.ihsan.io' hugo --destination build)
 
 # TODO fix headless chromium in docker
-# (cd "$SCRIPT_DIR"/../hugo/build && \
+# (cd "${ROOT_DIR}"/hugo/build && \
 #     fd . -e html . | xargs -P 4 -I{} bash -c \
 #         'echo {} && cat {} | critical --base . --inline | sponge {}'
 # )
 
-"$SCRIPT_DIR"/../src/compress_build.py
-
 (cd cdk && cdk deploy --require-approval never 'prod-AsimIhsanIoCdkStack')
 
-"$SCRIPT_DIR"/../src/s3-cf-upload-invalidate-production
+"${ROOT_DIR}"/src/s3-cf-upload-invalidate-production

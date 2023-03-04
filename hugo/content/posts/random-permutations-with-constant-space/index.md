@@ -17,7 +17,8 @@ objectives: |
 
    -   Understand what a Feistel Network is.
    -   Use Feistel Networks to generate random permutations on small domains.
-
+meta_description: >-
+   Learn how to generate random permutations with constant space using Rust. Understand the algorithm and its implementation. See examples and code snippets.
 tags:
 -   algorithms
 -   randomness
