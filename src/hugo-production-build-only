@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+set -euxo pipefail
+
+SCRIPT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
+ROOT_DIR=$(cd -- "$SCRIPT_DIR"/.. && pwd)
+
+rm -rf "${ROOT_DIR}"/hugo/build
+(cd "${ROOT_DIR}"/hugo && \
+    HUGO_ENV=production HUGO_BASEURL='https://asim.ihsan.io' hugo --destination build)
