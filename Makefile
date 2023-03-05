@@ -64,6 +64,9 @@ hugo-production-local: init-aws-s3-sync
 	./src/generate-critical.sh --production
 	$(AWS_COMMAND) $(MAKEFILE_DIR)src/hugo-production
 
+hugo-production-build-only:
+	./src/hugo-production-build-only
+
 s3-cf-upload-invalidate-production:
 	 $(AWS_DOCKER_RUN) \
 	 	--volume "$(MAKEFILE_DIR):/workspace" \
