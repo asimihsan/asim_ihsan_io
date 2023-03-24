@@ -18,6 +18,7 @@ meta_description: >-
 summary_video_enabled: true
 summary_video: demo.mp4
 summary_video_type: video/mp4
+summary_video_thumbnail: demo_thumbnail.png
 objectives: |
   By the end of this article you will be able to:
 

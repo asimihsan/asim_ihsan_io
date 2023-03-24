@@ -13,7 +13,7 @@
         {{ if .Params.summary_video_enabled }}
         <div class="column is-one-third">
             <div class="card-image">
-                <video controls width="250">
+                <video controls width="250" poster="{{ .Permalink }}{{ .Params.summary_video_thumbnail }}">
                     <source src="{{ .Permalink }}{{ .Params.summary_video }}" type="{{ .Params.summary_video_type }}">
                 </video>
             </div>

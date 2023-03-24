@@ -30,7 +30,7 @@
     <br />
     <div>
         <figure>
-            <video class="video-shortcode" preload="metadata" controls>
+            <video class="video-shortcode" preload="metadata" controls poster="{{ .Params.summary_video_thumbnail }}">
                 <source src="{{ .Params.summary_video }}" type="{{ .Params.summary_video_type }}">
                 There should have been a video here but your browser does not seem
                 to support it.
