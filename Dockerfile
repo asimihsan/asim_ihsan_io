@@ -3,21 +3,21 @@
 # -----------------------------------------------------------------------------
 #   Base Ubuntu
 # -----------------------------------------------------------------------------
-FROM ubuntu:jammy-20230126 as base
+FROM ubuntu:jammy-20230308 as base
 
 # See: https://pipenv.pypa.io/en/latest/basics/
 # See: https://docs.docker.com/build/building/cache/
 
-ENV AWSCLI_VERSION='2.9.21'
-ENV CDK_VERSION='2.63.1'
+ENV AWSCLI_VERSION='2.11.5'
+ENV CDK_VERSION='2.70.0'
 ENV DEBIAN_FRONTEND "noninteractive"
-ENV HUGO_VERSION='0.110.0'
+ENV HUGO_VERSION='0.111.3'
 ENV LANG en_US.utf8
 ENV NETLIFY_VERSION='12.10.0'
-ENV PYENV_GIT_TAG=v2.3.12
-ENV PYENV_PYTHON='3.9.16'
-ENV VERSION_NODE=v14.16.1
-ENV VERSION_NVM=0.39.1
+ENV PYENV_GIT_TAG=v2.3.16
+ENV PYENV_PYTHON='3.10.10'
+ENV VERSION_NODE=v18.15.0
+ENV VERSION_NVM=0.39.3
 
 RUN rm -f /etc/apt/apt.conf.d/docker-clean; \
     echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
