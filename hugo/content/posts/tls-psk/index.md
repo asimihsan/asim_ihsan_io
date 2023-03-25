@@ -26,6 +26,7 @@ objectives: |
   - Use stunnel to create an end-to-end TLS 1.3 PSK+DHE proxy
     tunnel.
   - Use Rust to create an end-to-end TLS 1.3 PSK+DHE proxy tunnel.
+utterances: true
 
 tags:
   - tls

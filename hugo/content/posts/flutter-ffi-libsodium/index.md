@@ -19,6 +19,7 @@ objectives: |
     -   Run expensive native code in the background to avoid blocking the user interface of a mobile app.
 meta_description: >-
     Explore how to use Flutter FFI and Libsodium to create secure and cross-platform mobile apps. Learn how to integrate Libsodium with Flutter and use its encryption features.
+utterances: true
 
 tags:
 - flutter

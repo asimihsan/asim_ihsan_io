@@ -16,6 +16,7 @@ objectives: |
     -   Understand at a high level what the Filesystem in Userspace (FUSE) interface is.
     -   Understand a Rust newbie's perspective on struggling to write Rust library APIs.
     -   Know what the next steps are for `cwl-mount`
+utterances: true
 
 tags:
 - aws

@@ -17,6 +17,7 @@ objectives: |
         health benefits.
     -   Apply different ratios of inhalation to exhalation to alter your self-perceived mood.
     -   Use a Raspberry Pi and a LIFX smart bulb as a peripheral vision breathing aid.
+utterances: true
 
 summary_image_enabled: true
 summary_image: breathing01.svg
