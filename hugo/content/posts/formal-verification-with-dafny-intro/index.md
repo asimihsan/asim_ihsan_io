@@ -13,6 +13,7 @@ objectives: |
     -   foobar
     -   foobat
     -   foobaz
+utterances: true
 
 tags:
 - formal-verification

@@ -123,7 +123,8 @@ RUN --mount=type=cache,target=/root/.cache,sharing=locked \
     /bin/bash -c '. ~/.nvm/nvm.sh && npm install netlify-cli@"${NETLIFY_VERSION}" -g --unsafe-perm=true' && \
     # /bin/bash -c '. ~/.nvm/nvm.sh && npm install critical -g --unsafe-perm=true' && \
     # /bin/bash -c '. ~/.nvm/nvm.sh && npm install puppeteer -g --unsafe-perm=true' && \
-    /bin/bash -c '. ~/.nvm/nvm.sh && npm install aws-cdk@"${CDK_VERSION}" -g --unsafe-perm=true'
+    /bin/bash -c '. ~/.nvm/nvm.sh && npm install aws-cdk@"${CDK_VERSION}" -g --unsafe-perm=true' && \
+    /bin/bash -c '. ~/.nvm/nvm.sh && npm install @mermaid-js/mermaid-cli -g --unsafe-perm=true'
 # -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------

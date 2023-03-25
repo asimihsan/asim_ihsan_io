@@ -15,6 +15,8 @@ objectives: |
     -   Explore a software design iteratively using formal modeling.
 meta_description: >-
     Learn how formal modeling with Alloy can help you design better software systems. Discover how Alloy can help you find bugs, verify properties, and explore design alternatives.
+utterances: true
+
 tags:
 - alloy
 - formalmodel

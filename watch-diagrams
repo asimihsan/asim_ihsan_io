@@ -24,6 +24,12 @@ kill_child_processes() {
         plantuml "$source" -tsvg || true
     done 2>&1) &
 
+(watchman-wait --max-events 0 "$SCRIPT_DIR"/hugo/content -p '**/*.mermaid' |
+    while read -r source; do
+        echo "$source"
+        mmdc -i "$source" -o "${source%.*}".svg || true
+    done 2>&1) &
+
 # shellcheck disable=SC2064
 trap "kill_child_processes" SIGINT
 

@@ -15,6 +15,7 @@ summary: |
 meta_description: >-
    Discover how to build an OpenAI Discord bot on AWS using Python and ChatGPT. See how this
    software system is cost-effective and highly available.
+utterances: true
 summary_video_enabled: true
 summary_video: demo.mp4
 summary_video_type: video/mp4
