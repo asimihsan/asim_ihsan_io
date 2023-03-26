@@ -22,6 +22,7 @@ objectives: |
 
 summary_image_enabled: true
 summary_image: fire.png
+summary_image_webp: fire.webp
 summary_image_title:
   Illustration of a dumpster on fire with a green letter M inside it.
 tags:
