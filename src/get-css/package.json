@@ -1,0 +1,13 @@
+{
+  "name": "get-css",
+  "version": "1.0.0",
+  "description": "",
+  "main": "get-css.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "dependencies": {
+    "crittr": "^1.5.2"
+  }
+}

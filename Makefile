@@ -34,7 +34,6 @@ hugo-draft:
 		bash -i -c '/workspace/src/hugo-draft'
 
 hugo-staging: init-aws-s3-sync
-	./src/generate-critical.sh
 	 $(AWS_DOCKER_RUN) \
 	 	--volume "$(MAKEFILE_DIR):/workspace" \
 		--workdir /workspace \
@@ -42,7 +41,6 @@ hugo-staging: init-aws-s3-sync
 		bash -i -c '/workspace/src/hugo-staging'
 
 hugo-staging-local: init-aws-s3-sync
-	./src/generate-critical.sh
 	$(AWS_COMMAND) $(MAKEFILE_DIR)src/hugo-staging
 
 s3-cf-upload-invalidate-staging:
@@ -53,7 +51,6 @@ s3-cf-upload-invalidate-staging:
 		bash -i -c '/workspace/src/s3-cf-upload-invalidate-staging'
 
 hugo-production: init-aws-s3-sync
-	./src/generate-critical.sh --production
 	 $(AWS_DOCKER_RUN) \
 	 	--volume "$(MAKEFILE_DIR):/workspace" \
 		--workdir /workspace \
@@ -61,11 +58,16 @@ hugo-production: init-aws-s3-sync
 		bash -i -c '/workspace/src/hugo-production'
 
 hugo-production-local: init-aws-s3-sync
-	./src/generate-critical.sh --production
 	$(AWS_COMMAND) $(MAKEFILE_DIR)src/hugo-production
 
 hugo-production-build-only:
 	./src/hugo-production-build-only
+
+generate-critical:
+	./src/generate-critical.sh
+
+generate-critical-production:
+	./src/generate-critical.sh --production
 
 s3-cf-upload-invalidate-production:
 	 $(AWS_DOCKER_RUN) \
