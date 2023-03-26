@@ -11,7 +11,10 @@
     <div>
       <figure>
         <picture>
-            <img src="{{ .Params.summary_image }}" alt="{{ .Params.summary_image_title }}">
+        {{ if .Params.summary_image_webp }}
+        <source srcset="{{ .Params.summary_image_webp }}" type="image/webp">
+        {{ end }}
+        <img src="{{ .Params.summary_image }}" alt="{{ .Params.summary_image_title }}">
         </picture>
       </figure>
     </div>
