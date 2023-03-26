@@ -70,7 +70,7 @@ During a routine deployment to a control plane of Consul agents, Memcache nodes
 were sequentially removed from the cache fleet. At the same time, an inefficient
 Vitess database query for fetching user data in group direct messages (GDMs)
 occurred. With a significant portion of the cache unavailable, the database was
-overhwlemed, and most queries timed out, preventing cache refilling. Slack's
+overwhelmed, and most queries timed out, preventing cache refilling. Slack's
 users experienced a widespread outage, with many unable to access the platform
 or experiencing significant performance issues.
 
