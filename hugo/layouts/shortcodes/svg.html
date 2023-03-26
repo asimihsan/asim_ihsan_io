@@ -1,0 +1,8 @@
+{{$svg := .Get 0}}
+{{$class := default "svg-img" (.Get 1) }}
+
+{{ if eq $class "svg-img-full" }}
+  {{$class = "svg-img-full full-width"}}
+{{ end }}
+
+<img class="{{ $class }}" src="{{ $svg }}"></img>

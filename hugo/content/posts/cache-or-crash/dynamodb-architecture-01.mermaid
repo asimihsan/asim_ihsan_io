@@ -1,0 +1,4 @@
+graph TD
+A[Customer] -- "(1)" --> B[Request Routing Service]
+B -- "(2)" Get Routing Info --> C[Metadata Service]
+B -- "(3)" Read/Update Requests --> D[Storage Nodes]

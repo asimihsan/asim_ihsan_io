@@ -1,0 +1,24 @@
+sequenceDiagram
+    participant S as Slack Client
+    participant A as Slack API
+    participant MC as Memcached
+    participant V as Vitess Datastore
+    participant M as Mcrib Control Plane
+
+    participant C as Consul
+
+    S->>A: Client boot request
+    A->>MC: Fetch data from cache
+    A->>V: Fetch data from database on cache miss
+
+    C->>MC: Health checks, registration
+
+    C->>C: Perform Consul agent restart on 25% of the fleet
+    note over C: On restart, evicts Memcached hosts it's running on
+    M->>C: Get healthy Memcached hosts
+
+    M->>MC: Replace "unhealthy" Memcached node<br/>with empty cache nodes
+
+    Note over MC,C: Cache hit rate drops, database load increases, and cascading failure begins
+
+    A-->>S: Slow client boot response or failure

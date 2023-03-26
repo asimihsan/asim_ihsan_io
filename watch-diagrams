@@ -27,7 +27,7 @@ kill_child_processes() {
 (watchman-wait --max-events 0 "$SCRIPT_DIR"/hugo/content -p '**/*.mermaid' |
     while read -r source; do
         echo "$source"
-        mmdc -i "$source" -o "${source%.*}".svg || true
+        mmdc -i "$source" -o "${source%.*}".svg --backgroundColor transparent || true
     done 2>&1) &
 
 # shellcheck disable=SC2064
