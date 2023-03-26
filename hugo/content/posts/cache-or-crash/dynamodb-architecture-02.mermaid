@@ -1,0 +1,5 @@
+graph TD
+A[Customer] -- "(1)" --> B[Request Routing Service]
+B -- "(3) Async, constant volume\nget routing info" --> C[MemDS]
+B -- "(2)" Read/Update Requests --> E[Storage Nodes]
+E -- "(4)" push updates --> C
