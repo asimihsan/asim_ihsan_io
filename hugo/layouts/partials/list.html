@@ -5,7 +5,11 @@
         <div class="column is-one-third">
             <div class="card-image">
                 <a href="{{ .RelPermalink }}">
+                    {{ if .Params.summary_image_width }}
+                    <img src="{{ .Permalink }}{{ .Params.summary_image }}" width="{{ .Params.summary_image_width }}" height="{{ .Params.summary_image_width }}" alt="image from {{ .Title }}">
+                    {{ else }}
                     <img src="{{ .Permalink }}{{ .Params.summary_image }}" alt="image from {{ .Title }}">
+                    {{ end }}
                 </a>
             </div>
         </div>

@@ -25,6 +25,8 @@ summary_image: fire.png
 summary_image_webp: fire.webp
 summary_image_title:
   Illustration of a dumpster on fire with a green letter M inside it.
+summary_image_width: 300
+summary_image_height: 300
 tags:
   - distributed
   - cache
