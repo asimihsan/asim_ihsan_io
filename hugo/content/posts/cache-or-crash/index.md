@@ -1,5 +1,7 @@
 ---
-title: "Cache or Crash: Exploring the risks of using caching in distributed software systems"
+title:
+  "Cache or Crash: Exploring the risks of using caching in distributed software
+  systems"
 date: 2023-03-25T00:00:00-07:00
 aliases:
   - /posts/cache-or-crash/
@@ -8,7 +10,8 @@ draft: false
 summary: |
   Discover the complexities of caching in distributed software systems as we explore both its benefits and potential risks. Learn from real-world examples and delve into best practices for implementing caching securely, without compromising availability.
 meta_description: >-
-   Explore caching in distributed systems, learn from real-world incidents, and discover best practices for secure, high-performing caches.
+  Explore caching in distributed systems, learn from real-world incidents, and
+  discover best practices for secure, high-performing caches.
 utterances: true
 objectives: |
   By the end of this article you will be able to:
@@ -19,7 +22,8 @@ objectives: |
 
 summary_image_enabled: true
 summary_image: fire.png
-summary_image_title: Illustration of a dumpster on fire with a green letter M inside it.
+summary_image_title:
+  Illustration of a dumpster on fire with a green letter M inside it.
 tags:
   - distributed
   - cache
@@ -49,10 +53,9 @@ between caching strategies and alternatives.
 
 OpenAI utilizes Redis to cache user information, reducing the load on their
 database. However, the [ChatGPT security breach on March 20,
-2023]([https://openai.com/blog/march-20-chatgpt-outage](https://openai.com/blog/march-20-chatgpt-outage)),
-resulted from a change that caused an unexpected surge in Redis request
-cancellations. This resulted in users seeing chat titles and chat messages from
-other users.
+2023](https://openai.com/blog/march-20-chatgpt-outage), resulted from a change
+that caused an unexpected surge in Redis request cancellations. This resulted in
+users seeing chat titles and chat messages from other users.
 
 Although the blame was laid on the feet of the [redis-py
 client](https://github.com/redis/redis-py/issues/2624), it's not clear how and
@@ -84,20 +87,21 @@ Take, for instance, [Azure's "Caching
 guidance"](https://learn.microsoft.com/en-us/azure/architecture/best-practices/caching),
 which states:
 
->**For example, a database might support a limited number of concurrent
->connections. Retrieving data from a shared cache, however, rather than the
->underlying database, makes it possible for a client application to access this
->data even if the number of available connections is currently exhausted.**
->Additionally, if the database becomes unavailable, client applications might be
->able to continue by using the data that's held in the cache.
-> 
->Consider caching data that is read frequently but modified infrequently (for
->example, data that has a higher proportion of read operations than write
->operations). However, we don't recommend that you use the cache as the
->authoritative store of critical information. Instead, ensure that all changes
->that your application can't afford to lose are always saved to a persistent
->data store. **If the cache is unavailable, your application can still continue
->to operate by using the data store, and you won't lose important information.**
+> **For example, a database might support a limited number of concurrent
+> connections. Retrieving data from a shared cache, however, rather than the
+> underlying database, makes it possible for a client application to access this
+> data even if the number of available connections is currently exhausted.**
+> Additionally, if the database becomes unavailable, client applications might
+> be able to continue by using the data that's held in the cache.
+>
+> Consider caching data that is read frequently but modified infrequently (for
+> example, data that has a higher proportion of read operations than write
+> operations). However, we don't recommend that you use the cache as the
+> authoritative store of critical information. Instead, ensure that all changes
+> that your application can't afford to lose are always saved to a persistent
+> data store. **If the cache is unavailable, your application can still continue
+> to operate by using the data store, and you won't lose important
+> information.**
 
 The crucial misstep here lies in relying on the cache as a means to enhance
 availability when the data store can only support a limited number of concurrent
@@ -167,7 +171,7 @@ level of design assessment and load testing as the services it fronts.
 To avoid issues with caching, it is essential to consider factors such as cache
 hit ratio, tolerance to eventual consistency, and the rate of change of source
 data when implementing caches. Additionally, choosing between local (on-box) and
-external caches depends on the specific needs and requirements of the service. 
+external caches depends on the specific needs and requirements of the service.
 
 ## Conclusion: Mastering the Cache Balance
 
