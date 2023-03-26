@@ -23,10 +23,8 @@
     <link rel="preload" href="/font/firasans-regular-subset.woff2" as="font" type="font/woff2">
     {{ $bulma_css := resources.Get "css/bulma.css" }}
     {{ $custom_css_template := resources.Get "css/template-style.css" }}
-    {{ $custom_css := $custom_css_template | resources.ExecuteAsTemplate "css/custom.css" . }}
-    {{ $css := slice $bulma_css $custom_css | resources.Concat "css/style.css" | minify | fingerprint }}
+    {{ $css := slice $bulma_css | resources.Concat "css/style.css" | minify | fingerprint }}
     <link rel="preload" as="style" type="text/css" href="{{ $css.Permalink }}" integrity="{{ $css.Data.Integrity }}">
-    <link rel="stylesheet" href="{{ $css.Permalink }}" integrity="{{ $css.Data.Integrity }}" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="{{ $css.Permalink }}" integrity="{{ $css.Data.Integrity }}"></noscript>
     <link rel="preload" href="/font/iosevka-custom-regular-subset.woff2" as="font" type="font/woff2">
     <link rel="preload" href="/font/firasans-bold-subset.woff2" as="font" type="font/woff2">
