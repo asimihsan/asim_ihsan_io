@@ -10,9 +10,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" content="user-scalable=yes">
     {{ hugo.Generator }}
     <meta property="og:title" content="{{ .Title }}">
-    <meta property="og:type" content="">
+    <meta property="og:type" content="article">
     <meta property="og:url" content="{{ .Site.BaseURL | absURL }}">
+    {{ if .Params.summary_image_enabled }}
+    <meta property="og:image" content="{{ .Permalink }}{{ .Params.summary_image }}"> 
+    {{ else }}
     <meta property="og:image" content="">
+    {{ end }}
 
     {{ partial "critical-css.html" . }}
 
