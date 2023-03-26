@@ -14,7 +14,11 @@
         {{ if .Params.summary_image_webp }}
         <source srcset="{{ .Params.summary_image_webp }}" type="image/webp">
         {{ end }}
+        {{ if .Params.summary_image_width }}
+        <img src="{{ .Params.summary_image }}" width="{{ .Params.summary_image_width }}" height="{{ .Params.summary_image_width }}" alt="{{ .Params.summary_image_title }}">
+        {{ else }}
         <img src="{{ .Params.summary_image }}" alt="{{ .Params.summary_image_title }}">
+        {{ end }}
         </picture>
       </figure>
     </div>
