@@ -1,7 +1,7 @@
 // See: https://github.com/byu-cs329-winter2020/hw5-formal-verification-with-dafny-egbgrace
 // See: https://bitbucket.org/byucs329/byu-cs-329-lecture-notes/src/master/dafny/dafny-intro.md
 
-predicate method isLeapYear(y: int) {
+predicate isLeapYear(y: int) {
     y % 4 == 0 && (y % 100 != 0 || y % 400 == 0)
 }
 
