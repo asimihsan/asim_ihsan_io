@@ -1,9 +1,6 @@
 baseURL = "/"
 languageCode = "en-us"
 title = "Asim Ihsan's Meanderings"
-pygmentsUseClassic = true
-pygmentsUseClasses = true
-pygmentsCodeFences = true
 
 [permalinks]
     posts = "/:filename/"
