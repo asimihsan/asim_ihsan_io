@@ -35,10 +35,10 @@ method Main() {
 
 Error should go away. At this point you've verified the program. We can compile it for Go and run it.
 
-Now let's compile this code for Go:
+Now let's compile this code for Python:
 
 ```
-dafny /compileTarget:go /spillTargetCode:1 hello_world.dfy
+dafny build --target py zune2.dfy
 ```
 
 Output:

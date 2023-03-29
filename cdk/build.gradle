@@ -22,7 +22,7 @@ application {
 }
 
 dependencies {
-    implementation 'software.amazon.awscdk:aws-cdk-lib:2.67.0'
+    implementation 'software.amazon.awscdk:aws-cdk-lib:2.70.0'
     implementation 'software.constructs:constructs:10.1.265'
     implementation 'com.google.guava:guava:31.1-jre'
 
