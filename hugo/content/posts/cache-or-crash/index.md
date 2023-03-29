@@ -55,10 +55,9 @@ between caching strategies and alternatives.
 ### OpenAI security breach on Mar/20/2023
 
 OpenAI utilizes Redis to cache user information, reducing the load on their
-database. However, the [ChatGPT security breach on March 20,
-2023](https://openai.com/blog/march-20-chatgpt-outage), resulted from a change
-that caused an unexpected surge in Redis request cancellations. This resulted in
-users seeing chat titles and chat messages from other users.
+database. However, the ChatGPT security breach on March 20, 2023, resulted from
+a change that caused an unexpected surge in Redis request cancellations. This
+resulted in users seeing chat titles and chat messages from other users. [^2]
 
 Although the blame was laid on the feet of the [redis-py
 client](https://github.com/redis/redis-py/issues/2624), it's not clear how and
@@ -67,10 +66,8 @@ database, nor what the load testing and monitoring strategies are.
 
 ### Slack outage on Feb/22/2022
 
-The [Slack outage on February 22,
-2022](https://slack.engineering/slacks-incident-on-2-22-22/) serves as a
-compelling case study on the risks associated with caches in software
-architectures.
+The Slack outage on February 22, 2022 serves as a compelling case study on the
+risks associated with caches in software architectures.
 
 During a routine deployment to a control plane of Consul agents, Memcache nodes
 were sequentially removed from the cache fleet. At the same time, an inefficient
@@ -78,7 +75,7 @@ Vitess database query for fetching user data in group direct messages (GDMs)
 occurred. With a significant portion of the cache unavailable, the database was
 overwhelmed, and most queries timed out, preventing cache refilling. Slack's
 users experienced a widespread outage, with many unable to access the platform
-or experiencing significant performance issues.
+or experiencing significant performance issues. [^3]
 
 {{< svg "slack.svg" "svg-img-full" >}}
 
@@ -86,9 +83,7 @@ or experiencing significant performance issues.
 
 Navigating the complexities of caching in distributed systems can be
 challenging, as even expert guidance may not always provide accurate solutions.
-Take, for instance, [Azure's "Caching
-guidance"](https://learn.microsoft.com/en-us/azure/architecture/best-practices/caching),
-which states:
+Take, for instance, Azure's "Caching guidance", which states [^5]:
 
 > **For example, a database might support a limited number of concurrent
 > connections. Retrieving data from a shared cache, however, rather than the
@@ -126,11 +121,11 @@ and availability risks.
 
 ## How DynamoDB improved their metadata caching
 
-[DynamoDB](https://www.usenix.org/system/files/atc22-elhemali.pdf) is a
-distributed system composed of multiple microservices, including metadata
-service, request routing service, and storage nodes. The metadata service stores
-routing information, while the request routing service handles authorization,
-authentication, and routes requests to the appropriate storage nodes.
+AWS DynamoDB is a managed NoSQL database service. It is a distributed system
+composed of multiple microservices, including metadata service, request routing
+service, and storage nodes. The metadata service stores routing information,
+while the request routing service handles authorization, authentication, and
+routes requests to the appropriate storage nodes. [^4]
 
 {{< svg "dynamodb-architecture-01.svg" >}}
 
@@ -160,7 +155,7 @@ stale, the incorrectly contacted storage node either responds with the latest
 membership or an error code, triggering another MemDS lookup by the request
 router. This design ensures efficient and reliable routing of requests in the
 distributed system, reducing risks associated with caches and improving overall
-performance.
+performance. [^4]
 
 ## Best Practices for Implementing and Maintaining Caches
 
@@ -169,12 +164,13 @@ honestly assess whether your software service truly needs it. Overreliance on
 caches can lead to potential disasters when traffic patterns shift or cache
 fleets fail. Never use caches as an intentional means of increasing
 availability, or if you do, ensure that your cache fleet undergoes the same
-level of design assessment and load testing as the services it fronts.
+level of design assessment and load testing as the services it fronts. [^1]
 
 To avoid issues with caching, it is essential to consider factors such as cache
 hit ratio, tolerance to eventual consistency, and the rate of change of source
 data when implementing caches. Additionally, choosing between local (on-box) and
 external caches depends on the specific needs and requirements of the service.
+[^1]
 
 ## Conclusion: Mastering the Cache Balance
 
@@ -186,3 +182,15 @@ between caching and alternative solutions. Ultimately, understanding the
 benefits and risks of caching will enable you to create secure, high-performing
 software systems that can withstand the challenges of ever-changing traffic
 patterns and unexpected failures.
+
+## References
+
+[^1]: [Caching challenges and strategies](https://aws.amazon.com/builders-library/caching-challenges-and-strategies/) - Amazon Builders' Library
+
+[^2]: [March 20 ChatGPT outage: Here’s what happened](https://openai.com/blog/march-20-chatgpt-outage) - OpenAI
+  
+[^3]: [Slack's Incident on 2/22/22](https://slack.engineering/slacks-incident-on-2-22-22/) - Slack Engineering
+
+[^4]: [Amazon DynamoDB: A Scalable, Predictably Performant, and Fully Managed NoSQL Database Service](https://www.usenix.org/system/files/atc22-elhemali.pdf) - USENIX ATC '22
+
+[^5]: [Caching guidance](https://learn.microsoft.com/en-us/azure/architecture/best-practices/caching) - Microsoft Azure

@@ -299,6 +299,7 @@ figcaption h4 {
 
 .highlight pre {
     background-color: #f0f0f0 !important;
+    padding: 1em;
 }
 
 pre,
